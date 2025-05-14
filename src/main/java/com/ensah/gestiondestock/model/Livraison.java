@@ -9,13 +9,13 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reception {
+public class Livraison {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate dateReception;
+    private LocalDate dateLivraison;
 
     private int quantite;
 
