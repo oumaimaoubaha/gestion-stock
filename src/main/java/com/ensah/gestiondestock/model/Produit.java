@@ -1,6 +1,19 @@
 package com.ensah.gestiondestock.model;
 
-public class Produit {
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.io.Serializable;
+import java.util.List;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Produit implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +34,7 @@ public class Produit {
     @OneToMany(mappedBy = "produit")
     private List<Livraison> livraisons;
 
-    // LigneInventaire
+    // Lignes d’inventaire
     @OneToMany(mappedBy = "produit")
     private List<LigneInventaire> lignesInventaire;
 }
