@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Entrepôts</title>
+    <style>
+        body { font-family: Arial; }
+        .sidebar { float: left; width: 200px; background: #f0f0f0; padding: 10px; }
+        .content { margin-left: 220px; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+        th { background-color: #eee; }
+        .actions a { margin-right: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h4>Gestion de stocks</h4>
+    <ul>
+        <li><b>Gestion des entrepôts</b></li>
+        <li>Réceptions</li>
+        <li>Livraisons</li>
+        <li>Transferts</li>
+        <li>Inventaires</li>
+    </ul>
+</div>
+
+<div class="content">
+    <h2>Liste des entrepôts</h2>
+
+    <a th:href="@{/entrepots/add}">➕ Ajouter un entrepôt</a>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Code</th>
+            <th>Adresse</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${entrepots}">
+            <td th:text="${e.nom}">Nom</td>
+            <td th:text="${e.code}">Code</td>
+            <td th:text="${e.adresse}">Adresse</td>
+            <td class="actions">
+                <a th:href="@{/entrepots/edit/{id}(id=${e.id})}">Modifier</a>
+                <a th:href="@{/entrepots/delete/{id}(id=${e.id})}"
+                   onclick="return confirm('Supprimer cet entrepôt ?');">Supprimer</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

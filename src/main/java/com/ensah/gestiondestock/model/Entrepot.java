@@ -17,6 +17,7 @@ public class Entrepot implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String code;
 
     private String nom;
     private String adresse;
