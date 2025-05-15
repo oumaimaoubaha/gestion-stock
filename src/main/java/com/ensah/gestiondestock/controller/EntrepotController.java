@@ -18,7 +18,8 @@ public class EntrepotController {
     @GetMapping
     public String listEntrepots(Model model) {
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
-        return "entrepot/list"; // correspond à templates/entrepot/list.html
+        model.addAttribute("entrepot", new Entrepot()); // 👈 important pour le formulaire
+        return "entrepot/list";
     }
 
     // 1.2 Affichage du formulaire d'ajout
