@@ -18,6 +18,10 @@ public class Reception {
     private LocalDate dateReception;
 
     private int quantite;
+    private String remarque;
+    private LocalDate dateAchat;
+    private String numeroAchat;
+    private String source;
 
     @ManyToOne
     @JoinColumn(name = "produit_id")

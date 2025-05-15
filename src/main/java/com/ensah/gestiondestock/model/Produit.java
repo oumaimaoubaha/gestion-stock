@@ -21,6 +21,7 @@ public class Produit implements Serializable {
     private String reference;
     private String libelle;
     private String type;
+    private String unite;
 
     // Transferts
     @OneToMany(mappedBy = "produit")
