@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Produits</title>
+    <style>
+        body { font-family: Arial; margin: 0; }
+        .header {
+            background: #eee; padding: 10px 20px; font-weight: bold;
+            border-bottom: 1px solid #ccc;
+        }
+        .sidebar {
+            float: left; width: 200px; background: #f0f0f0; height: 100vh;
+            padding: 10px; box-sizing: border-box;
+        }
+        .content {
+            margin-left: 200px; padding: 20px;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ccc; padding: 8px;
+        }
+        th { background-color: #eee; }
+        .actions a { margin-right: 10px; }
+        .form-container {
+            margin-top: 30px; width: 400px;
+        }
+        input[type="text"] {
+            width: 100%; padding: 5px; margin-bottom: 10px;
+        }
+        .buttons input {
+            margin-right: 10px; padding: 5px 15px;
+        }
+        hr { margin: 10px 0; }
+        .active-link { font-weight: bold; background: #ddd; display: block; padding: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="header">Gestion de stocks</div>
+
+<div class="sidebar">
+    <div><a th:href="@{/}" class="active-link">Accueil</a></div>
+    <hr>
+    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
+    <hr>
+    <div class="active-link">Gestion des produits</div>
+    <hr>
+    <div><b>Mouvements de stock</b></div>
+    <ul>
+        <li><a th:href="@{/receptions}">Réceptions</a></li>
+        <li><a th:href="@{/livraisons}">Livraisons</a></li>
+        <li><a th:href="@{/transferts}">Transferts</a></li>
+    </ul>
+    <hr>
+    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+</div>
+
+<div class="content">
+    <h2>Liste des produits</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Référence</th>
+            <th>Libellé</th>
+            <th>Type</th>
+            <th>Unité</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${produits}">
+            <td th:text="${p.reference}">Réf</td>
+            <td th:text="${p.libelle}">Libellé</td>
+            <td th:text="${p.type}">Type</td>
+            <td th:text="${p.unite}">Unité</td>
+            <td class="actions">
+                <a th:href="@{/produits/edit/{id}(id=${p.id})}">Modifier</a>
+                <a th:href="@{/produits/delete/{id}(id=${p.id})}"
+                   onclick="return confirm('Supprimer ce produit ?');">Supprimer</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="form-container">
+        <h3 th:text="${produit.id == null} ? 'Ajouter un produit' : 'Modifier un produit'"></h3>
+        <form th:action="@{/produits/save}" th:object="${produit}" method="post">
+            <input type="hidden" th:field="*{id}" />
+
+            <label>Référence :</label>
+            <input type="text" th:field="*{reference}" required />
+
+            <label>Libellé :</label>
+            <input type="text" th:field="*{libelle}" required />
+
+            <label>Type :</label>
+            <input type="text" th:field="*{type}" />
+
+            <label>Unité :</label>
+            <input type="text" th:field="*{unite}" />
+
+            <div class="buttons">
+                <input type="submit" value="Ajouter" />
+                <a th:href="@{/produits}"><input type="button" value="Annuler" /></a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

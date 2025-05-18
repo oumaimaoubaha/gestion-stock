@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="form">
+    <h2 th:text="${produit.id == null} ? 'Nouveau produit' : 'Modifier produit'"></h2>
+
+    <form th:action="@{/produits/save}" th:object="${produit}" method="post">
+        <input type="hidden" th:field="*{id}"/>
+
+        <label for="reference">Référence :</label>
+        <input type="text" id="reference" th:field="*{reference}" required/><br/><br/>
+
+        <label for="libelle">Libellé :</label>
+        <input type="text" id="libelle" th:field="*{libelle}" required/><br/><br/>
+
+        <label for="type">Type :</label>
+        <input type="text" id="type" th:field="*{type}" /><br/><br/>
+
+        <label for="unite">Unité :</label>
+        <input type="text" id="unite" th:field="*{unite}" /><br/><br/>
+
+        <button type="submit">Valider</button>
+        <a th:href="@{/produits}">Annuler</a>
+    </form>
+</div>
+</body>
+</html>
