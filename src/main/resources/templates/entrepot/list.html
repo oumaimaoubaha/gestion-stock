@@ -20,9 +20,7 @@
 </head>
 <body>
 
-<div class="header">
-    Gestion de stocks
-</div>
+<div class="header">Gestion de stocks</div>
 
 <div class="sidebar">
     <div><b>Accueil</b></div>
@@ -65,10 +63,17 @@
         </tbody>
     </table>
 
+    <!-- Pagination -->
     <div style="margin-top: 10px;">
-        <a href="#">suivant &gt;&gt;</a>
+        <span th:if="${currentPage > 0}">
+            <a th:href="@{/entrepots(page=${currentPage - 1})}">&lt;&lt; précédent</a>
+        </span>
+        <span th:if="${hasNext}" style="margin-left: 10px;">
+            <a th:href="@{/entrepots(page=${currentPage + 1})}">suivant &gt;&gt;</a>
+        </span>
     </div>
 
+    <!-- Formulaire -->
     <div class="form-container">
         <h3 th:text="${entrepot.id == null} ? 'Ajouter un entrepôt' : 'Modifier un entrepôt'"></h3>
         <form th:action="@{/entrepots/save}" th:object="${entrepot}" method="post">
