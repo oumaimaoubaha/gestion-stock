@@ -2,11 +2,16 @@ package com.ensah.gestiondestock.service;
 
 import com.ensah.gestiondestock.model.Inventaire;
 import com.ensah.gestiondestock.model.LigneInventaire;
+import com.ensah.gestiondestock.model.Produit;
 import com.ensah.gestiondestock.repository.InventaireRepository;
 import com.ensah.gestiondestock.repository.LigneInventaireRepository;
+import com.ensah.gestiondestock.repository.ProduitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,6 +23,12 @@ public class InventaireService {
 
     @Autowired
     private LigneInventaireRepository ligneInventaireRepository;
+
+    @Autowired
+    private ProduitRepository produitRepository;
+
+    @Autowired
+    private ProduitService produitService;
 
     // 5.1 Lister tous les inventaires
     public List<Inventaire> getAllInventaires() {
@@ -46,9 +57,46 @@ public class InventaireService {
         return ligneInventaireRepository.save(ligne);
     }
 
-    // 5.5.c Valider l’inventaire → ici, ça peut être vide ou enrichi plus tard
+    // 5.4 Rechercher par période et entrepôt
+    public List<Inventaire> searchInventairesParPeriodeEtEntrepot(LocalDate dateMin, LocalDate dateMax, Long entrepotId) {
+        return inventaireRepository.findByPeriodeAndEntrepot(dateMin, dateMax, entrepotId);
+    }
+
+    // 5.5.c Valider l’inventaire (placeholder)
     public void validerInventaire(Long inventaireId) {
-        // Pour l’instant, rien de spécial — juste un placeholder
-        // Tu peux mettre à jour les produits plus tard si besoin
+        // Tu peux enrichir cette méthode plus tard
+    }
+
+    // ✅ Méthode pour appliquer le dernier inventaire corrigé
+    public void appliquerDernierInventaire() {
+        File fichier = new File("dernier_inventaire.csv");
+        if (!fichier.exists()) return;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fichier))) {
+            String ligne;
+            boolean first = true;
+
+            while ((ligne = reader.readLine()) != null) {
+                if (first) {
+                    first = false;
+                    continue;
+                }
+
+                String[] champs = ligne.split(",");
+                if (champs.length >= 5) {
+                    String reference = champs[0].trim();
+                    int quantitePhysique = Integer.parseInt(champs[3].trim());
+
+                    Produit produit = produitService.getProduitByReference(reference);
+                    if (produit != null) {
+                        produit.setQuantiteStock(quantitePhysique);
+                        produitRepository.save(produit);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

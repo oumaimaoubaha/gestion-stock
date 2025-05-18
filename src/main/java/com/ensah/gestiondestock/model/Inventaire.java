@@ -15,7 +15,9 @@ public class Inventaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String effectuePar;
+    private String validePar;
+    private String remarque;
     private LocalDate dateInventaire;
 
     @ManyToOne

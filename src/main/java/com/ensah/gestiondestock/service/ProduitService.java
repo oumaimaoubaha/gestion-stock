@@ -47,4 +47,8 @@ public class ProduitService {
     public List<Produit> searchByLibelle(String libelle) {
         return produitRepository.findByLibelleContainingIgnoreCase(libelle);
     }
+    public Produit getProduitByReference(String reference) {
+        return produitRepository.findByReference(reference);
+    }
+
 }

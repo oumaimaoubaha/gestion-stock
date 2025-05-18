@@ -35,16 +35,14 @@
     <tbody>
     <tr th:each="r : ${receptions}">
         <form th:action="@{/receptions/save}" method="post">
-            <input type="hidden" name="produit.id" th:value="${r.produit.id}" />
-            <input type="hidden" name="entrepot.id" th:value="${r.entrepot.id}" />
-            <td><input type="date" name="dateAchat" th:value="${r.dateAchat}" readonly /></td>
-            <td><input type="text" name="numeroAchat" th:value="${r.numeroAchat}" readonly /></td>
-            <td><input type="text" name="produit.libelle" th:value="${r.produit.libelle}" readonly /></td>
-            <td><input type="text" name="produit.unite" th:value="${r.produit.unite}" readonly /></td>
-            <td><input type="number" name="quantite" th:value="${r.quantite}" readonly /></td>
-            <td><input type="text" name="source" th:value="${r.source}" readonly /></td>
+            <td><input type="date" name="dateAchat" th:value="${r.dateAchat}" required /></td>
+            <td><input type="text" name="numeroAchat" th:value="${r.numeroAchat}" required /></td>
+            <td><input type="text" name="produit.libelle" th:value="${r.produit.libelle}" required /></td>
+            <td><input type="text" name="produit.unite" th:value="${r.produit.unite}" required /></td>
+            <td><input type="number" name="quantite" th:value="${r.quantite}" required /></td>
+            <td><input type="text" name="source" th:value="${r.source}" required /></td>
             <td>
-                <label>Date de réception :</label>
+                <label>Date réception :</label>
                 <input type="date" name="dateReception" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required /><br/>
 
                 <label>Magasin :</label>

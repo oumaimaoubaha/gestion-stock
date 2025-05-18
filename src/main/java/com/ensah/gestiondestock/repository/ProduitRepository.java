@@ -6,6 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ProduitRepository extends JpaRepository<Produit, Long> {
-    List<Produit> findByReferenceContainingIgnoreCase(String reference);
+
+    // ✅ pour inventaire : récupérer les produits d’un entrepôt
+    List<Produit> findByEntrepotId(Long entrepotId);
+
+    // (déjà existant dans ton code)
+    List<Produit> findByReferenceContainingIgnoreCase(String ref);
     List<Produit> findByLibelleContainingIgnoreCase(String libelle);
+    Produit findByReference(String reference);
 }
