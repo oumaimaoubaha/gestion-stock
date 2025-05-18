@@ -33,15 +33,20 @@ public class EntrepotController {
     @PostMapping("/save")
     public String saveEntrepot(@ModelAttribute Entrepot entrepot) {
         entrepotService.saveOrUpdateEntrepot(entrepot);
-        return "redirect:/entrepots";
+        return "redirect:/entrepots"; // retourne à la première page par défaut
     }
 
     // 1.3 Modifier
     @GetMapping("/edit/{id}")
-    public String editEntrepot(@PathVariable Long id, Model model) {
+    public String editEntrepot(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, Model model) {
         Entrepot e = entrepotService.getEntrepotById(id);
+        Page<Entrepot> entrepotPage = entrepotService.getEntrepotsPaginated(page, PAGE_SIZE);
+
         model.addAttribute("entrepot", e);
-        model.addAttribute("entrepots", entrepotService.getEntrepotsPaginated(0, PAGE_SIZE).getContent());
+        model.addAttribute("entrepots", entrepotPage.getContent());
+        model.addAttribute("hasNext", entrepotPage.hasNext());
+        model.addAttribute("currentPage", page);
+
         return "entrepot/list";
     }
 

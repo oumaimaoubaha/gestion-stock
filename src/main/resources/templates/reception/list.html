@@ -12,20 +12,15 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
         th { background-color: #eee; }
-        .filter-section input, .filter-section select {
-            margin-right: 10px; padding: 5px;
-        }
-        .btn {
-            padding: 5px 10px;
-        }
+        .filter-section input, .filter-section select { margin-right: 10px; padding: 5px; }
+        .btn { padding: 5px 10px; }
         .actions a { margin-right: 10px; }
-        .new-link { margin-top: 10px; display: block; font-weight: bold; }
+        .nav-path { font-size: 14px; margin-bottom: 10px; }
+        .new-link, .pagination { display: block; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
-
 <div class="header">Gestion de stocks</div>
-
 <div class="sidebar">
     <a th:href="@{/}">Accueil</a>
     <a th:href="@{/entrepots}">Gestion des entrepôts</a>
@@ -39,30 +34,28 @@
     </ul>
     <a th:href="@{/inventaires}"><b>Inventaires</b></a>
 </div>
-
 <div class="content">
-    <h2>Liste des réceptions</h2>
-
+    <div class="nav-path">
+        <a th:href="@{/receptions}">Réceptions</a> > Liste des réceptions
+    </div>
     <form method="get" th:action="@{/receptions}" class="filter-section">
         <label>Date de réception :</label>
-        De : <input type="date" name="from" th:value="${from}">
-        À : <input type="date" name="to" th:value="${to}">
-        <br><br>
+        De : <input type="date" name="from" th:value="${from}" />
+        À : <input type="date" name="to" th:value="${to}" />
         <label>Produit :</label>
-        <input type="text" name="produit" placeholder="Nom produit" th:value="${produit}">
+        <input type="text" name="produit" th:value="${produit}" />
         <label>Entrepôt :</label>
-        <select name="entrepot" th:value="${entrepot}">
+        <select name="entrepot">
             <option value="">-- Tous --</option>
             <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
         </select>
         <button type="submit" class="btn">Chercher</button>
     </form>
-
     <table>
         <thead>
         <tr>
-            <th>Date récept.</th>
-            <th>N° achat</th>
+            <th>Date récept</th>
+            <th>N° doc d'ach</th>
             <th>Produit</th>
             <th>Unité</th>
             <th>Quantité</th>
@@ -70,27 +63,27 @@
             <th>Entrepôt</th>
             <th>Remarque</th>
             <th>Modifier</th>
-            <th>Supprimer</th>
+            <th>Supprim</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="r : ${receptions}">
-            <td th:text="${r.dateReception}">12/06/2023</td>
-            <td th:text="${r.numeroAchat}">F52631524</td>
-            <td th:text="${r.produit.reference}">Sucre</td>
-            <td th:text="${r.produit.unite}">Kg</td>
-            <td th:text="${r.quantite}">100</td>
-            <td th:text="${r.source}">Fournisseur</td>
-            <td th:text="${r.entrepot.nom}">MAG1</td>
-            <td th:text="${r.remarque}">Néant</td>
+            <td th:text="${#dates.format(r.dateReception, 'dd/MM/yyyy')}"></td>
+            <td th:text="${r.numeroAchat}"></td>
+            <td th:text="${r.produit.reference}"></td>
+            <td th:text="${r.produit.unite}"></td>
+            <td th:text="${r.quantite}"></td>
+            <td th:text="${r.source}"></td>
+            <td th:text="${r.entrepot.nom}"></td>
+            <td th:text="${r.remarque}"></td>
             <td><a th:href="@{'/receptions/edit/' + ${r.id}}">Modifier</a></td>
-            <td><a th:href="@{'/receptions/delete/' + ${r.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a></td>
+            <td><a th:href="@{'/receptions/delete/' + ${r.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprim</a></td>
         </tr>
         </tbody>
     </table>
-
-    <a th:href="@{/receptions/add}" class="new-link">➕ Nouvelle réception</a>
+    <a th:href="@{/receptions/add/achat}" class="new-link">➕ Réception suite à un achat</a>
+    <a th:href="@{/receptions/add/autre}" class="new-link">➕ Réception indépendante</a>
+    <a href="#" class="pagination">suivant >></a>
 </div>
-
 </body>
 </html>

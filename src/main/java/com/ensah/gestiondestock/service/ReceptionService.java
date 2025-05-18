@@ -1,12 +1,16 @@
 package com.ensah.gestiondestock.service;
 
+import com.ensah.gestiondestock.model.Produit;
+import com.ensah.gestiondestock.model.Entrepot;
 import com.ensah.gestiondestock.model.Reception;
 import com.ensah.gestiondestock.repository.ReceptionRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class ReceptionService {
@@ -14,40 +18,36 @@ public class ReceptionService {
     @Autowired
     private ReceptionRepository receptionRepository;
 
-    // 2.1 Lister toutes les réceptions
+    // Lister toutes les réceptions
     public List<Reception> getAllReceptions() {
         return receptionRepository.findAll();
     }
 
-    // 2.2 Rechercher par date, produit ou entrepôt
+    // Rechercher par date, produit ou entrepôt
     public List<Reception> search(LocalDate date, Long produitId, Long entrepotId) {
         return receptionRepository.findByCriteria(date, produitId, entrepotId);
     }
 
-    // 2.3 Modifier une réception (même méthode que ajouter)
+    // Ajouter ou modifier une réception
     public Reception saveOrUpdateReception(Reception reception) {
         return receptionRepository.save(reception);
     }
 
-    // 2.4 Supprimer une réception
+    // Supprimer une réception
     public void deleteReception(Long id) {
         receptionRepository.deleteById(id);
     }
 
-    // 2.5.a Ajouter une réception suite à un achat (même méthode mais contexte différent côté vue)
-    public Reception ajouterReceptionSuiteAchat(Reception reception) {
-        // logique spécifique si tu veux la différencier
-        return receptionRepository.save(reception);
-    }
-
-    // 2.5.b Ajouter une réception indépendante (retour, don, production, etc.)
-    public Reception ajouterReceptionIndependante(Reception reception) {
-        // logique spécifique si tu veux la différencier
-        return receptionRepository.save(reception);
-    }
-
-    // 🔎 Obtenir une réception par ID (utile pour édition)
+    // Récupérer une réception par ID
     public Reception getReceptionById(Long id) {
         return receptionRepository.findById(id).orElse(null);
+    }
+
+    // Simuler des commandes à réceptionner (pour page /add/achat)
+    public List<Reception> getCommandesAReceptions() {
+        List<Reception> commandes = new ArrayList<>();
+        // Tu peux ajouter d'autres lignes ici si tu veux tester plus d'exemples
+
+        return commandes;
     }
 }

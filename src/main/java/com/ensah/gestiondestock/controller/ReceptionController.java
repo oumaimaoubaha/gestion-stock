@@ -62,4 +62,23 @@ public class ReceptionController {
         receptionService.deleteReception(id);
         return "redirect:/receptions";
     }
+    @GetMapping("/add/achat")
+    public String showReceptionAchatForm(Model model) {
+        model.addAttribute("receptions", receptionService.getCommandesAReceptions()); // simulate
+        return "reception/add_achat";
+    }
+
+    @GetMapping("/add/autre")
+    public String showReceptionAutreForm(Model model) {
+        model.addAttribute("reception", new Reception());
+        model.addAttribute("produits", produitService.getAllProduits());
+        model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+        return "reception/add_autre";
+    }
+
+    @PostMapping("/receptionner")
+    public String receptionnerDepuisAchat(@ModelAttribute Reception reception) {
+        receptionService.saveOrUpdateReception(reception);
+        return "redirect:/receptions";
+    }
 }

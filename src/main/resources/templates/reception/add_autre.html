@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Réception indépendante</title>
+</head>
+<body>
+<div>
+    <a th:href="@{/receptions/add/achat}" style="font-weight: bold;">Réception des achats</a>
+    <a th:href="@{/receptions/add/autre}" style="margin-left: 20px;">Autre</a>
+</div>
+<h2>Réception > Nouvelle réception</h2>
+
+<form th:action="@{/receptions/save}" th:object="${reception}" method="post">
+    <label>Date de réception :</label>
+    <input type="date" th:field="*{dateReception}" required /><br/>
+
+    <label>Produit :</label>
+    <select th:field="*{produit}" required>
+        <option th:each="p : ${produits}" th:value="${p}" th:text="${p.libelle}"></option>
+    </select><br/>
+
+    <label>Unité :</label>
+    <input type="text" th:value="${reception.produit?.unite}" readonly /><br/>
+
+    <label>Quantité :</label>
+    <input type="number" th:field="*{quantite}" required /><br/>
+
+    <label>Source :</label>
+    <input type="text" th:field="*{source}" /><br/>
+
+    <label>Entrepôt :</label>
+    <select th:field="*{entrepot}" required>
+        <option th:each="e : ${entrepots}" th:value="${e}" th:text="${e.nom}"></option>
+    </select><br/>
+
+    <button type="submit">OK</button>
+</form>
+
+<a th:href="@{/receptions}">&lt; Liste des réceptions</a>
+</body>
+</html>
