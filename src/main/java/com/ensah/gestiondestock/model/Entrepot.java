@@ -40,4 +40,7 @@ public class Entrepot implements Serializable {
     // Inventaires
     @OneToMany(mappedBy = "entrepot")
     private List<Inventaire> inventaires;
+    @OneToMany(mappedBy = "entrepot")
+    private List<Produit> produits;
+
 }

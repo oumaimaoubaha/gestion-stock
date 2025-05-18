@@ -27,7 +27,7 @@
         .form-container {
             margin-top: 30px; width: 400px;
         }
-        input[type="text"] {
+        input[type="text"], input[type="number"], select {
             width: 100%; padding: 5px; margin-bottom: 10px;
         }
         .buttons input {
@@ -68,6 +68,8 @@
             <th>Libellé</th>
             <th>Type</th>
             <th>Unité</th>
+            <th>Quantité</th>
+            <th>Entrepôt</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -77,6 +79,8 @@
             <td th:text="${p.libelle}">Libellé</td>
             <td th:text="${p.type}">Type</td>
             <td th:text="${p.unite}">Unité</td>
+            <td th:text="${p.quantiteStock}">0</td>
+            <td th:text="${p.entrepot != null ? p.entrepot.nom : '—'}">Entrepôt</td>
             <td class="actions">
                 <a th:href="@{/produits/edit/{id}(id=${p.id})}">Modifier</a>
                 <a th:href="@{/produits/delete/{id}(id=${p.id})}"
@@ -102,6 +106,14 @@
 
             <label>Unité :</label>
             <input type="text" th:field="*{unite}" />
+
+            <label>Quantité en stock :</label>
+            <input type="number" th:field="*{quantiteStock}" min="0" />
+
+            <label>Entrepôt :</label>
+            <select th:field="*{entrepot.id}" required>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+            </select>
 
             <div class="buttons">
                 <input type="submit" value="Ajouter" />
