@@ -12,16 +12,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Controller
 @RequestMapping("/receptions")
 public class ReceptionController {
 
-    @Autowired private ReceptionService receptionService;
-    @Autowired private ProduitService produitService;
-    @Autowired private EntrepotService entrepotService;
+    @Autowired
+    private ReceptionService receptionService;
 
+    @Autowired
+    private ProduitService produitService;
+
+    @Autowired
+    private EntrepotService entrepotService;
+
+    // Liste avec filtres
     @GetMapping
     public String listReceptions(Model model,
                                  @RequestParam(required = false) Long produit,
@@ -32,9 +37,14 @@ public class ReceptionController {
         model.addAttribute("receptions", receptionService.search(from, produit, entrepot));
         model.addAttribute("produits", produitService.getAllProduits());
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+        model.addAttribute("from", from);
+        model.addAttribute("to", to);
+        model.addAttribute("produit", produit);
+        model.addAttribute("entrepot", entrepot);
         return "reception/list";
     }
 
+    // Formulaire ajout réception manuelle
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("reception", new Reception());
@@ -43,12 +53,14 @@ public class ReceptionController {
         return "reception/form";
     }
 
+    // Sauvegarde
     @PostMapping("/save")
     public String saveReception(@ModelAttribute Reception reception) {
         receptionService.saveOrUpdateReception(reception);
         return "redirect:/receptions";
     }
 
+    // Modifier
     @GetMapping("/edit/{id}")
     public String editReception(@PathVariable Long id, Model model) {
         model.addAttribute("reception", receptionService.getReceptionById(id));
@@ -57,6 +69,7 @@ public class ReceptionController {
         return "reception/form";
     }
 
+    // Supprimer
     @GetMapping("/delete/{id}")
     public String deleteReception(@PathVariable Long id) {
         receptionService.deleteReception(id);

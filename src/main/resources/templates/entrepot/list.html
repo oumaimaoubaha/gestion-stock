@@ -26,14 +26,16 @@
 
 <div class="sidebar">
     <div><b>Accueil</b></div>
+    <div><a th:href="@{/entrepots}" class="active-link">Gestion des entrepôts</a></div>
     <hr>
-    <div><b>Gestion des entrepôts</b></div>
+    <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div>
     <hr>
     <div><b>Mouvements de stock</b></div>
     <ul>
         <li><a th:href="@{/receptions}">Réceptions</a></li>
         <li><a th:href="@{/livraisons}">Livraisons</a></li>
         <li><a th:href="@{/transferts}">Transferts</a></li>
+        <li><a th:href="@{/commandes}">Commandes</a></li>
     </ul>
     <hr>
     <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>

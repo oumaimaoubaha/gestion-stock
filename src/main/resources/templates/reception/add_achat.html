@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Réceptions depuis achat</title>
+  <style>
+    body { font-family: Arial; margin: 0; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background-color: #eee; }
+    a.button { padding: 6px 12px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<h2>Commandes d’achat à réceptionner</h2>
+
+<table>
+  <thead>
+  <tr>
+    <th>Numéro</th>
+    <th>Date</th>
+    <th>Fournisseur</th>
+    <th>Lignes</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="commande : ${commandes}">
+    <td th:text="${commande.numero}">C123</td>
+    <td th:text="${commande.dateAchat}">2024-01-01</td>
+    <td th:text="${commande.fournisseur.nom}">Fournisseur A</td>
+    <td>
+      <ul>
+        <li th:each="ligne : ${commande.lignes}">
+          <span th:text="${ligne.produit.libelle}">Produit</span> :
+          <span th:text="${ligne.quantite}">10</span>
+          (<span th:text="${ligne.entrepot.nom}">Entrepôt</span>)
+        </li>
+      </ul>
+    </td>
+    <td>
+      <a th:href="@{'/receptions/add/achat/form?id=' + ${commande.id}}" class="button">Réceptionner</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<a th:href="@{/receptions}" style="margin-top: 20px; display: inline-block;">⬅ Retour</a>
+
+</body>
+</html>
