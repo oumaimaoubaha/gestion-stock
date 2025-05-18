@@ -5,48 +5,29 @@
     <title>Gestion des Entrepôts</title>
     <style>
         body { font-family: Arial; margin: 0; }
-        .header {
-            background: #eee; padding: 10px 20px; font-weight: bold;
-            border-bottom: 1px solid #ccc;
-        }
-        .sidebar {
-            float: left; width: 200px; background: #f0f0f0; height: 100vh;
-            padding: 10px; box-sizing: border-box;
-        }
-        .content {
-            margin-left: 200px; padding: 20px;
-        }
-        table {
-            width: 100%; border-collapse: collapse; margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #ccc; padding: 8px;
-        }
+        .header { background: #f4f4f4; padding: 10px 20px; border-bottom: 1px solid #ccc; font-weight: bold; }
+        .sidebar { float: left; width: 200px; background: #f0f0f0; height: 100vh; padding: 10px; box-sizing: border-box; }
+        .content { margin-left: 200px; padding: 20px; }
+        .section-title { border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
         th { background-color: #eee; }
         .actions a { margin-right: 10px; }
-        .form-container {
-            margin-top: 30px; width: 400px;
-        }
-        input[type="text"] {
-            width: 100%; padding: 5px; margin-bottom: 10px;
-        }
-        .buttons input {
-            margin-right: 10px; padding: 5px 15px;
-        }
-        hr { margin: 10px 0; }
-        .active-link { font-weight: bold; background: #ddd; display: block; padding: 4px; }
+        .form-container { margin-top: 30px; width: 300px; }
+        input[type="text"] { width: 100%; padding: 5px; margin-bottom: 10px; }
+        .buttons input { margin-right: 10px; padding: 5px 15px; }
     </style>
 </head>
 <body>
 
-<div class="header">Gestion de stocks</div>
+<div class="header">
+    Gestion de stocks
+</div>
 
 <div class="sidebar">
-    <div class="active-link">Accueil</div>
+    <div><b>Accueil</b></div>
     <hr>
-    <div><a th:href="@{/entrepots}" class="active-link">Gestion des entrepôts</a></div>
-    <hr>
-    <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div>
+    <div><b>Gestion des entrepôts</b></div>
     <hr>
     <div><b>Mouvements de stock</b></div>
     <ul>
@@ -59,7 +40,7 @@
 </div>
 
 <div class="content">
-    <h2>Liste des entrepôts</h2>
+    <h2 class="section-title">Liste des entrepôts</h2>
 
     <table>
         <thead>
@@ -77,22 +58,15 @@
             <td th:text="${e.adresse}">Adresse</td>
             <td class="actions">
                 <a th:href="@{/entrepots/edit/{id}(id=${e.id})}">Modifier</a>
-                <a th:href="@{/entrepots/delete/{id}(id=${e.id})}"
-                   onclick="return confirm('Supprimer cet entrepôt ?');">Supprimer</a>
+                <a th:href="@{/entrepots/delete/{id}(id=${e.id})}" onclick="return confirm('Supprimer cet entrepôt ?');">Supprimer</a>
             </td>
         </tr>
         </tbody>
     </table>
 
     <div style="margin-top: 10px;">
-    <span th:if="${currentPage > 0}">
-        <a th:href="@{/entrepots(page=${currentPage - 1})}">&lt;&lt; précédent</a>
-    </span>
-        <span th:if="${hasNext}" style="margin-left: 10px;">
-        <a th:href="@{/entrepots(page=${currentPage + 1})}">suivant &gt;&gt;</a>
-    </span>
+        <a href="#">suivant &gt;&gt;</a>
     </div>
-
 
     <div class="form-container">
         <h3 th:text="${entrepot.id == null} ? 'Ajouter un entrepôt' : 'Modifier un entrepôt'"></h3>
