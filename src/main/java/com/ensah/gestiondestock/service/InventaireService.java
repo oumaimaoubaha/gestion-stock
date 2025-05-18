@@ -46,6 +46,11 @@ public class InventaireService {
         return ligneInventaireRepository.save(ligne);
     }
 
+    public List<Inventaire> searchInventairesParPeriodeEtEntrepot(LocalDate dateMin, LocalDate dateMax, Long entrepotId) {
+        return inventaireRepository.findByPeriodeAndEntrepot(dateMin, dateMax, entrepotId);
+    }
+
+
     // 5.5.c Valider l’inventaire → ici, ça peut être vide ou enrichi plus tard
     public void validerInventaire(Long inventaireId) {
         // Pour l’instant, rien de spécial — juste un placeholder
