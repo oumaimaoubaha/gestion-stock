@@ -26,4 +26,32 @@ public class Inventaire {
 
     @OneToMany(mappedBy = "inventaire", cascade = CascadeType.ALL)
     private List<LigneInventaire> lignes;
+    public void setEffectuePar(String effectuePar) {
+        this.effectuePar = effectuePar;
+    }
+
+    public void setValidePar(String validePar) {
+        this.validePar = validePar;
+    }
+
+    public void setRemarque(String remarque) {
+        this.remarque = remarque;
+    }
+
+    public void setDateInventaire(LocalDate dateInventaire) {
+        this.dateInventaire = dateInventaire;
+    }
+
+    public void setEntrepot(Entrepot entrepot) {
+        this.entrepot = entrepot;
+    }
+
+    public void setLignes(List<LigneInventaire> lignes) {
+        this.lignes = lignes;
+    }
+    public List<LigneInventaire> getLignes() {
+        return lignes;
+    }
+
+
 }

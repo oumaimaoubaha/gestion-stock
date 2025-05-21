@@ -1,107 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Écarts d'inventaire</title>
-    <style>
-        body { font-family: Arial; margin: 0; font-size: 14px; }
-        .header { background: #eee; padding: 10px; font-weight: bold; }
-
-        .sidebar {
-            float: left;
-            width: 200px;
-            background: #f4f4f4;
-            height: 100vh;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        .sidebar a { display: block; margin: 5px 0; }
-
-        .content {
-            margin-left: 220px;
-            padding: 20px;
-        }
-
-        .btn {
-            padding: 6px 12px;
-            border: 1px solid #333;
-            background-color: white;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border: 2px solid #000;
-        }
-
-        th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #eee;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Détails de l’inventaire</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid black; padding: 8px; text-align: left; }
+    th { background-color: #eee; }
+  </style>
 </head>
 <body>
 
-<div class="header">Gestion de stocks</div>
+<h2>Inventaire du <span th:text="${inventaire.dateInventaire}"></span> - Entrepôt : <span th:text="${inventaire.entrepot.nom}"></span></h2>
 
-<div class="sidebar">
-    <div><b>Gestion de stocks</b></div>
-    <div>Accueil</div>
-    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
-    <hr>
-    <div><a th:href="@{/produits}">Gestion des produits</a></div>
-    <hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-    </ul>
-    <hr>
-    <div><b>Inventaires</b></div>
-    <ul>
-        <li><a th:href="@{/inventaires}">Liste des inventaires</a></li>
-        <li><a th:href="@{/inventaires/form}">Nouveau inventaire</a></li>
-    </ul>
-</div>
+<table>
+  <thead>
+  <tr>
+    <th>Produit</th>
+    <th>Unité</th>
+    <th>Quantité avant</th>
+    <th>Quantité après</th>
+    <th>Écart</th>
+    <th>Justification</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="ligne : ${ecarts}">
+    <td th:text="${ligne.produit.libelle}"></td>
+    <td th:text="${ligne.produit.unite}"></td>
+    <td th:text="${ligne.quantitePhysique}"></td>
+    <td th:text="${ligne.quantiteTheorique}"></td>
+    <td th:text="${ligne.ecart}"></td>
+    <td th:text="${ligne.justification}">-</td>
+  </tr>
+  </tbody>
+</table>
 
-<div class="content">
-    <h2>Liste des écarts détectés</h2>
+<a th:href="@{/inventaires}">← Retour à la liste des inventaires</a>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Produit</th>
-            <th>Unité</th>
-            <th>Quantité avant</th>
-            <th>Quantité après</th>
-            <th>Justification</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="ecart : ${ecarts}">
-            <td th:text="${ecart[0]}"></td>
-            <td th:text="${ecart[1]}"></td>
-            <td th:text="${ecart[2]}"></td>
-            <td th:text="${ecart[3]}"></td>
-            <td th:text="${ecart[4]}"></td>
-        </tr>
-        </tbody>
-    </table>
-
-    <form th:action="@{/inventaires/valider}" method="post">
-        <button type="submit" class="btn">Valider l'inventaire</button>
-    </form>
-
-</div>
 </body>
 </html>
