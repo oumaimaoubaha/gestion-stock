@@ -13,5 +13,7 @@ public interface ProduitRepository extends JpaRepository<Produit, Long> {
     // (déjà existant dans ton code)
     List<Produit> findByReferenceContainingIgnoreCase(String ref);
     List<Produit> findByLibelleContainingIgnoreCase(String libelle);
-    Produit findByReference(String reference);
+    List<Produit> findByReference(String reference);
+    Produit findFirstByReference(String reference);
+
 }

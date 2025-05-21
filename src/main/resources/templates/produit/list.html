@@ -5,36 +5,17 @@
     <title>Gestion des Produits</title>
     <style>
         body { font-family: Arial; margin: 0; }
-        .header {
-            background: #eee; padding: 10px 20px; font-weight: bold;
-            border-bottom: 1px solid #ccc;
-        }
-        .sidebar {
-            float: left; width: 200px; background: #f0f0f0; height: 100vh;
-            padding: 10px; box-sizing: border-box;
-        }
-        .content {
-            margin-left: 200px; padding: 20px;
-        }
-        table {
-            width: 100%; border-collapse: collapse; margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #ccc; padding: 8px;
-        }
+        .header { background: #eee; padding: 10px 20px; font-weight: bold; border-bottom: 1px solid #ccc; }
+        .sidebar { float: left; width: 200px; background: #f0f0f0; height: 100vh; padding: 10px; box-sizing: border-box; }
+        .content { margin-left: 200px; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
         th { background-color: #eee; }
         .actions a { margin-right: 10px; }
-        .form-container {
-            margin-top: 30px; width: 400px;
-        }
-        input[type="text"], input[type="number"], select {
-            width: 100%; padding: 5px; margin-bottom: 10px;
-        }
-        .buttons input {
-            margin-right: 10px; padding: 5px 15px;
-        }
+        .error { color: red; font-size: 13px; margin-bottom: 15px; }
         hr { margin: 10px 0; }
         .active-link { font-weight: bold; background: #ddd; display: block; padding: 4px; }
+        .add-link { margin-top: 20px; display: inline-block; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -46,13 +27,18 @@
     <hr>
     <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
     <hr>
-    <div class="active-link">Gestion des produits</div>
+    <div><b>Produits</b></div>
+    <ul>
+        <li><a th:href="@{/produits}">Liste des produits</a></li>
+        <li><a th:href="@{/produits/form}">Ajouter produit</a></li>
+    </ul>
     <hr>
     <div><b>Mouvements de stock</b></div>
     <ul>
         <li><a th:href="@{/receptions}">Réceptions</a></li>
         <li><a th:href="@{/livraisons}">Livraisons</a></li>
         <li><a th:href="@{/transferts}">Transferts</a></li>
+        <li><a th:href="@{/commandes}">Commandes</a></li>
     </ul>
     <hr>
     <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
@@ -60,7 +46,20 @@
 
 <div class="content">
     <h2>Liste des produits</h2>
+    <p th:if="${erreurSuppression}" th:text="${erreurSuppression}" style="color: red;"></p>
 
+
+    <!-- 🔍 Formulaire de recherche -->
+    <form th:action="@{/produits}" method="get" style="margin-bottom: 20px;">
+        <input type="text" name="ref" placeholder="Référence" th:value="${ref}" />
+        <select name="entrepotId">
+            <option value="">-- Tous les entrepôts --</option>
+            <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}" th:selected="${entrepotId} == ${e.id}"></option>
+        </select>
+        <button type="submit">Rechercher</button>
+    </form>
+
+    <!-- 📄 Tableau des produits -->
     <table>
         <thead>
         <tr>
@@ -83,43 +82,15 @@
             <td th:text="${p.entrepot != null ? p.entrepot.nom : '—'}">Entrepôt</td>
             <td class="actions">
                 <a th:href="@{/produits/edit/{id}(id=${p.id})}">Modifier</a>
-                <a th:href="@{/produits/delete/{id}(id=${p.id})}"
-                   onclick="return confirm('Supprimer ce produit ?');">Supprimer</a>
+                <a th:href="@{/produits/delete/{id}(id=${p.id})}" onclick="return confirm('Supprimer ce produit ?');">Supprimer</a>
             </td>
         </tr>
         </tbody>
     </table>
 
-    <div class="form-container">
-        <h3 th:text="${produit.id == null} ? 'Ajouter un produit' : 'Modifier un produit'"></h3>
-        <form th:action="@{/produits/save}" th:object="${produit}" method="post">
-            <input type="hidden" th:field="*{id}" />
-
-            <label>Référence :</label>
-            <input type="text" th:field="*{reference}" required />
-
-            <label>Libellé :</label>
-            <input type="text" th:field="*{libelle}" required />
-
-            <label>Type :</label>
-            <input type="text" th:field="*{type}" />
-
-            <label>Unité :</label>
-            <input type="text" th:field="*{unite}" />
-
-            <label>Quantité en stock :</label>
-            <input type="number" th:field="*{quantiteStock}" min="0" />
-
-            <label>Entrepôt :</label>
-            <select th:field="*{entrepot.id}" required>
-                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
-            </select>
-
-            <div class="buttons">
-                <input type="submit" value="Ajouter" />
-                <a th:href="@{/produits}"><input type="button" value="Annuler" /></a>
-            </div>
-        </form>
+    <!-- ➕ Lien vers page d'ajout -->
+    <div style="margin-top: 30px;">
+        <a th:href="@{/produits/form}" class="add-link">➕ Ajouter un produit</a>
     </div>
 </div>
 
