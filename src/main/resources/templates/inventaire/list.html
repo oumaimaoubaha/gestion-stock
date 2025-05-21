@@ -133,15 +133,15 @@
             <td th:text="${inv.effectuePar}">-</td>
             <td th:text="${inv.validePar}">-</td>
             <td th:text="${inv.remarque}">-</td>
-            <td><a th:href="@{'/ecarts/' + ${inv.id}}">Afficher</a></td>
+            <td><a th:href="@{'/inventaires/ecarts/' + ${inv.id}}">Afficher</a></td>
             <td><a th:href="@{'/inventaires/download/' + ${inv.id}}">Télécharger inventaire</a></td>
+
         </tr>
         </tbody>
     </table>
 
     <div style="margin-top: 20px;">
-        <a th:href="@{/inventaires/form}"><b>Nouveau inventaire</b></a> |
-        <a th:href="@{/inventaires/import}"><b>Importer fichier corrigé</b></a>
+        <a th:href="@{/inventaires/form}"><b>Nouveau inventaire</b></a>
     </div>
 </div>
 

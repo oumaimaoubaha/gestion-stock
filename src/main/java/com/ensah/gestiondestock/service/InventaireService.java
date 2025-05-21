@@ -18,56 +18,43 @@ import java.util.List;
 @Service
 public class InventaireService {
 
-    @Autowired
-    private InventaireRepository inventaireRepository;
+    @Autowired private InventaireRepository inventaireRepository;
+    @Autowired private LigneInventaireRepository ligneInventaireRepository;
+    @Autowired private ProduitRepository produitRepository;
 
-    @Autowired
-    private LigneInventaireRepository ligneInventaireRepository;
-
-    @Autowired
-    private ProduitRepository produitRepository;
-
-    @Autowired
-    private ProduitService produitService;
-
-    // 5.1 Lister tous les inventaires
+    // 🔁 Tous les inventaires
     public List<Inventaire> getAllInventaires() {
         return inventaireRepository.findAll();
     }
 
-    // 5.2 Rechercher un inventaire par date et/ou entrepôt
+    // 🔍 Recherche simple (non utilisée ici)
     public List<Inventaire> searchInventaires(LocalDate date, Long entrepotId) {
         return inventaireRepository.findByCriteria(date, entrepotId);
     }
 
-    // 5.3 Afficher un inventaire (par ID)
+    // 🔍 Recherche avec filtres combinés
+    public List<Inventaire> searchInventairesParPeriodeEtEntrepot(LocalDate dateMin, LocalDate dateMax, Long entrepotId) {
+        return inventaireRepository.findByPeriodeAndEntrepot(dateMin, dateMax, entrepotId);
+    }
+
+    // 📦 Récupérer un inventaire par ID
     public Inventaire getInventaireById(Long id) {
         return inventaireRepository.findById(id).orElse(null);
     }
 
-    // 5.5.a Enregistrer un nouvel inventaire
+    // ✅ Enregistrer un inventaire complet
     public Inventaire enregistrerInventaire(Inventaire inventaire) {
         return inventaireRepository.save(inventaire);
     }
 
-    // 5.5.b Ajouter une ligne avec calcul d’écart
+    // ➕ Ajouter une ligne à un inventaire
     public LigneInventaire ajouterLigneInventaire(LigneInventaire ligne) {
         int ecart = ligne.getQuantitePhysique() - ligne.getQuantiteTheorique();
         ligne.setEcart(ecart);
         return ligneInventaireRepository.save(ligne);
     }
 
-    // 5.4 Rechercher par période et entrepôt
-    public List<Inventaire> searchInventairesParPeriodeEtEntrepot(LocalDate dateMin, LocalDate dateMax, Long entrepotId) {
-        return inventaireRepository.findByPeriodeAndEntrepot(dateMin, dateMax, entrepotId);
-    }
-
-    // 5.5.c Valider l’inventaire (placeholder)
-    public void validerInventaire(Long inventaireId) {
-        // Tu peux enrichir cette méthode plus tard
-    }
-
-    // ✅ Méthode pour appliquer le dernier inventaire corrigé
+    // 📂 Fonction utilitaire si tu veux appliquer un fichier .csv de correction à froid
     public void appliquerDernierInventaire() {
         File fichier = new File("dernier_inventaire.csv");
         if (!fichier.exists()) return;
@@ -83,14 +70,17 @@ public class InventaireService {
                 }
 
                 String[] champs = ligne.split(",");
-                if (champs.length >= 5) {
+                if (champs.length >= 4) {
                     String reference = champs[0].trim();
-                    int quantitePhysique = Integer.parseInt(champs[3].trim());
+                    String quantiteStr = champs[3].trim();
 
-                    Produit produit = produitService.getProduitByReference(reference);
-                    if (produit != null) {
-                        produit.setQuantiteStock(quantitePhysique);
-                        produitRepository.save(produit);
+                    if (!quantiteStr.isEmpty()) {
+                        int quantite = Integer.parseInt(quantiteStr);
+                        Produit produit = produitRepository.findByReference(reference);
+                        if (produit != null) {
+                            produit.setQuantiteStock(quantite);
+                            produitRepository.save(produit);
+                        }
                     }
                 }
             }

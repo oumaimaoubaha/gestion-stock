@@ -12,6 +12,7 @@ public class LigneInventaire {
     private int quantitePhysique;
     private int quantiteTheorique;
     private int ecart;
+    private String justification;
 
     @ManyToOne
     @JoinColumn(name = "produit_id")
@@ -65,5 +66,13 @@ public class LigneInventaire {
 
     public void setInventaire(Inventaire inventaire) {
         this.inventaire = inventaire;
+    }
+
+    public String getJustification() {
+        return justification;
+    }
+
+    public void setJustification(String justification) {
+        this.justification = justification;
     }
 }
