@@ -1,27 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un produit</title>
+    <style>
+        body { font-family: Arial; margin: 0; }
+        .header { background: #eee; padding: 10px 20px; font-weight: bold; border-bottom: 1px solid #ccc; }
+        .sidebar { float: left; width: 200px; background: #f0f0f0; height: 100vh; padding: 10px; box-sizing: border-box; }
+        .content { margin-left: 200px; padding: 20px; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 5px; margin-bottom: 10px; }
+        .buttons input { margin-right: 10px; padding: 5px 15px; }
+        .error { color: red; font-size: 13px; margin-bottom: 15px; }
+        .active-link { font-weight: bold; background: #ddd; display: block; padding: 4px; }
+        hr { margin: 10px 0; }
+    </style>
+</head>
 <body>
-<div th:fragment="form">
-    <h2 th:text="${produit.id == null} ? 'Nouveau produit' : 'Modifier produit'"></h2>
+
+<div class="header">Gestion de stocks</div>
+
+<div class="sidebar">
+    <div><a th:href="@{/}">Accueil</a></div>
+    <hr>
+    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
+    <hr>
+    <div><b>Produits</b></div>
+    <ul>
+        <li><a th:href="@{/produits}">Liste des produits</a></li>
+        <li><a th:href="@{/produits/form}" class="active-link">Ajouter produit</a></li>
+    </ul>
+    <hr>
+    <div><b>Mouvements de stock</b></div>
+    <ul>
+        <li><a th:href="@{/receptions}">Réceptions</a></li>
+        <li><a th:href="@{/livraisons}">Livraisons</a></li>
+        <li><a th:href="@{/transferts}">Transferts</a></li>
+        <li><a th:href="@{/commandes}">Commandes</a></li>
+    </ul>
+    <hr>
+    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+</div>
+
+<div class="content">
+    <h2>Ajouter un produit</h2>
+
+    <div th:if="${erreur}" class="error" th:text="${erreur}"></div>
 
     <form th:action="@{/produits/save}" th:object="${produit}" method="post">
-        <input type="hidden" th:field="*{id}"/>
+        <input type="hidden" th:field="*{id}" />
 
-        <label for="reference">Référence :</label>
-        <input type="text" id="reference" th:field="*{reference}" required/><br/><br/>
+        <label>Référence :</label>
+        <input type="text" th:field="*{reference}" required />
 
-        <label for="libelle">Libellé :</label>
-        <input type="text" id="libelle" th:field="*{libelle}" required/><br/><br/>
+        <label>Libellé :</label>
+        <input type="text" th:field="*{libelle}" required />
 
-        <label for="type">Type :</label>
-        <input type="text" id="type" th:field="*{type}" /><br/><br/>
+        <label>Type :</label>
+        <input type="text" th:field="*{type}" required />
 
-        <label for="unite">Unité :</label>
-        <input type="text" id="unite" th:field="*{unite}" /><br/><br/>
+        <label>Unité :</label>
+        <input type="text" th:field="*{unite}" required />
 
-        <button type="submit">Valider</button>
-        <a th:href="@{/produits}">Annuler</a>
+        <label>Quantité en stock :</label>
+        <input type="number" th:field="*{quantiteStock}" min="0" required />
+
+        <label>Entrepôt :</label>
+        <select th:field="*{entrepot.id}" required>
+            <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+        </select>
+
+        <div class="buttons">
+            <input type="submit" value="Enregistrer" />
+            <a th:href="@{/produits}"><input type="button" value="Annuler" /></a>
+        </div>
     </form>
 </div>
+
 </body>
 </html>

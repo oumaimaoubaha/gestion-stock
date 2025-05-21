@@ -42,5 +42,8 @@ public class Entrepot implements Serializable {
     private List<Inventaire> inventaires;
     @OneToMany(mappedBy = "entrepot")
     private List<Produit> produits;
+    public Long getId() {
+        return id;
+    }
 
 }
