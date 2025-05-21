@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Commande</title>
+</head>
+<body>
+
+<h2 th:text="${isEdit} ? 'Modification de la Commande d’Achat' : 'Nouvelle Commande d’Achat'"></h2>
+
+<div th:if="${error}" style="color: red; font-weight: bold;">
+  ⚠️ <span th:text="${error}"></span>
+</div>
+
+<form th:action="@{/commandes/save}" method="post" th:object="${commande}">
+  <!-- ✅ Champ ID transmis via th:field -->
+  <input type="hidden" th:field="*{id}" />
+
+  <!-- ✅ Affichage debug -->
+  <p style="color: blue;">[DEBUG] ID reçu : <span th:text="*{id}">null</span></p>
+
+  <label>Numéro :</label>
+  <input type="text" th:field="*{numero}" required><br>
+
+  <label>Date :</label>
+  <input type="date" th:field="*{dateAchat}" required><br>
+
+  <label>Fournisseur :</label>
+  <input type="text" th:field="*{nomFournisseur}" required /><br><br>
+
+  <h3>Ligne de commande</h3>
+  <div id="lignes">
+    <div th:each="ligne, iStat : *{lignes}">
+      <label>Produit :</label>
+      <input type="text" th:field="*{lignes[__${iStat.index}__].produit.libelle}" required />
+
+      <label>Quantité :</label>
+      <input type="number" th:field="*{lignes[__${iStat.index}__].quantite}" required />
+
+      <label>Entrepôt :</label>
+      <select th:field="*{lignes[__${iStat.index}__].entrepot.id}" required>
+        <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+      </select>
+      <br><br>
+    </div>
+  </div>
+
+  <button type="submit">✅ Enregistrer</button>
+</form>
+
+<br><br>
+<a href="/commandes" style="font-weight: bold;">⬅ Retour à la liste</a>
+
+</body>
+</html>

@@ -38,7 +38,7 @@ public class ProduitService {
         return produitRepository.existsById(id);
     }
 
-    // 6. Rechercher par référence (exacte ou partielle, insensible à la casse)
+    // 6. Rechercher par référence
     public List<Produit> searchByReference(String ref) {
         return produitRepository.findByReferenceContainingIgnoreCase(ref);
     }
@@ -47,8 +47,24 @@ public class ProduitService {
     public List<Produit> searchByLibelle(String libelle) {
         return produitRepository.findByLibelleContainingIgnoreCase(libelle);
     }
+
+    // 8. Obtenir un produit par référence exacte
     public Produit getProduitByReference(String reference) {
         return produitRepository.findByReference(reference);
     }
 
+    // 🔹 9. Méthode à ajouter : chercher ou créer par libellé
+    public Produit findOrCreateByLibelle(String libelle) {
+        Produit produit = produitRepository.findByLibelle(libelle);
+        if (produit == null) {
+            produit = new Produit();
+            produit.setLibelle(libelle);
+            produit.setReference(libelle); // ou autre logique
+            produit.setQuantiteStock(0);
+            produit.setType("Nouveau");
+            produit.setUnite("Unité");
+            produit = produitRepository.save(produit);
+        }
+        return produit;
+    }
 }
