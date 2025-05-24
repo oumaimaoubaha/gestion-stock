@@ -32,4 +32,19 @@ public class Transfert implements Serializable {
     @ManyToOne
     @JoinColumn(name = "id_produit")
     private Produit produit;
+
+    public void setProduitId(Long id) {
+        if (this.produit == null) this.produit = new Produit();
+        this.produit.setId(id);
+    }
+
+    public void setSourceId(Long id) {
+        if (this.source == null) this.source = new Entrepot();
+        this.source.setId(id);
+    }
+
+    public void setDestinationId(Long id) {
+        if (this.destination == null) this.destination = new Entrepot();
+        this.destination.setId(id);
+    }
 }

@@ -8,15 +8,15 @@
 
 <h2 th:text="${isEdit} ? 'Modification de la Commande d’Achat' : 'Nouvelle Commande d’Achat'"></h2>
 
-<!-- ✅ Affichage message d'erreur -->
+<!-- Message d'erreur -->
 <div th:if="${error}" style="color: red; font-weight: bold;">
   ⚠️ <span th:text="${error}"></span>
 </div>
 
-<!-- ✅ Formulaire sans th:object -->
-<form th:action="@{/commandes/save}" method="post">
+<!-- Formulaire -->
+<form th:action="${isEdit} ? @{/commandes/update} : @{/commandes/create}" method="post">
 
-  <!-- ✅ Champ caché pour ID -->
+  <!-- ID caché -->
   <input type="hidden" name="id" th:value="${commande.id}" />
   <p style="color: blue;">[DEBUG] ID reçu : <span th:text="${commande.id}">null</span></p>
 

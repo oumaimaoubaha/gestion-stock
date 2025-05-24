@@ -34,9 +34,8 @@ public class CommandeAchatService {
         return commandeAchatRepository.findByNumero(numero);
     }
 
-    public boolean numeroExisteDeja(String numero, Long idCommandeEnCours) {
+    public boolean numeroExisteDeja(String numero, Long idEnCours) {
         CommandeAchat existante = commandeAchatRepository.findByNumero(numero);
-        if (existante == null) return false;
-        return idCommandeEnCours == null || !existante.getId().equals(idCommandeEnCours);
+        return existante != null && !existante.getId().equals(idEnCours);
     }
 }
