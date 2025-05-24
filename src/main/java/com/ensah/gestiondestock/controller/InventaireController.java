@@ -30,7 +30,6 @@ public class InventaireController {
     @Autowired private EntrepotService entrepotService;
     @Autowired private ProduitRepository produitRepository;
 
-    // ✅ Liste des inventaires avec filtres
     @GetMapping
     public String afficherListeInventaires(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateMin,
@@ -41,7 +40,6 @@ public class InventaireController {
         List<Inventaire> inventaires = inventaireService.searchInventairesParPeriodeEtEntrepot(dateMin, dateMax, entrepotId);
         model.addAttribute("inventaires", inventaires);
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
-
         model.addAttribute("dateMin", dateMin);
         model.addAttribute("dateMax", dateMax);
         model.addAttribute("entrepotId", entrepotId);
@@ -73,6 +71,7 @@ public class InventaireController {
                                          HttpSession session,
                                          Model model) {
         List<LigneInventaire> ecarts = new ArrayList<>();
+        Long entrepotId = (Long) session.getAttribute("entrepotId");
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(fichier.getInputStream()))) {
             String ligne;
@@ -86,7 +85,13 @@ public class InventaireController {
                 if (champs.length >= 5) {
                     String reference = champs[0].trim();
                     int theorique = Integer.parseInt(champs[4].trim());
-                    Produit produit = produitRepository.findByReference(reference);
+
+                    List<Produit> produits = produitRepository.findByReference(reference);
+                    Produit produit = produits.stream()
+                            .filter(p -> p.getEntrepot() != null && p.getEntrepot().getId().equals(entrepotId))
+                            .findFirst()
+                            .orElse(null);
+
                     if (produit != null) {
                         int physique = produit.getQuantiteStock();
                         int ecart = physique - theorique;

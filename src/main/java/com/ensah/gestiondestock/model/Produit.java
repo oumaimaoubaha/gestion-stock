@@ -1,4 +1,5 @@
 package com.ensah.gestiondestock.model;
+import jakarta.validation.constraints.*;
 
 import jakarta.persistence.*;
 
@@ -14,11 +15,21 @@ public class Produit implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "La référence est obligatoire")
     private String reference;
+
+    @NotBlank(message = "Le libellé est obligatoire")
     private String libelle;
+
+    @NotBlank(message = "Le type est obligatoire")
     private String type;
+
+    @NotBlank(message = "L’unité est obligatoire")
     private String unite;
+
+    @Min(value = 0, message = "Quantité stock doit être ≥ 0")
     private int quantiteStock;
+
 
     @ManyToOne
     @JoinColumn(name = "entrepot_id")

@@ -38,7 +38,7 @@ public class ProduitService {
         return produitRepository.existsById(id);
     }
 
-    // 6. Rechercher par référence
+    // 6. Rechercher par référence (partielle)
     public List<Produit> searchByReference(String ref) {
         return produitRepository.findByReferenceContainingIgnoreCase(ref);
     }
@@ -48,23 +48,37 @@ public class ProduitService {
         return produitRepository.findByLibelleContainingIgnoreCase(libelle);
     }
 
-    // 8. Obtenir un produit par référence exacte
-    public Produit getProduitByReference(String reference) {
-        return produitRepository.findByReference(reference);
+    // 8. Recherche combinée
+    public List<Produit> getProduitsFiltres(String ref, Long entrepotId) {
+        if ((ref == null || ref.isBlank()) && entrepotId == null) {
+            return produitRepository.findAll();
+        }
+
+        return produitRepository.findAll().stream()
+                .filter(p ->
+                        (ref == null || p.getReference().toLowerCase().contains(ref.toLowerCase())) &&
+                                (entrepotId == null || (p.getEntrepot() != null && p.getEntrepot().getId().equals(entrepotId)))
+                )
+                .toList();
     }
 
-    // 🔹 9. Méthode à ajouter : chercher ou créer par libellé
-    public Produit findOrCreateByLibelle(String libelle) {
-        Produit produit = produitRepository.findByLibelle(libelle);
-        if (produit == null) {
-            produit = new Produit();
-            produit.setLibelle(libelle);
-            produit.setReference(libelle); // ou autre logique
-            produit.setQuantiteStock(0);
-            produit.setType("Nouveau");
-            produit.setUnite("Unité");
-            produit = produitRepository.save(produit);
-        }
-        return produit;
+    // 9. Obtenir un produit par référence exacte
+    // 9. Obtenir un produit par référence exacte (le premier de la liste)
+    public Produit getProduitByReference(String reference) {
+        List<Produit> produits = produitRepository.findByReference(reference);
+        return produits.isEmpty() ? null : produits.get(0);
     }
+
+
+    // 10. Vérifier si un produit du même code existe dans le même entrepôt
+    public boolean produitExisteDansEntrepot(String reference, Long entrepotId, Long produitId) {
+        List<Produit> produits = produitRepository.findByReference(reference);
+
+        return produits.stream().anyMatch(p ->
+                p.getEntrepot() != null &&
+                        p.getEntrepot().getId().equals(entrepotId) &&
+                        (produitId == null || !p.getId().equals(produitId))
+        );
+    }
+
 }

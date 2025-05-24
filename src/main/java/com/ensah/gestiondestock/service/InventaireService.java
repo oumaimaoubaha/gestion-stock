@@ -76,8 +76,9 @@ public class InventaireService {
 
                     if (!quantiteStr.isEmpty()) {
                         int quantite = Integer.parseInt(quantiteStr);
-                        Produit produit = produitRepository.findByReference(reference);
-                        if (produit != null) {
+                        List<Produit> produits = produitRepository.findByReference(reference);
+
+                        for (Produit produit : produits) {
                             produit.setQuantiteStock(quantite);
                             produitRepository.save(produit);
                         }
@@ -89,4 +90,5 @@ public class InventaireService {
             e.printStackTrace();
         }
     }
+
 }
