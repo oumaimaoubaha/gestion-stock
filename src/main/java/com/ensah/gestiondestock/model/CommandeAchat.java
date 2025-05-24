@@ -1,6 +1,8 @@
 package com.ensah.gestiondestock.model;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,16 +13,16 @@ public class CommandeAchat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String numero;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dateAchat;
 
     private String nomFournisseur;
 
     @OneToMany(mappedBy = "commandeAchat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LigneCommande> lignes;
-
-    // --- Getters & Setters ---
 
     public Long getId() {
         return id;
@@ -42,7 +44,6 @@ public class CommandeAchat {
         this.dateAchat = dateAchat;
     }
 
-
     public List<LigneCommande> getLignes() {
         return lignes;
     }
@@ -50,6 +51,7 @@ public class CommandeAchat {
     public void setLignes(List<LigneCommande> lignes) {
         this.lignes = lignes;
     }
+
     public String getNomFournisseur() {
         return nomFournisseur;
     }
