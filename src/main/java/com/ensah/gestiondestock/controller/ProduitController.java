@@ -78,15 +78,23 @@ public class ProduitController {
     @GetMapping("/edit/{id}")
     public String editProduit(@PathVariable Long id, Model model) {
         model.addAttribute("produit", produitService.getProduitById(id));
-        model.addAttribute("produits", produitService.getAllProduits());
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
-        return "produit/list";
+        return "produit/form"; // ✅ redirige vers le bon formulaire
     }
+
 
     // ✅ Suppression
     @GetMapping("/delete/{id}")
-    public String deleteProduit(@PathVariable Long id) {
-        produitService.deleteProduit(id);
+    public String deleteProduit(@PathVariable Long id, Model model) {
+        try {
+            produitService.deleteProduit(id);
+        } catch (Exception e) {
+            model.addAttribute("erreurSuppression", "Impossible de supprimer ce produit car il est utilisé ailleurs.");
+            model.addAttribute("produits", produitService.getAllProduits());
+            model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+            return "produit/list";
+        }
         return "redirect:/produits";
     }
+
 }
