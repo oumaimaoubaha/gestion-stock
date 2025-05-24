@@ -1,3 +1,4 @@
+// ✅ CommandeAchatService.java
 package com.ensah.gestiondestock.service;
 
 import com.ensah.gestiondestock.model.CommandeAchat;
@@ -21,19 +22,21 @@ public class CommandeAchatService {
         return commandeAchatRepository.findAll();
     }
 
-    public CommandeAchat getById(Long id) {
-        return commandeAchatRepository.findById(id).orElse(null);
-    }
-
-    public void delete(Long id) {
-        commandeAchatRepository.deleteById(id);
-    }
-
     public CommandeAchat getCommandeById(Long id) {
         return commandeAchatRepository.findById(id).orElse(null);
     }
 
     public void deleteById(Long id) {
         commandeAchatRepository.deleteById(id);
+    }
+
+    public CommandeAchat getCommandeByNumero(String numero) {
+        return commandeAchatRepository.findByNumero(numero);
+    }
+
+    public boolean numeroExisteDeja(String numero, Long idCommandeEnCours) {
+        CommandeAchat existante = commandeAchatRepository.findByNumero(numero);
+        if (existante == null) return false;
+        return idCommandeEnCours == null || !existante.getId().equals(idCommandeEnCours);
     }
 }

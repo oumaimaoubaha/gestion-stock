@@ -2,79 +2,61 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Nouvelle commande</title>
-  <script>
-    function ajouterLigne() {
-        const lignesDiv = document.getElementById("lignes");
-        const index = lignesDiv.children.length;
-
-        const template = document.getElementById("ligne-template").innerHTML;
-        const ligneHtml = template.replace(/__INDEX__/g, index);
-        const div = document.createElement("div");
-        div.innerHTML = ligneHtml;
-        lignesDiv.appendChild(div);
-    }
-  </script>
+  <title>Commande</title>
 </head>
 <body>
 
-<h2>Nouvelle Commande d’Achat</h2>
+<h2 th:text="${isEdit} ? 'Modification de la Commande d’Achat' : 'Nouvelle Commande d’Achat'"></h2>
 
-<form th:action="@{/commandes/save}" method="post" th:object="${commande}">
+<!-- ✅ Affichage message d'erreur -->
+<div th:if="${error}" style="color: red; font-weight: bold;">
+  ⚠️ <span th:text="${error}"></span>
+</div>
+
+<!-- ✅ Formulaire sans th:object -->
+<form th:action="@{/commandes/save}" method="post">
+
+  <!-- ✅ Champ caché pour ID -->
+  <input type="hidden" name="id" th:value="${commande.id}" />
+  <p style="color: blue;">[DEBUG] ID reçu : <span th:text="${commande.id}">null</span></p>
+
   <label>Numéro :</label>
-  <input type="text" th:field="*{numero}" required><br>
+  <input type="text" name="numero" th:value="${commande.numero}" required><br>
 
   <label>Date :</label>
-  <input type="date" th:field="*{dateAchat}" required><br>
+  <input type="date" name="dateAchat" th:value="${commande.dateAchat}" required><br>
 
   <label>Fournisseur :</label>
-  <input type="text" th:field="*{nomFournisseur}" required /><br><br>
+  <input type="text" name="nomFournisseur" th:value="${commande.nomFournisseur}" required /><br><br>
 
-  <h3>Lignes de commande</h3>
+  <h3>Ligne de commande</h3>
   <div id="lignes">
-    <div th:each="ligne, iStat : *{lignes}">
+    <div th:each="ligne, i : ${commande.lignes}">
+
       <label>Produit :</label>
-      <select th:field="*{lignes[__${iStat.index}__].produit.id}">
-        <option th:each="p : ${produits}" th:value="${p.id}" th:text="${p.libelle}"></option>
-      </select>
+      <input type="text" th:name="'lignes[' + ${i.index} + '].produit.libelle'"
+             th:value="${ligne.produit.libelle}" required />
 
       <label>Quantité :</label>
-      <input type="number" th:field="*{lignes[__${iStat.index}__].quantite}">
+      <input type="number" th:name="'lignes[' + ${i.index} + '].quantite'"
+             th:value="${ligne.quantite}" required />
 
       <label>Entrepôt :</label>
-      <select th:field="*{lignes[__${iStat.index}__].entrepot.id}">
-        <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+      <select th:name="'lignes[' + ${i.index} + '].entrepot.id'" required>
+        <option th:each="e : ${entrepots}"
+                th:value="${e.id}"
+                th:text="${e.nom}"
+                th:selected="${e.id} == ${ligne.entrepot.id}"></option>
       </select>
       <br><br>
     </div>
   </div>
 
-  <button type="button" onclick="ajouterLigne()">➕ Ajouter une ligne</button><br><br>
   <button type="submit">✅ Enregistrer</button>
 </form>
 
-<!-- Lien de retour -->
 <br><br>
 <a href="/commandes" style="font-weight: bold;">⬅ Retour à la liste</a>
-
-<!-- Template pour ligne vide -->
-<script type="text/template" id="ligne-template">
-  <div>
-    <label>Produit :</label>
-    <select name="lignes[__INDEX__].produit.id" required>
-      <option th:each="p : ${produits}" th:value="${p.id}" th:text="${p.libelle}"></option>
-    </select>
-
-    <label>Quantité :</label>
-    <input type="number" name="lignes[__INDEX__].quantite" required>
-
-    <label>Entrepôt :</label>
-    <select name="lignes[__INDEX__].entrepot.id" required>
-      <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
-    </select>
-    <br><br>
-  </div>
-</script>
 
 </body>
 </html>

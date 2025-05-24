@@ -79,5 +79,14 @@ public class ProduitService {
                         (produitId == null || !p.getId().equals(produitId))
         );
     }
+    public Produit findOrCreateByLibelle(String libelle) {
+        Produit produit = produitRepository.findByLibelle(libelle);
+        if (produit == null) {
+            produit = new Produit();
+            produit.setLibelle(libelle);
+            produitRepository.save(produit);
+        }
+        return produit;
+    }
 
 }
