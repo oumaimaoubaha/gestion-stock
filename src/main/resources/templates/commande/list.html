@@ -77,11 +77,14 @@
         </tr>
         </tbody>
     </table>
-
     <div class="pagination">
-        <a th:if="${currentPage > 0}" th:href="@{/commandes(page=${currentPage - 1})}">« Précédent</a>
+        <a th:if="${currentPage > 0}"
+           th:href="@{/receptions(page=${currentPage - 1}, dateMin=${dateMin}, dateMax=${dateMax}, produit=${produit}, entrepot=${entrepot})}">« Précédent</a>
+
         <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
-        <a th:if="${commandes.hasNext()}" th:href="@{/commandes(page=${currentPage + 1})}">Suivant »</a>
+
+        <a th:if="${currentPage + 1 < totalPages}"
+           th:href="@{/receptions(page=${currentPage + 1}, dateMin=${dateMin}, dateMax=${dateMax}, produit=${produit}, entrepot=${entrepot})}">Suivant »</a>
     </div>
 </main>
 </body>

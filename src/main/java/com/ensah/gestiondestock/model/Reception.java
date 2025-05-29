@@ -1,55 +1,54 @@
 package com.ensah.gestiondestock.model;
 
 import jakarta.persistence.*;
+import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
+
+
 import java.time.LocalDate;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Reception {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    private LocalDate dateReception;
-    private LocalDate dateAchat;
-    private String numeroAchat;
-    private String produit;
-    private String unite;
-    private int quantite;
-    private String source;
-    private String remarque;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @ManyToOne
-    private Entrepot entrepot;
+        @NotNull(message = "La date de réception est obligatoire")
+        private LocalDate dateReception;
 
-    // Getters et setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+        @NotNull(message = "La date d'achat est obligatoire")
+        private LocalDate dateAchat;
 
-    public LocalDate getDateReception() { return dateReception; }
-    public void setDateReception(LocalDate dateReception) { this.dateReception = dateReception; }
+        @NotBlank(message = "Le numéro d'achat est obligatoire")
+        private String numeroAchat;
 
-    public LocalDate getDateAchat() { return dateAchat; }
-    public void setDateAchat(LocalDate dateAchat) { this.dateAchat = dateAchat; }
+        @NotBlank(message = "Le produit est obligatoire")
+        private String produit;
 
-    public String getNumeroAchat() { return numeroAchat; }
-    public void setNumeroAchat(String numeroAchat) { this.numeroAchat = numeroAchat; }
+        @NotBlank(message = "L’unité est obligatoire")
+        private String unite;
 
-    public String getProduit() { return produit; }
-    public void setProduit(String produit) { this.produit = produit; }
+        @Min(value = 1, message = "La quantité doit être au minimum 1")
+        private int quantite;
 
-    public String getUnite() { return unite; }
-    public void setUnite(String unite) { this.unite = unite; }
+        @NotBlank(message = "La source est obligatoire")
+        private String source;
 
-    public int getQuantite() { return quantite; }
-    public void setQuantite(int quantite) { this.quantite = quantite; }
+        @NotBlank(message = "L'entrepôt est obligatoire")
+        private String entrepot;
 
-    public String getSource() { return source; }
-    public void setSource(String source) { this.source = source; }
+        private String remarque; // ✅ champ corrigé
 
-    public String getRemarque() { return remarque; }
-    public void setRemarque(String remarque) { this.remarque = remarque; }
+        @ManyToOne
+        @JoinColumn(name = "commande_achat_id")
+        private CommandeAchat commandeAchat;
 
-    public Entrepot getEntrepot() { return entrepot; }
-    public void setEntrepot(Entrepot entrepot) { this.entrepot = entrepot; }
-}
+        // ✅ getters et setters générés automatiquement avec Lombok (@Data) ou manuellement si nécessaire
+    }

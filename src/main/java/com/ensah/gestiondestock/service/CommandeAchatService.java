@@ -46,4 +46,13 @@ public class CommandeAchatService {
     public Page<CommandeAchat> getPageCommandes(Pageable pageable) {
         return commandeAchatRepository.findAllByOrderByDateAchatDesc(pageable);
     }
+    public List<CommandeAchat> getAll() {
+        return commandeAchatRepository.findAll();
+    }
+
+    public List<CommandeAchat> getByIdNotIn(List<Long> ids) {
+        return commandeAchatRepository.findByIdNotIn(ids);
+    }
+
+
 }

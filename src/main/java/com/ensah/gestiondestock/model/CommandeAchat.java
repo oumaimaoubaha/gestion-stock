@@ -25,15 +25,7 @@ public class CommandeAchat {
 
     @OneToMany(mappedBy = "commandeAchat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LigneCommande> lignes;
-    public Long getId() {
-        return id;
-    }
-
-    public String getNumeroAchat() {
-        return numeroAchat;
-    }
-    public void setDateAchat(LocalDate dateAchat) {
-        this.dateAchat = dateAchat;
-    }
+    @OneToMany(mappedBy = "commandeAchat", cascade = CascadeType.ALL)
+    private List<Reception> receptions;
 
 }

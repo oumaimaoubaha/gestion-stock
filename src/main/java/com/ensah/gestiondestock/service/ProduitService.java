@@ -88,5 +88,10 @@ public class ProduitService {
         }
         return produit;
     }
+    @Autowired
+    public List<String> getUnites() {
+        return produitRepository.findDistinctUnites();
+    }
+
 
 }
