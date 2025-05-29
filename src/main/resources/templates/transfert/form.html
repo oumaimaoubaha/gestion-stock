@@ -9,7 +9,6 @@
         .container { display: flex; }
 
         .sidebar {
-            float: left;
             width: 200px;
             background-color: #f2f2f2;
             padding: 15px;
@@ -25,17 +24,8 @@
             font-weight: bold;
         }
 
-        .sidebar ul {
-            padding-left: 20px;
-        }
-
-        .sidebar ul li {
-            list-style-type: disc;
-            margin-bottom: 5px;
-        }
-
         .content {
-            margin-left: 200px;
+            flex: 1;
             padding: 20px;
         }
 
@@ -54,17 +44,21 @@
             margin-top: 15px;
             padding: 8px 16px;
         }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
-<div class="header">Gestion de stocks</div>
-
 <div class="container">
     <div class="sidebar">
         <div><b>Accueil</b></div>
         <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
         <hr>
-        <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div>
+        <div><a th:href="@{/produits}">Gestion des produits</a></div>
         <hr>
         <div><b>Mouvements de stock</b></div>
         <ul>
@@ -74,38 +68,43 @@
             <li><a th:href="@{/commandes}">Commandes</a></li>
         </ul>
         <hr>
-        <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+        <div><a th:href="@{/inventaires}">Inventaires</a></div>
     </div>
 
     <div class="content">
         <h3 style="color: blueviolet;">Transferts > Nouveau transfert</h3>
+        <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
 
-        <form th:action="@{/transferts/save}" th:object="${transfert}" method="post">
+        <form th:action="@{/transferts/save}" th:object="${transfert}" method="post" onsubmit="return checkQuantite()">
             <label>Date de transfert</label>
             <input type="date" th:field="*{date}" required>
 
+            <label>Entrepôt source</label>
+            <select th:field="*{source.id}" id="sourceSelect" required>
+                <option value="">-- Choisir --</option>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+            </select>
+
             <label>Produit</label>
-            <select th:field="*{produit.id}" required>
-                <option th:each="p : ${produits}" th:value="${p.id}" th:text="${p.reference}">Produit</option>
+            <select th:field="*{produit.id}" id="produitSelect" required>
+                <option value="">-- Choisir --</option>
             </select>
 
             <label>Unité</label>
-            <input type="text"
-                   th:value="${transfert.produit != null} ? ${transfert.produit.unite} : ''"
-                   readonly>
+            <input type="text" id="uniteInput" readonly>
 
             <label>Quantité</label>
-            <input type="number" th:field="*{quantite}" required>
-
-            <label>Entrepôt source</label>
-            <select th:field="*{source.id}" required>
-                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}">Entrepôt</option>
-            </select>
+            <input type="number" th:field="*{quantite}" id="quantiteInput" required>
+            <div id="quantiteErreur" class="error" style="display: none;">Quantité dépassée</div>
 
             <label>Entrepôt cible</label>
             <select th:field="*{destination.id}" required>
-                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}">Entrepôt</option>
+                <option value="">-- Choisir --</option>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
             </select>
+
+            <label>Remarque</label>
+            <input type="text" th:field="*{remarque}" placeholder="Remarque facultative">
 
             <button type="submit">OK</button>
         </form>
@@ -114,5 +113,56 @@
         <a th:href="@{/transferts}">&lt; Liste des transferts</a>
     </div>
 </div>
+
+<script>
+    document.getElementById('sourceSelect').addEventListener('change', function () {
+        const entrepotId = this.value;
+        const produitSelect = document.getElementById('produitSelect');
+        const uniteInput = document.getElementById('uniteInput');
+
+        produitSelect.innerHTML = '<option value="">-- Choisir --</option>';
+        uniteInput.value = "";
+
+        if (!entrepotId) return;
+
+        fetch(`/transferts/produits-par-entrepot?entrepotId=${entrepotId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.id;
+                    option.text = p.reference;
+                    option.setAttribute('data-unite', p.unite);
+                    option.setAttribute('data-quantite', p.quantiteStock);
+                    produitSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Erreur de chargement des produits:', error);
+            });
+    });
+
+    document.getElementById('produitSelect').addEventListener('change', function () {
+        const selected = this.options[this.selectedIndex];
+        const unite = selected.getAttribute('data-unite') || '';
+        document.getElementById('uniteInput').value = unite;
+    });
+
+    function checkQuantite() {
+        const select = document.getElementById('produitSelect');
+        const selected = select.options[select.selectedIndex];
+        const maxQte = parseFloat(selected.getAttribute('data-quantite')) || 0;
+        const inputQte = parseFloat(document.getElementById('quantiteInput').value) || 0;
+
+        if (inputQte > maxQte) {
+            document.getElementById('quantiteErreur').style.display = 'block';
+            return false;
+        }
+
+        document.getElementById('quantiteErreur').style.display = 'none';
+        return true;
+    }
+</script>
+
 </body>
 </html>

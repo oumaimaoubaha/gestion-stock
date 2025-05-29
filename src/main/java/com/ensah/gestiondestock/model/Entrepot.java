@@ -1,5 +1,6 @@
 package com.ensah.gestiondestock.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,6 +42,7 @@ public class Entrepot implements Serializable {
     @OneToMany(mappedBy = "entrepot")
     private List<Inventaire> inventaires;
     @OneToMany(mappedBy = "entrepot")
+    @JsonIgnore
     private List<Produit> produits;
     public Long getId() {
         return id;
