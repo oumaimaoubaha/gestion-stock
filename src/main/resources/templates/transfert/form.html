@@ -1,10 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Nouveau transfert</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+
+        .container { display: flex; }
+
+        .sidebar {
+            float: left;
+            width: 200px;
+            background-color: #f2f2f2;
+            padding: 15px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .sidebar a {
+            display: block;
+            margin: 5px 0;
+            text-decoration: none;
+            color: blueviolet;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            padding-left: 20px;
+        }
+
+        .sidebar ul li {
+            list-style-type: disc;
+            margin-bottom: 5px;
+        }
+
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+
+        form label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        form input, form select {
+            width: 300px;
+            padding: 5px;
+            margin-top: 5px;
+        }
+
+        form button {
+            margin-top: 15px;
+            padding: 8px 16px;
+        }
+    </style>
 </head>
 <body>
+<div class="header">Gestion de stocks</div>
 
+<div class="container">
+    <div class="sidebar">
+        <div><b>Accueil</b></div>
+        <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
+        <hr>
+        <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div>
+        <hr>
+        <div><b>Mouvements de stock</b></div>
+        <ul>
+            <li><a th:href="@{/receptions}">Réceptions</a></li>
+            <li><a th:href="@{/livraisons}">Livraisons</a></li>
+            <li><a th:href="@{/transferts}" style="color:blueviolet;"><b>Transferts</b></a></li>
+            <li><a th:href="@{/commandes}">Commandes</a></li>
+        </ul>
+        <hr>
+        <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+    </div>
+
+    <div class="content">
+        <h3 style="color: blueviolet;">Transferts > Nouveau transfert</h3>
+
+        <form th:action="@{/transferts/save}" th:object="${transfert}" method="post">
+            <label>Date de transfert</label>
+            <input type="date" th:field="*{date}" required>
+
+            <label>Produit</label>
+            <select th:field="*{produit.id}" required>
+                <option th:each="p : ${produits}" th:value="${p.id}" th:text="${p.reference}">Produit</option>
+            </select>
+
+            <label>Unité</label>
+            <input type="text"
+                   th:value="${transfert.produit != null} ? ${transfert.produit.unite} : ''"
+                   readonly>
+
+            <label>Quantité</label>
+            <input type="number" th:field="*{quantite}" required>
+
+            <label>Entrepôt source</label>
+            <select th:field="*{source.id}" required>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}">Entrepôt</option>
+            </select>
+
+            <label>Entrepôt cible</label>
+            <select th:field="*{destination.id}" required>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}">Entrepôt</option>
+            </select>
+
+            <button type="submit">OK</button>
+        </form>
+
+        <br>
+        <a th:href="@{/transferts}">&lt; Liste des transferts</a>
+    </div>
+</div>
 </body>
 </html>

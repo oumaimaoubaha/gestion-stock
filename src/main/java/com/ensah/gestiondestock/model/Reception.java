@@ -30,4 +30,8 @@ public class Reception {
     @ManyToOne
     @JoinColumn(name = "entrepot_id")
     private Entrepot entrepot;
+    @Override
+    public String toString() {
+        return "Reception{id=" + id + ", date=" + dateReception + "}";
+    }
 }
