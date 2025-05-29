@@ -2,43 +2,50 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Liste des commandes d'achat</title>
+    <title>Commandes</title>
     <style>
-        body { font-family: Arial; margin: 0; }
-        .header { background: #f4f4f4; padding: 10px 20px; font-weight: bold; }
-        .sidebar { float: left; width: 200px; background: #f0f0f0; height: 100vh; padding: 10px; box-sizing: border-box; }
-        .content { margin-left: 200px; padding: 20px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-        th, td { border: 1px solid #ccc; padding: 5px; text-align: left; }
-        th { background: #eee; }
-        .actions a { margin-right: 10px; }
+        body { margin: 0; font-family: Arial, sans-serif; display: flex; }
+        aside { width: 220px; background-color: #f0f0f0; padding: 20px; border-right: 1px solid #ccc; height: 100vh; }
+        aside h3 { margin-top: 0; }
+        .menu a { display: block; padding: 6px; text-decoration: none; color: black; }
+        .menu a.active { background-color: #cce0ff; border-radius: 4px; }
+        .menu a:hover { text-decoration: underline; }
+        main { flex: 1; padding: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        th { background-color: #eaeaea; }
+        .top-bar { margin-bottom: 15px; }
+        .top-bar a { color: purple; font-weight: bold; text-decoration: none; }
+        .top-bar a:hover { text-decoration: underline; }
+        .actions a:first-child { color: purple; margin-right: 10px; }
+        .actions a:last-child { color: blue; }
+        .error { color: red; font-weight: bold; }
+        .pagination { margin-top: 15px; }
+        .pagination a { margin-right: 10px; text-decoration: none; color: blue; }
+        .pagination span { font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="header">Gestion de stocks</div>
+<aside>
+    <h3>Gestion de stocks</h3>
+    <div class="menu">
+        <a th:href="@{/}">Accueil</a>
+        <a th:href="@{/entrepots}">Gestion des entrepôts</a>
+        <a th:href="@{/produits}">Produits</a>
+        <a th:href="@{/receptions}" class="active">Réceptions</a>
+        <a th:href="@{/livraisons}">Livraisons</a>
+        <a th:href="@{/transferts}">Transferts</a>
+        <a th:href="@{/inventaires}">Inventaires</a>
+    </div>
+</aside>
 
-<div class="sidebar">
-    <div><b>Accueil</b></div>
-    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
-    <hr>
-    <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div>
-    <hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-        <li><a th:href="@{/commandes}">Commandes</a></li>
-    </ul>
-    <hr>
-    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
-</div>
+<main>
+    <div class="top-bar">
+        <a href="/commandes/nouveau">➕ Nouvelle commande</a>
+    </div>
 
-<div class="content">
-    <h2>Liste des commandes d'achat</h2>
-
-    <a href="/commandes/new">➕ Nouvelle commande</a>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
 
     <table>
         <thead>
@@ -48,42 +55,34 @@
             <th>Fournisseur</th>
             <th>Produits</th>
             <th>Quantités</th>
-            <th>Entrepôts</th>
+            <th>Unité</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="cmd : ${commandes}">
-            <td th:text="${cmd.numero}">Num</td>
-            <td th:text="${cmd.dateAchat}">Date</td>
-            <td th:text="${cmd.nomFournisseur}">Fournisseur</td>
-            <td>
-                <ul>
-                    <li th:each="ligne : ${cmd.lignes}" th:text="${ligne.produit.libelle}">Produit</li>
-                </ul>
-            </td>
-            <td>
-                <ul>
-                    <li th:each="ligne : ${cmd.lignes}" th:text="${ligne.quantite}">Quantité</li>
-                </ul>
-            </td>
-            <td>
-                <ul>
-                    <li th:each="ligne : ${cmd.lignes}" th:text="${ligne.entrepot.nom}">Entrepôt</li>
-                </ul>
-            </td>
+        <tr th:each="cmd : ${commandes.content}" th:if="${cmd.produit} != null">
+            <td th:text="${cmd.numeroAchat}">EX123</td>
+            <td th:text="${cmd.dateAchat}">2025-01-01</td>
+            <td th:text="${cmd.source}">Source</td>
+            <td><ul><li th:text="${cmd.produit}">Produit</li></ul></td>
+            <td><ul><li th:text="${cmd.quantite}">10</li></ul></td>
+            <td><ul><li th:text="${cmd.unite}">kg</li></ul></td>
             <td class="actions">
-                <a th:href="@{/commandes/edit/{id}(id=${cmd.id})}">Modifier</a>
-                <a th:href="@{/commandes/delete/{id}(id=${cmd.id})}" onclick="return confirm('Supprimer cette commande ?');">Supprimer</a>
+                <a th:href="@{'/commandes/modifier/' + ${cmd.id}}">Modifier</a>
+                <a th:href="@{'/commandes/supprimer/' + ${cmd.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
             </td>
+        </tr>
+        <tr th:if="${commandes.content.?[produit != null].isEmpty()}">
+            <td colspan="7" style="text-align: center;">Aucune commande pour le moment.</td>
         </tr>
         </tbody>
     </table>
 
-    <div style="margin-top: 10px;">
-        <a href="#">suivant &gt;&gt;</a>
+    <div class="pagination">
+        <a th:if="${currentPage > 0}" th:href="@{/commandes(page=${currentPage - 1})}">« Précédent</a>
+        <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
+        <a th:if="${commandes.hasNext()}" th:href="@{/commandes(page=${currentPage + 1})}">Suivant »</a>
     </div>
-</div>
-
+</main>
 </body>
 </html>

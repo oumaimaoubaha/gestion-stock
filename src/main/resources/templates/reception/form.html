@@ -1,46 +1,123 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Formulaire Réception</title>
+    <title>Nouvelle réception</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        .container { display: flex; }
+        .sidebar {
+            width: 200px;
+            background-color: white;
+            border: 2px solid black;
+            border-right: none;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+        }
+        .sidebar h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid black;
+            padding-bottom: 5px;
+        }
+        .sidebar a {
+            display: block;
+            margin: 5px 0;
+            padding: 5px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #add8e6;
+            border-left: 3px solid black;
+        }
+        .content { flex: 1; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        form label { display: inline-block; width: 150px; margin-bottom: 5px; }
+        form input, form select { margin-bottom: 10px; width: 200px; }
+        .form-section { margin-top: 30px; border-top: 1px solid #aaa; padding-top: 20px; }
+    </style>
 </head>
 <body>
-<h2 th:text="${reception.id == null} ? 'Nouvelle réception' : 'Modifier réception'"></h2>
+<div class="container">
+    <div class="sidebar">
+        <h3>Gestion de stocks</h3>
+        <a th:href="@{/}" th:classappend="${activePage == 'accueil'} ? 'active'">Accueil</a>
+        <a th:href="@{/entrepots}" th:classappend="${activePage == 'entrepots'} ? 'active'">Gestion des entrepôts</a>
+        <a th:href="@{/commandes}" th:classappend="${activePage == 'commandes'} ? 'active'">Commandes</a>
+        <a th:href="@{/receptions}" th:classappend="${activePage == 'receptions'} ? 'active'">Réceptions</a>
+        <a th:href="@{/livraisons}" th:classappend="${activePage == 'livraisons'} ? 'active'">Livraisons</a>
+        <a th:href="@{/transferts}" th:classappend="${activePage == 'transferts'} ? 'active'">Transferts</a>
+        <a th:href="@{/inventaires}" th:classappend="${activePage == 'inventaires'} ? 'active'">Inventaires</a>
+    </div>
 
-<form th:action="@{/receptions/save}" th:object="${reception}" method="post">
-    <input type="hidden" th:field="*{id}" />
+    <div class="content">
+        <h2>Réceptions > Nouvelle réception</h2>
 
-    <label>Date de réception :</label>
-    <input type="date" th:field="*{dateReception}" required /><br/>
+        <form method="get" th:action="@{/receptions/new}">
+            <label>Numéro d'achat: <input type="text" name="numeroAchat" th:value="${numeroAchat}"></label>
+            <label>Produit: <input type="text" name="produit" th:value="${produit}"></label>
+            <button type="submit">Chercher</button>
+        </form>
 
-    <label>Date achat :</label>
-    <input type="date" th:field="*{dateAchat}" /><br/>
+        <table>
+            <thead>
+            <tr>
+                <th>Date achat</th>
+                <th>Num d'achat</th>
+                <th>Produit</th>
+                <th>Unité</th>
+                <th>Quantité</th>
+                <th>Source</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cmd : ${commandes}">
+                <td th:text="${cmd.dateAchat}"></td>
+                <td th:text="${cmd.numero}"></td>
+                <td th:text="${cmd.produit}"></td>
+                <td th:text="${cmd.unite}"></td>
+                <td th:text="${cmd.quantite}"></td>
+                <td th:text="${cmd.source}"></td>
+                <td>
+                    <a th:href="@{'/receptions/new?idCommande=' + ${cmd.id}}">Réceptionner</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-    <label>Numéro achat :</label>
-    <input type="text" th:field="*{numeroAchat}" /><br/>
+        <div class="form-section">
+            <form th:action="@{/receptions/save}" th:object="${reception}" method="post">
+                <input type="hidden" th:field="*{id}"/>
+                <label>Date de réception: <input type="date" th:field="*{dateReception}" required></label><br>
+                <label>Date achat: <input type="date" th:field="*{dateAchat}" readonly></label><br>
+                <label>Numéro achat: <input type="text" th:field="*{numeroAchat}" readonly></label><br>
+                <label>Produit: <input type="text" th:field="*{produit}" readonly></label><br>
+                <label>Unité: <input type="text" th:field="*{unite}" readonly></label><br>
+                <label>Quantité: <input type="number" th:field="*{quantite}" required></label><br>
+                <label>Source: <input type="text" th:field="*{source}" readonly></label><br>
+                <label>Magasin:
+                    <select th:field="*{entrepot}" required>
+                        <option th:each="e : ${entrepots}" th:value="${e}" th:text="${e.nom}"></option>
+                    </select>
+                </label><br>
+                <button type="submit">Valider</button>
+            </form>
+        </div>
 
-    <label>Produit :</label>
-    <select th:field="*{produit}" required>
-        <option th:each="p : ${produits}" th:value="${p}" th:text="${p.libelle}"></option>
-    </select><br/>
-
-    <label>Quantité :</label>
-    <input type="number" th:field="*{quantite}" min="1" required /><br/>
-
-    <label>Entrepôt :</label>
-    <select th:field="*{entrepot}" required>
-        <option th:each="e : ${entrepots}" th:value="${e}" th:text="${e.nom}"></option>
-    </select><br/>
-
-    <label>Source :</label>
-    <input type="text" th:field="*{source}" placeholder="Retour, don, etc." /><br/>
-
-    <label>Remarque :</label>
-    <textarea th:field="*{remarque}" rows="3" cols="40"></textarea><br/><br/>
-
-    <button type="submit">Valider</button>
-    <a th:href="@{/receptions}">Annuler</a>
-</form>
+        <a th:href="@{/receptions}">&lt; Liste des réceptions</a>
+    </div>
+</div>
 </body>
 </html>

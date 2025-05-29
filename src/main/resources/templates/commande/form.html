@@ -3,60 +3,121 @@
 <head>
   <meta charset="UTF-8">
   <title>Commande</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 30px;
+        background-color: #f8f8f8;
+    }
+
+    .form-container {
+        max-width: 600px;
+        margin: auto;
+        background-color: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    label {
+        display: inline-block;
+        width: 120px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"] {
+        width: 300px;
+        padding: 6px;
+        margin-bottom: 10px;
+    }
+
+    .error {
+        color: red;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .buttons {
+        margin-top: 20px;
+    }
+
+    .buttons button,
+    .buttons a {
+        padding: 8px 15px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .buttons button {
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+
+    .buttons a {
+        background-color: #ccc;
+        color: black;
+    }
+
+    .buttons button:hover {
+        background-color: #45a049;
+    }
+
+    .buttons a:hover {
+        background-color: #bbb;
+    }
+  </style>
 </head>
 <body>
 
-<h2 th:text="${isEdit} ? 'Modification de la Commande d’Achat' : 'Nouvelle Commande d’Achat'"></h2>
+<div class="form-container">
+  <h2 th:text="${commande.id == null ? 'Nouvelle Commande d’Achat' : 'Modification de la Commande'}"></h2>
 
-<!-- Message d'erreur -->
-<div th:if="${error}" style="color: red; font-weight: bold;">
-  ⚠️ <span th:text="${error}"></span>
-</div>
-
-<!-- Formulaire -->
-<form th:action="${isEdit} ? @{/commandes/update} : @{/commandes/create}" method="post">
-
-  <!-- ID caché -->
-  <input type="hidden" name="id" th:value="${commande.id}" />
-  <p style="color: blue;">[DEBUG] ID reçu : <span th:text="${commande.id}">null</span></p>
-
-  <label>Numéro :</label>
-  <input type="text" name="numero" th:value="${commande.numero}" required><br>
-
-  <label>Date :</label>
-  <input type="date" name="dateAchat" th:value="${commande.dateAchat}" required><br>
-
-  <label>Fournisseur :</label>
-  <input type="text" name="nomFournisseur" th:value="${commande.nomFournisseur}" required /><br><br>
-
-  <h3>Ligne de commande</h3>
-  <div id="lignes">
-    <div th:each="ligne, i : ${commande.lignes}">
-
-      <label>Produit :</label>
-      <input type="text" th:name="'lignes[' + ${i.index} + '].produit.libelle'"
-             th:value="${ligne.produit.libelle}" required />
-
-      <label>Quantité :</label>
-      <input type="number" th:name="'lignes[' + ${i.index} + '].quantite'"
-             th:value="${ligne.quantite}" required />
-
-      <label>Entrepôt :</label>
-      <select th:name="'lignes[' + ${i.index} + '].entrepot.id'" required>
-        <option th:each="e : ${entrepots}"
-                th:value="${e.id}"
-                th:text="${e.nom}"
-                th:selected="${e.id} == ${ligne.entrepot.id}"></option>
-      </select>
-      <br><br>
-    </div>
+  <div th:if="${erreurNumero}" class="error">
+    ⚠ <span th:text="${erreurNumero}"></span>
   </div>
 
-  <button type="submit">✅ Enregistrer</button>
-</form>
+  <form th:action="@{/commandes/save}" th:object="${commande}" method="post">
+    <input type="hidden" th:field="*{id}" />
 
-<br><br>
-<a href="/commandes" style="font-weight: bold;">⬅ Retour à la liste</a>
+    <label>Numéro :</label>
+    <input type="text" th:field="*{numeroAchat}" required /><br>
+
+    <label>Date :</label>
+    <input type="date" name="dateAchat" id="dateAchat"
+           th:value="${commande.dateAchat != null ? #temporals.format(commande.dateAchat, 'yyyy-MM-dd') : #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+           required /><br>
+    <label>Fournisseur :</label>
+    <input type="text" th:field="*{source}" required /><br>
+
+    <h3 style="margin-top: 20px; margin-bottom: 10px;">Ligne de commande</h3>
+
+    <label>Produit :</label>
+    <input type="text" th:field="*{produit}" required /><br>
+
+    <label>Quantité :</label>
+    <input type="number" th:field="*{quantite}" required /><br>
+
+    <label>Unité :</label>
+    <input type="text" th:field="*{unite}" required /><br>
+
+    <div class="buttons">
+      <button type="submit">✅ Enregistrer</button>
+      <a href="/commandes">⬅ Retour</a>
+    </div>
+  </form>
+</div>
 
 </body>
 </html>

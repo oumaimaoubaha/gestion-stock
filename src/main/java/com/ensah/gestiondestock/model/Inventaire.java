@@ -53,5 +53,10 @@ public class Inventaire {
         return lignes;
     }
 
+    @Override
+    public String toString() {
+        return "Inventaire{id=" + id + ", dateInventaire=" + dateInventaire + "}";
+    }
+
 
 }

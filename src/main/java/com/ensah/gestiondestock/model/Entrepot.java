@@ -46,4 +46,23 @@ public class Entrepot implements Serializable {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return "Entrepot{id=" + id + ", code='" + code + "', nom='" + nom + "'}";
+    }
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+
+
+
 }

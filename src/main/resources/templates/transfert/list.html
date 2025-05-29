@@ -1,10 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Liste des transferts</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+
+        .container { display: flex; }
+
+        .sidebar {
+            width: 200px;
+            background-color: #f2f2f2;
+            padding: 15px;
+            height: 100vh;
+        }
+
+        .sidebar h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar a {
+            display: block;
+            margin: 5px 0;
+            text-decoration: none;
+            color: blueviolet;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            padding-left: 20px;
+        }
+
+        .sidebar ul li {
+            list-style-type: disc;
+            margin-bottom: 5px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        form label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        form input, form select, form button {
+            padding: 5px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        a {
+            color: blueviolet;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <div class="sidebar">
+        <div><b>Accueil</b></div>
+        <div><a th:href="@{/entrepots}" class="active-link">Gestion des entrepôts</a></div>
+        <hr>
+        <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div>
+        <hr>
+        <div><b>Mouvements de stock</b></div>
+        <ul>
+            <li><a th:href="@{/receptions}">Réceptions</a></li>
+            <li><a th:href="@{/livraisons}">Livraisons</a></li>
+            <li><a th:href="@{/transferts}">Transferts</a></li>
+            <li><a th:href="@{/commandes}">Commandes</a></li>
+        </ul>
+        <hr>
+        <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+    </div>
 
+
+
+    <div class="content">
+        <h3 style="color: blueviolet;">Transferts > Liste des transferts</h3>
+
+        <form method="get" th:action="@{/transferts}">
+            <label>Date de transfert</label>
+            <div style="margin-bottom: 8px;">
+                De: <input type="date" name="dateFrom">
+            </div>
+            <div style="margin-bottom: 8px;">
+                À: <input type="date" name="dateTo">
+            </div>
+            <div style="margin-bottom: 8px;">
+                <label style="display: inline-block; width: 60px;">Produit</label>
+                <input type="text" name="produit" style="width: 200px;">
+            </div>
+            <div>
+                <button type="submit">Chercher</button>
+            </div>
+        </form>
+
+
+        <table>
+            <thead>
+            <tr>
+                <th>Date transfert</th>
+                <th>Produit</th>
+                <th>Unité</th>
+                <th>Quantité</th>
+                <th>Entrepôt source</th>
+                <th>Entrepôt cible</th>
+                <th>Remarque</th>
+                <th>Modifier</th>
+                <th>Supprimer</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="t : ${transferts}">
+                <td th:text="${t.date}">15/02/2023</td>
+                <td th:text="${t.produit.nom}">prod 1</td>
+                <td th:text="${t.produit.unite}">boîte</td>
+                <td th:text="${t.quantite}">100</td>
+                <td th:text="${t.source.nom}">MAG1</td>
+                <td th:text="${t.destination.nom}">MAG2</td>
+                <td> - </td>
+                <td><a th:href="@{'/transferts/edit/' + ${t.id}}">Modifier</a></td>
+                <td><a th:href="@{'/transferts/delete/' + ${t.id}}" onclick="return confirm('Confirmer ?')">Supprimer</a></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <a th:href="@{/transferts/new}">Nouveau transfert</a>
+    </div>
+</div>
 </body>
 </html>

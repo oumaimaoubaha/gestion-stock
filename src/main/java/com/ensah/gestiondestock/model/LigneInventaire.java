@@ -75,4 +75,9 @@ public class LigneInventaire {
     public void setJustification(String justification) {
         this.justification = justification;
     }
+
+    @Override
+    public String toString() {
+        return "LigneInventaire{id=" + id + ", ecart=" + ecart + "}";
+    }
 }

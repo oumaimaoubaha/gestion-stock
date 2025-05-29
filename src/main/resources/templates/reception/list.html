@@ -4,86 +4,137 @@
     <meta charset="UTF-8">
     <title>Liste des réceptions</title>
     <style>
-        body { font-family: Arial; margin: 0; }
-        .header { background: #eee; padding: 10px; font-weight: bold; }
-        .sidebar { float: left; width: 200px; background: #f4f4f4; height: 100vh; padding: 15px; box-sizing: border-box; }
-        .sidebar a { display: block; margin: 5px 0; }
-        .content { margin-left: 220px; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #eee; }
-        .filter-section input, .filter-section select { margin-right: 10px; padding: 5px; }
-        .btn { padding: 5px 10px; }
-        .actions a { margin-right: 10px; }
-        .nav-path { font-size: 14px; margin-bottom: 10px; }
-        .new-link, .pagination { display: block; margin-top: 10px; font-weight: bold; }
+        body { font-family: Arial, sans-serif; margin: 0; }
+
+        .container { display: flex; }
+
+      .sidebar a {
+    display: block;
+    margin: 5px 0;
+    padding: 5px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    transition: background-color 0.2s;
+}
+
+.sidebar a:hover {
+    background-color: #add8e6; /* effet survol */
+}
+
+.sidebar a.active {
+    background-color: #add8e6; /* lien actif */
+    border-left: 3px solid black;
+}
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table th, table td {
+            border: 1px solid #aaa;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .bottom-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .bottom-links a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-<div class="header">Gestion de stocks</div>
-<div class="sidebar">
-    <a th:href="@{/}">Accueil</a>
-    <a th:href="@{/entrepots}">Gestion des entrepôts</a>
-    <div><b>Gestion des produits</b></div>
-    <hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-    </ul>
-    <a th:href="@{/inventaires}"><b>Inventaires</b></a>
-</div>
-<div class="content">
-    <div class="nav-path">
-        <a th:href="@{/receptions}">Réceptions</a> > Liste des réceptions
+<div class="container">
+
+    <!-- MENU LATÉRAL -->
+    <div class="sidebar">
+        <h3>Gestion de stocks</h3>
+        <a th:href="@{/}" th:classappend="${activePage == 'accueil'} ? 'active'">Accueil</a>
+        <a th:href="@{/entrepots}" th:classappend="${activePage == 'entrepots'} ? 'active'">Gestion des entrepôts</a>
+        <a th:href="@{/commandes}" th:classappend="${activePage == 'commandes'} ? 'active'">Commandes</a>
+        <a th:href="@{/receptions}" th:classappend="${activePage == 'receptions'} ? 'active'">Réceptions</a>
+        <a th:href="@{/livraisons}" th:classappend="${activePage == 'livraisons'} ? 'active'">Livraisons</a>
+        <a th:href="@{/transferts}" th:classappend="${activePage == 'transferts'} ? 'active'">Transferts</a>
+        <a th:href="@{/inventaires}" th:classappend="${activePage == 'inventaires'} ? 'active'">Inventaires</a>
     </div>
-    <form method="get" th:action="@{/receptions}" class="filter-section">
-        <label>Date de réception :</label>
-        De : <input type="date" name="from" th:value="${from}" />
-        À : <input type="date" name="to" th:value="${to}" />
-        <label>Produit :</label>
-        <input type="text" name="produit" th:value="${produit}" />
-        <label>Entrepôt :</label>
-        <select name="entrepot">
-            <option value="">-- Tous --</option>
-            <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
-        </select>
-        <button type="submit" class="btn">Chercher</button>
-    </form>
-    <table>
-        <thead>
-        <tr>
-            <th>Date récept</th>
-            <th>N° doc d'ach</th>
-            <th>Produit</th>
-            <th>Unité</th>
-            <th>Quantité</th>
-            <th>Source</th>
-            <th>Entrepôt</th>
-            <th>Remarque</th>
-            <th>Modifier</th>
-            <th>Supprim</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="r : ${receptions}">
-            <td th:text="${#dates.format(r.dateReception, 'dd/MM/yyyy')}"></td>
-            <td th:text="${r.numeroAchat}"></td>
-            <td th:text="${r.produit.reference}"></td>
-            <td th:text="${r.produit.unite}"></td>
-            <td th:text="${r.quantite}"></td>
-            <td th:text="${r.source}"></td>
-            <td th:text="${r.entrepot.nom}"></td>
-            <td th:text="${r.remarque}"></td>
-            <td><a th:href="@{'/receptions/edit/' + ${r.id}}">Modifier</a></td>
-            <td><a th:href="@{'/receptions/delete/' + ${r.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprim</a></td>
-        </tr>
-        </tbody>
-    </table>
-    <a th:href="@{/receptions/add/achat}" class="new-link">➕ Réception suite à un achat</a>
-    <a th:href="@{/receptions/add/autre}" class="new-link">➕ Réception indépendante</a>
-    <a href="#" class="pagination">suivant >></a>
+
+    <!-- CONTENU PRINCIPAL -->
+    <div class="content">
+        <h2>Réceptions > Liste des réceptions</h2>
+
+        <form method="get" th:action="@{/receptions}">
+            <label>Date de réception De:
+                <input type="date" name="from" th:value="${from}">
+            </label>
+            <label> À:
+                <input type="date" name="to" th:value="${to}">
+            </label>
+            <label>Produit:
+                <input type="text" name="produit" th:value="${produit}">
+            </label>
+            <label>Entrepôt:
+                <select name="entrepot">
+                    <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}">MAG1</option>
+                </select>
+            </label>
+            <button type="submit">Chercher</button>
+        </form>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Date récepti</th>
+                <th>N doc d'ach</th>
+                <th>Produit</th>
+                <th>Unit</th>
+                <th>Quantit</th>
+                <th>Source</th>
+                <th>Entrep</th>
+                <th>Remarq</th>
+                <th>Modifier</th>
+                <th>Supprim</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${receptions}">
+                <td th:text="${r.dateReception}"></td>
+                <td th:text="${r.numeroAchat}"></td>
+                <td th:text="${r.produit}"></td>
+                <td th:text="${r.unite}"></td>
+                <td th:text="${r.quantite}"></td>
+                <td th:text="${r.source}"></td>
+                <td th:text="${r.entrepot.nom}"></td>
+                <td th:text="${r.remarque}"></td>
+                <td><a th:href="@{'/receptions/edit/' + ${r.id}}">Modifier</a></td>
+                <td><a th:href="@{'/receptions/delete/' + ${r.id}}">Supprim</a></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="bottom-links">
+            <a href="/receptions/new">Nouvelle réception</a>
+            <a href="#">suivant >></a>
+        </div>
+    </div>
 </div>
 </body>
 </html>

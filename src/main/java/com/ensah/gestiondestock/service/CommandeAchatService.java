@@ -1,10 +1,13 @@
-// ✅ CommandeAchatService.java
 package com.ensah.gestiondestock.service;
 
 import com.ensah.gestiondestock.model.CommandeAchat;
 import com.ensah.gestiondestock.repository.CommandeAchatRepository;
+import com.ensah.gestiondestock.repository.LigneCommandeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,28 +17,33 @@ public class CommandeAchatService {
     @Autowired
     private CommandeAchatRepository commandeAchatRepository;
 
-    public void save(CommandeAchat commande) {
-        commandeAchatRepository.save(commande);
-    }
+    @Autowired
+    private LigneCommandeRepository ligneCommandeRepository;
 
     public List<CommandeAchat> getAllCommandes() {
         return commandeAchatRepository.findAll();
     }
 
-    public CommandeAchat getCommandeById(Long id) {
+    public CommandeAchat getById(Long id) {
         return commandeAchatRepository.findById(id).orElse(null);
     }
 
-    public void deleteById(Long id) {
+    public void save(CommandeAchat commande) {
+        commandeAchatRepository.save(commande);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        ligneCommandeRepository.deleteByCommandeAchatId(id);
         commandeAchatRepository.deleteById(id);
     }
 
-    public CommandeAchat getCommandeByNumero(String numero) {
-        return commandeAchatRepository.findByNumero(numero);
+    public CommandeAchat findByNumeroAchat(String numero) {
+        return commandeAchatRepository.findByNumeroAchat(numero);
     }
 
-    public boolean numeroExisteDeja(String numero, Long idEnCours) {
-        CommandeAchat existante = commandeAchatRepository.findByNumero(numero);
-        return existante != null && !existante.getId().equals(idEnCours);
+    // ✅ tri des commandes par dateAchat décroissante
+    public Page<CommandeAchat> getPageCommandes(Pageable pageable) {
+        return commandeAchatRepository.findAllByOrderByDateAchatDesc(pageable);
     }
 }

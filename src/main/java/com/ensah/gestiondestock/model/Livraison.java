@@ -26,4 +26,9 @@ public class Livraison {
     @ManyToOne
     @JoinColumn(name = "entrepot_id")
     private Entrepot entrepot;
+
+    @Override
+    public String toString() {
+        return "Livraison{id=" + id + ", date=" + dateLivraison + "}";
+    }
 }
