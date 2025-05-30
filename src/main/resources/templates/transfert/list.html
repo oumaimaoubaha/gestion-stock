@@ -15,11 +15,6 @@
             height: 100vh;
         }
 
-        .sidebar h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
         .sidebar a {
             display: block;
             margin: 5px 0;
@@ -28,22 +23,9 @@
             font-weight: bold;
         }
 
-        .sidebar ul {
-            padding-left: 20px;
-        }
-
-        .sidebar ul li {
-            list-style-type: disc;
-            margin-bottom: 5px;
-        }
-
         .content {
             flex: 1;
             padding: 20px;
-        }
-
-        form {
-            margin-bottom: 20px;
         }
 
         form label {
@@ -61,7 +43,6 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
 
         th, td {
@@ -81,9 +62,9 @@
 <div class="container">
     <div class="sidebar">
         <div><b>Accueil</b></div>
-        <div><a th:href="@{/entrepots}" class="active-link">Gestion des entrepôts</a></div>
+        <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
         <hr>
-        <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div>
+        <div><a th:href="@{/produits}">Gestion des produits</a></div>
         <hr>
         <div><b>Mouvements de stock</b></div>
         <ul>
@@ -93,31 +74,42 @@
             <li><a th:href="@{/commandes}">Commandes</a></li>
         </ul>
         <hr>
-        <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+        <div><a th:href="@{/inventaires}">Inventaires</a></div>
     </div>
-
-
 
     <div class="content">
         <h3 style="color: blueviolet;">Transferts > Liste des transferts</h3>
 
         <form method="get" th:action="@{/transferts}">
             <label>Date de transfert</label>
-            <div style="margin-bottom: 8px;">
-                De: <input type="date" name="dateFrom">
-            </div>
-            <div style="margin-bottom: 8px;">
-                À: <input type="date" name="dateTo">
-            </div>
-            <div style="margin-bottom: 8px;">
-                <label style="display: inline-block; width: 60px;">Produit</label>
-                <input type="text" name="produit" style="width: 200px;">
-            </div>
             <div>
-                <button type="submit">Chercher</button>
+                De: <input type="date" name="date" th:value="${date}">
             </div>
-        </form>
 
+            <label>Produit</label>
+            <input type="text" name="referenceProduit" placeholder="Référence produit" th:value="${referenceProduit}">
+
+
+            <label>Entrepôt source</label>
+            <select name="sourceId">
+                <option value="">-- Tous --</option>
+                <option th:each="e : ${entrepots}"
+                        th:value="${e.id}"
+                        th:text="${e.nom}"
+                        th:selected="${sourceId} == ${e.id}"></option>
+            </select>
+
+            <label>Entrepôt destination</label>
+            <select name="destinationId">
+                <option value="">-- Tous --</option>
+                <option th:each="e : ${entrepots}"
+                        th:value="${e.id}"
+                        th:text="${e.nom}"
+                        th:selected="${destinationId} == ${e.id}"></option>
+            </select>
+
+            <div><button type="submit">Chercher</button></div>
+        </form>
 
         <table>
             <thead>
@@ -136,12 +128,12 @@
             <tbody>
             <tr th:each="t : ${transferts}">
                 <td th:text="${t.date}">15/02/2023</td>
-                <td th:text="${t.produit.nom}">prod 1</td>
+                <td th:text="${t.produit.reference}">prod 1</td>
                 <td th:text="${t.produit.unite}">boîte</td>
                 <td th:text="${t.quantite}">100</td>
                 <td th:text="${t.source.nom}">MAG1</td>
                 <td th:text="${t.destination.nom}">MAG2</td>
-                <td> - </td>
+                <td th:text="${t.remarque}">-</td>
                 <td><a th:href="@{'/transferts/edit/' + ${t.id}}">Modifier</a></td>
                 <td><a th:href="@{'/transferts/delete/' + ${t.id}}" onclick="return confirm('Confirmer ?')">Supprimer</a></td>
             </tr>
