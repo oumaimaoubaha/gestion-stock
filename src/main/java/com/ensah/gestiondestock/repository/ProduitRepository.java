@@ -28,4 +28,5 @@ public interface ProduitRepository extends JpaRepository<Produit, Long> {
     Produit findByLibelleAndEntrepotId(String libelle, Long entrepotId);
     Produit findByReferenceAndEntrepotId(String reference, Long entrepotId);
 
+
 }

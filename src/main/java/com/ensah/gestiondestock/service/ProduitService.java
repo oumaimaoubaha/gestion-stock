@@ -136,4 +136,20 @@ public class ProduitService {
             produitRepository.save(nouveau);
         }
     }
+    public Produit findByReference(String reference) {
+        List<Produit> produits = produitRepository.findByReference(reference);
+        if (produits.isEmpty()) {
+            return null; // ✅ évite le crash
+        }
+        return produits.get(0);
+    }
+    public Produit getById(Long id) {
+        return produitRepository.findById(id).orElse(null);
+    }
+    public Produit save(Produit produit) {
+        return produitRepository.save(produit);
+    }
+
+
+
 }
