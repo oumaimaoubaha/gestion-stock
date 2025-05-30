@@ -1,10 +1,184 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Liste des livraisons</title>
+    <style>
+        body { font-family: Arial; margin: 0; }
+
+        .header {
+            background: #f4f4f4;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ccc;
+            font-weight: bold;
+        }
+
+        .sidebar {
+            float: left;
+            width: 200px;
+            background: #f0f0f0;
+            height: 100vh;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+
+        h2 {
+            color: blueviolet;
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="date"],
+        input[type="text"],
+        select {
+            padding: 5px;
+            width: 250px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        .btn-chercher {
+            padding: 6px 15px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-chercher:hover {
+            background-color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #eee;
+        }
+
+        .link {
+            margin-top: 20px;
+        }
+
+        .link a {
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .link a:hover {
+            color: darkblue;
+        }
+    </style>
 </head>
 <body>
+
+<div class="header">Gestion de stocks</div>
+
+<div class="sidebar">
+    <div><b>Accueil</b></div>
+    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
+    <hr>
+    <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div>
+    <hr>
+    <div><b>Mouvements de stock</b></div>
+    <ul>
+        <li><a th:href="@{/receptions}">Réceptions</a></li>
+        <li><a th:href="@{/livraisons}">Livraisons</a></li>
+        <li><a th:href="@{/transferts}">Transferts</a></li>
+        <li><a th:href="@{/commandes}">Commandes</a></li>
+    </ul>
+    <hr>
+    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+</div>
+
+<div class="content">
+    <h2>Livraisons > Liste des livraisons</h2>
+
+    <form method="get" th:action="@{/livraisons}">
+        <div class="form-group">
+            <label>Date de livraison :</label><br>
+            De : <input type="date" name="dateDebut" th:value="${dateDebut}">
+            À : <input type="date" name="dateFin" th:value="${dateFin}">
+        </div>
+
+        <div class="form-group">
+            <label>Produit :</label><br>
+            <input type="text" name="referenceProduit" th:value="${referenceProduit}">
+        </div>
+
+        <div class="form-group">
+            <label>Entrepôt :</label><br>
+            <select name="entrepotId">
+                <option value="">-- Tous --</option>
+                <option th:each="e : ${entrepots}"
+                        th:value="${e.id}"
+                        th:text="${e.nom}"
+                        th:selected="${entrepotId} == ${e.id}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn-chercher">Chercher</button>
+        </div>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Date livraison</th>
+            <th>N° doc vente</th>
+            <th>Produit</th>
+            <th>Unité</th>
+            <th>Quantité</th>
+            <th>Client</th>
+            <th>Entrepôt</th>
+            <th>Remarque</th>
+            <th>Modifier</th>
+            <th>Supprimer</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="l : ${livraisons}">
+            <td th:text="${l.dateLivraison}">12/06/2023</td>
+            <td th:text="${l.commandeAchat != null ? l.commandeAchat.numeroAchat : ''}">C5263152</td>
+            <td th:text="${l.produit.reference}">Produit</td>
+            <td th:text="${l.produit.unite}">Kg</td>
+            <td th:text="${l.quantite}">100</td>
+            <td th:text="${l.commandeAchat != null ? l.commandeAchat.source : 'Client'}">Client</td>
+            <td th:text="${l.entrepot.nom}">MAG1</td>
+            <td th:text="${l.remarque}">Néant</td>
+            <td><a th:href="@{'/livraisons/edit/' + ${l.id}}">Modifier</a></td>
+            <td><a th:href="@{'/livraisons/delete/' + ${l.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="link">
+        <a th:href="@{/livraisons/nouvelle}">Nouvelle Livraison</a>
+    </div>
+</div>
 
 </body>
 </html>

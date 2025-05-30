@@ -46,4 +46,5 @@ public class CommandeAchatService {
     public Page<CommandeAchat> getPageCommandes(Pageable pageable) {
         return commandeAchatRepository.findAllByOrderByDateAchatDesc(pageable);
     }
+
 }
