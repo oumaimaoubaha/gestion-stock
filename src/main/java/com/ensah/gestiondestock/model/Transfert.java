@@ -20,6 +20,9 @@ public class Transfert implements Serializable {
 
     private LocalDate date;
     private int quantite;
+    @Column(length = 255)
+    private String remarque;
+
 
     @ManyToOne
     @JoinColumn(name = "id_source")
@@ -32,6 +35,7 @@ public class Transfert implements Serializable {
     @ManyToOne
     @JoinColumn(name = "id_produit")
     private Produit produit;
+
 
     public void setProduitId(Long id) {
         if (this.produit == null) this.produit = new Produit();
@@ -47,4 +51,26 @@ public class Transfert implements Serializable {
         if (this.destination == null) this.destination = new Entrepot();
         this.destination.setId(id);
     }
+    public Produit getProduit() { return produit; }
+    public void setProduit(Produit produit) { this.produit = produit; }
+
+    public Entrepot getDestination() { return destination; }
+    public void setDestination(Entrepot destination) { this.destination = destination; }
+
+    public int getQuantite() { return quantite; }
+    public void setQuantite(int quantite) { this.quantite = quantite; }
+
+    public String getRemarque() {
+        return remarque;
+    }
+
+    public void setRemarque(String remarque) {
+        this.remarque = remarque;
+    }
+    public Entrepot getSource() {
+        return source;
+    }
+
+
+
 }

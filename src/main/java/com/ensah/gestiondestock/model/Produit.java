@@ -1,4 +1,6 @@
 package com.ensah.gestiondestock.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.constraints.*;
 
 import jakarta.persistence.*;
@@ -33,18 +35,24 @@ public class Produit implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "entrepot_id")
+    @JsonIgnore
+
     private Entrepot entrepot;
 
     @OneToMany(mappedBy = "produit")
+    @JsonIgnore
     private List<Transfert> transferts;
 
     @OneToMany(mappedBy = "produit")
+    @JsonIgnore
     private List<Reception> receptions;
 
     @OneToMany(mappedBy = "produit")
+    @JsonIgnore
     private List<Livraison> livraisons;
 
     @OneToMany(mappedBy = "produit")
+    @JsonIgnore
     private List<LigneInventaire> lignesInventaire;
 
     // ======= Getters & Setters manuels =======
@@ -134,4 +142,9 @@ public class Produit implements Serializable {
     public void setLignesInventaire(List<LigneInventaire> lignesInventaire) {
         this.lignesInventaire = lignesInventaire;
     }
+
+
+
+
+
 }
