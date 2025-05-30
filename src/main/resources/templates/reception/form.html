@@ -2,122 +2,174 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Nouvelle réception</title>
+    <title>Réception</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; }
-        .container { display: flex; }
-        .sidebar {
-            width: 200px;
-            background-color: white;
-            border: 2px solid black;
-            border-right: none;
-            padding: 10px;
-            font-family: Arial, sans-serif;
-            height: 100vh;
+        body {
+            font-family: Arial;
+            padding: 30px;
+            background: #f2f2f2;
         }
-        .sidebar h3 {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            border-bottom: 2px solid black;
-            padding-bottom: 5px;
+
+        h2 {
+            margin-bottom: 10px;
         }
-        .sidebar a {
-            display: block;
-            margin: 5px 0;
-            padding: 5px;
-            text-decoration: none;
-            color: black;
-            font-weight: bold;
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
         }
-        .sidebar a:hover, .sidebar a.active {
-            background-color: #add8e6;
-            border-left: 3px solid black;
-        }
-        .content { flex: 1; padding: 20px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+
         th, td {
+            padding: 10px;
             border: 1px solid #ccc;
-            padding: 8px;
-            text-align: center;
+            text-align: left;
         }
-        form label { display: inline-block; width: 150px; margin-bottom: 5px; }
-        form input, form select { margin-bottom: 10px; width: 200px; }
-        .form-section { margin-top: 30px; border-top: 1px solid #aaa; padding-top: 20px; }
+
+        th {
+            background-color: #e6f0ff;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: #3e8e41;
+        }
+
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px #ccc;
+            max-width: 650px;
+            margin: auto;
+        }
+
+        .form-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .form-section label {
+            display: inline-block;
+            width: 140px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-section input,
+        .form-section select {
+            width: 300px;
+            padding: 6px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="sidebar">
-        <h3>Gestion de stocks</h3>
-        <a th:href="@{/}" th:classappend="${activePage == 'accueil'} ? 'active'">Accueil</a>
-        <a th:href="@{/entrepots}" th:classappend="${activePage == 'entrepots'} ? 'active'">Gestion des entrepôts</a>
-        <a th:href="@{/commandes}" th:classappend="${activePage == 'commandes'} ? 'active'">Commandes</a>
-        <a th:href="@{/receptions}" th:classappend="${activePage == 'receptions'} ? 'active'">Réceptions</a>
-        <a th:href="@{/livraisons}" th:classappend="${activePage == 'livraisons'} ? 'active'">Livraisons</a>
-        <a th:href="@{/transferts}" th:classappend="${activePage == 'transferts'} ? 'active'">Transferts</a>
-        <a th:href="@{/inventaires}" th:classappend="${activePage == 'inventaires'} ? 'active'">Inventaires</a>
-    </div>
 
-    <div class="content">
-        <h2>Réceptions > Nouvelle réception</h2>
-
-        <form method="get" th:action="@{/receptions/new}">
-            <label>Numéro d'achat: <input type="text" name="numeroAchat" th:value="${numeroAchat}"></label>
-            <label>Produit: <input type="text" name="produit" th:value="${produit}"></label>
-            <button type="submit">Chercher</button>
-        </form>
-
-        <table>
-            <thead>
-            <tr>
-                <th>Date achat</th>
-                <th>Num d'achat</th>
-                <th>Produit</th>
-                <th>Unité</th>
-                <th>Quantité</th>
-                <th>Source</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="cmd : ${commandes}">
-                <td th:text="${cmd.dateAchat}"></td>
-                <td th:text="${cmd.numero}"></td>
-                <td th:text="${cmd.produit}"></td>
-                <td th:text="${cmd.unite}"></td>
-                <td th:text="${cmd.quantite}"></td>
-                <td th:text="${cmd.source}"></td>
-                <td>
-                    <a th:href="@{'/receptions/new?idCommande=' + ${cmd.id}}">Réceptionner</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <div class="form-section">
-            <form th:action="@{/receptions/save}" th:object="${reception}" method="post">
-                <input type="hidden" th:field="*{id}"/>
-                <label>Date de réception: <input type="date" th:field="*{dateReception}" required></label><br>
-                <label>Date achat: <input type="date" th:field="*{dateAchat}" readonly></label><br>
-                <label>Numéro achat: <input type="text" th:field="*{numeroAchat}" readonly></label><br>
-                <label>Produit: <input type="text" th:field="*{produit}" readonly></label><br>
-                <label>Unité: <input type="text" th:field="*{unite}" readonly></label><br>
-                <label>Quantité: <input type="number" th:field="*{quantite}" required></label><br>
-                <label>Source: <input type="text" th:field="*{source}" readonly></label><br>
-                <label>Magasin:
-                    <select th:field="*{entrepot}" required>
-                        <option th:each="e : ${entrepots}" th:value="${e}" th:text="${e.nom}"></option>
-                    </select>
-                </label><br>
-                <button type="submit">Valider</button>
-            </form>
-        </div>
-
-        <a th:href="@{/receptions}">&lt; Liste des réceptions</a>
-    </div>
+<div th:if="${reception.id == null}">
+    <h2>Commandes non réceptionnées</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>N° Achat</th>
+            <th>Produit</th>
+            <th>Unité</th>
+            <th>Quantité</th>
+            <th>Source</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="cmd : ${commandes}" th:if="${cmd.produit != null}">
+            <td th:text="${cmd.dateAchat}">2025-01-01</td>
+            <td th:text="${cmd.numeroAchat}">F123</td>
+            <td th:text="${cmd.produit}">Sucre</td>
+            <td th:text="${cmd.unite}">kg</td>
+            <td th:text="${cmd.quantite}">100</td>
+            <td th:text="${cmd.source}">Fournisseur</td>
+            <td><a th:href="@{/receptions/nouvelle(id=${cmd.id})}" class="btn">Réceptionner</a></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
+
+<div class="form-section" th:if="${reception.id != null or reception.commandeAchat != null}">
+    <a th:href="@{/receptions}" class="back-link">⬅ Retour à la liste des réceptions</a>
+    <h3>Réception à enregistrer</h3>
+
+    <form th:action="@{/receptions/valider}" method="post" th:object="${reception}">
+        <input type="hidden" th:field="*{id}" />
+        <input type="hidden" th:field="*{commandeAchat.id}" />
+
+        <label>Date réception :</label>
+        <input type="date"
+               th:field="*{dateReception}"
+               th:value="${reception.dateReception != null ? #temporals.format(reception.dateReception, 'yyyy-MM-dd') : ''}" /><br>
+
+        <label>Date achat :</label>
+        <input type="date"
+               th:field="*{dateAchat}"
+               th:value="${reception.dateAchat != null ? #temporals.format(reception.dateAchat, 'yyyy-MM-dd') : ''}" readonly /><br>
+
+        <label>Numéro achat :</label>
+        <input type="text" th:field="*{numeroAchat}" readonly /><br>
+
+        <label>Produit :</label>
+        <input type="text" th:field="*{produit}" /><br>
+
+        <label>Unité :</label>
+        <select th:field="*{unite}">
+            <option value="">-- Sélectionner --</option>
+            <option th:each="u : ${unites}"
+                    th:value="${u}"
+                    th:text="${u}"
+                    th:selected="${u == reception.unite}"></option>
+        </select><br>
+
+        <label>Quantité :</label>
+        <input type="number" th:field="*{quantite}" /><br>
+
+        <label>Source :</label>
+        <input type="text" th:field="*{source}" /><br>
+
+        <label>Entrepôt :</label>
+        <select th:field="*{entrepot}">
+            <option value="">-- Sélectionner --</option>
+            <option th:each="e : ${entrepots}"
+                    th:value="${e.nom}"
+                    th:text="${e.nom}"
+                    th:selected="${e.nom == reception.entrepot}"></option>
+        </select><br>
+
+        <label>Remarque :</label>
+        <input type="text" th:field="*{remarque}" placeholder="Optionnel" /><br>
+
+        <button type="submit" class="btn">✅ Valider</button>
+    </form>
+</div>
+
 </body>
 </html>

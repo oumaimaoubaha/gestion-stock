@@ -79,6 +79,11 @@ public class ProduitService {
         }
         return produit;
     }
+    @Autowired
+    public List<String> getUnites() {
+        return produitRepository.findDistinctUnites();
+    }
+
 
     public List<Produit> getProduitsByEntrepot(Long entrepotId) {
         return produitRepository.findByEntrepotId(entrepotId);

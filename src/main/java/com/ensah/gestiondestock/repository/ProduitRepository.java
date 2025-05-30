@@ -2,6 +2,7 @@ package com.ensah.gestiondestock.repository;
 
 import com.ensah.gestiondestock.model.Produit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface ProduitRepository extends JpaRepository<Produit, Long> {
     // Recherche exacte
     List<Produit> findByReference(String reference);
     Produit findByLibelle(String libelle);
+    @Query("SELECT DISTINCT p.unite FROM Produit p WHERE p.unite IS NOT NULL")
+    List<String> findDistinctUnites();
 
     // Utile si besoin d’un seul résultat
     Produit findFirstByReference(String reference);
