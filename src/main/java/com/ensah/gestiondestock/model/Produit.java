@@ -1,4 +1,5 @@
 package com.ensah.gestiondestock.model;
+import com.ensah.gestiondestock.repository.ProduitRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.validation.constraints.*;
@@ -142,6 +143,8 @@ public class Produit implements Serializable {
     public void setLignesInventaire(List<LigneInventaire> lignesInventaire) {
         this.lignesInventaire = lignesInventaire;
     }
+
+
 
 
 

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Commandes de livraison</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; display: flex; }
+    aside {
+      width: 220px;
+      background-color: white;
+      padding: 20px;
+      border-right: 1px solid black;
+      height: 100vh;
+    }
+    aside h3 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      border-bottom: 2px solid black;
+      padding-bottom: 5px;
+    }
+    aside div, aside ul { margin-bottom: 15px; }
+    aside a {
+      display: block;
+      padding: 6px;
+      text-decoration: none;
+      color: black;
+    }
+    aside a:hover, .active {
+      background-color: #cce0ff;
+      border-radius: 4px;
+    }
+    main { flex: 1; padding: 30px; background: #f8f8f8; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+    th { background-color: #eaeaea; }
+    .top-bar { margin-bottom: 15px; }
+    .top-bar a {
+      color: purple;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .top-bar a:hover { text-decoration: underline; }
+    .actions a:first-child { color: purple; margin-right: 10px; }
+    .actions a:last-child { color: blue; }
+    .error { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<aside>
+  <div><b>Accueil</b></div>
+  <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div><hr>
+  <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div><hr>
+  <div><b>Mouvements de stock</b></div>
+  <ul>
+    <li><a th:href="@{/receptions}">Réceptions</a></li>
+    <li><a th:href="@{/livraisons}">Livraisons</a></li>
+    <li><a th:href="@{/transferts}">Transferts</a></li>
+    <li><a th:href="@{/commandes}">Commandes</a></li>
+    <li><a th:href="@{/commandeLivraison}" class="active">Commandes de livraison</a></li>
+  </ul>
+  <hr>
+  <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+</aside>
+
+<main>
+  <div class="top-bar">
+    <a th:href="@{/commandeLivraison/nouveau}">➕ Nouvelle commande</a>
+  </div>
+
+  <div th:if="${error}" class="error" th:text="${error}"></div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>N° Livraison</th>
+      <th>Date</th>
+      <th>Client</th>
+      <th>Produit</th>
+      <th>Quantité</th>
+      <th>Unité</th>
+      <th>Entrepôt</th>
+      <th>Remarque</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cmd : ${commandes}">
+      <td th:text="${cmd.numeroLivraison}">LIV001</td>
+      <td th:text="${cmd.dateLivraison}">2025-01-01</td>
+      <td th:text="${cmd.client}">Client</td>
+      <td th:text="${cmd.produit.reference}">Produit</td>
+      <td th:text="${cmd.quantite}">10</td>
+      <td th:text="${cmd.produit.unite}">kg</td>
+      <td th:text="${cmd.entrepot.nom}">Entrepôt</td>
+      <td th:text="${cmd.remarque}">-</td>
+      <td class="actions">
+        <a th:href="@{'/commandeLivraison/modifier/' + ${cmd.id}}">Modifier</a>
+        <a th:href="@{'/commandeLivraison/supprimer/' + ${cmd.id}}"
+           onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+      </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(commandes)}">
+      <td colspan="8" style="text-align: center;">Aucune commande de livraison pour le moment.</td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+
+</body>
+</html>
