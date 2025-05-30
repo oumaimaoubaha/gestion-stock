@@ -165,11 +165,17 @@
                 <td th:text="${rec.unite}">Kg</td>
                 <td th:text="${rec.quantite}">100</td>
                 <td th:text="${rec.source}">Fournisseur</td>
-                <td th:text="${rec.entrepot}">MAG1</td>
-                <!-- ✅ Remarque sécurisée -->
+                <td th:text="${rec.entrepot != null ? rec.entrepot.nom : 'N/A'}">MAG1</td>
                 <td th:text="${rec.remarque != null ? rec.remarque : 'Néant'}">Néant</td>
                 <td><a th:href="@{'/receptions/modifier/' + ${rec.id}}" class="btn">Modifier</a></td>
                 <td><a th:href="@{'/receptions/supprimer/' + ${rec.id}}" class="btn btn-danger" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a></td>
+            </tr>
+
+            <!-- ✅ Message si aucun résultat -->
+            <tr th:if="${#lists.isEmpty(receptions)}">
+                <td colspan="10" style="text-align:center; color:red; font-weight:bold;">
+                    ⚠️ Aucune réception ne correspond à la recherche.
+                </td>
             </tr>
             </tbody>
         </table>

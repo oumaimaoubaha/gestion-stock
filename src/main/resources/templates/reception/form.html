@@ -4,32 +4,19 @@
     <meta charset="UTF-8">
     <title>Réception</title>
     <style>
-        body {
-            font-family: Arial;
-            padding: 30px;
-            background: #f2f2f2;
-        }
-
-        h2 {
-            margin-bottom: 10px;
-        }
-
+        body { font-family: Arial; padding: 30px; background: #f2f2f2; }
+        h2 { margin-bottom: 10px; }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 25px;
         }
-
         th, td {
             padding: 10px;
             border: 1px solid #ccc;
             text-align: left;
         }
-
-        th {
-            background-color: #e6f0ff;
-        }
-
+        th { background-color: #e6f0ff; }
         .btn {
             padding: 6px 12px;
             background-color: #4CAF50;
@@ -39,11 +26,7 @@
             cursor: pointer;
             font-weight: bold;
         }
-
-        .btn:hover {
-            background-color: #3e8e41;
-        }
-
+        .btn:hover { background-color: #3e8e41; }
         .form-section {
             background: white;
             padding: 20px;
@@ -52,19 +35,16 @@
             max-width: 650px;
             margin: auto;
         }
-
         .form-section h3 {
             margin-top: 0;
             color: #333;
         }
-
         .form-section label {
             display: inline-block;
             width: 140px;
             margin-bottom: 8px;
             font-weight: bold;
         }
-
         .form-section input,
         .form-section select {
             width: 300px;
@@ -73,23 +53,41 @@
             border-radius: 4px;
             border: 1px solid #ccc;
         }
-
         .back-link {
             display: inline-block;
             margin-bottom: 15px;
             color: #007bff;
             text-decoration: none;
         }
-
         .back-link:hover {
             text-decoration: underline;
+        }
+        .success-message {
+            background-color: #e0ffe0;
+            border: 1px solid #00aa00;
+            color: #006600;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
 <div th:if="${reception.id == null}">
+
     <h2>Commandes non réceptionnées</h2>
+
+    <form method="get" th:action="@{/receptions/nouvelle}">
+        <label>Numéro d'achat :</label>
+        <input type="text" name="numeroAchat" th:value="${numeroAchat}" />
+        <br>
+        <label>Produit :</label>
+        <input type="text" name="produit" th:value="${produit}" />
+        <br>
+        <button type="submit" class="btn">Chercher</button>
+    </form>
+
     <table>
         <thead>
         <tr>
@@ -112,56 +110,67 @@
             <td th:text="${cmd.source}">Fournisseur</td>
             <td><a th:href="@{/receptions/nouvelle(id=${cmd.id})}" class="btn">Réceptionner</a></td>
         </tr>
+
+        <!-- ✅ Correction ici : -->
+        <tr th:if="${aucuneCommande}">
+            <td colspan="7" style="text-align:center; color:red; font-weight:bold;">
+                ⚠️ Aucune commande ne correspond à la recherche.
+            </td>
+        </tr>
         </tbody>
     </table>
+
+    <a th:href="@{/receptions}" class="back-link">⬅ Retour à la liste des réceptions</a>
 </div>
 
 <div class="form-section" th:if="${reception.id != null or reception.commandeAchat != null}">
     <a th:href="@{/receptions}" class="back-link">⬅ Retour à la liste des réceptions</a>
-    <h3>Réception à enregistrer</h3>
+
+    <div th:if="${message}" class="success-message" th:text="${message}"></div>
+
+    <h3 th:text="${reception.id != null} ? 'Modification de la réception' : 'Réception à enregistrer'"></h3>
 
     <form th:action="@{/receptions/valider}" method="post" th:object="${reception}">
         <input type="hidden" th:field="*{id}" />
         <input type="hidden" th:field="*{commandeAchat.id}" />
 
+        <div th:if="${#fields.hasErrors('*')}" style="background-color: #ffe6e6; padding:10px; border:1px solid red; margin-bottom: 20px;">
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
         <label>Date réception :</label>
-        <input type="date"
-               th:field="*{dateReception}"
-               th:value="${reception.dateReception != null ? #temporals.format(reception.dateReception, 'yyyy-MM-dd') : ''}" /><br>
+        <input type="date" name="dateReception"
+               th:value="${#temporals.format(reception.dateReception, 'yyyy-MM-dd')}" /><br>
 
         <label>Date achat :</label>
-        <input type="date"
-               th:field="*{dateAchat}"
-               th:value="${reception.dateAchat != null ? #temporals.format(reception.dateAchat, 'yyyy-MM-dd') : ''}" readonly /><br>
+        <input type="date" name="dateAchat"
+               th:value="${#temporals.format(reception.dateAchat, 'yyyy-MM-dd')}" readonly /><br>
+
+        <label>Produit :</label>
+        <input type="text" th:field="*{produit}" readonly /><br>
 
         <label>Numéro achat :</label>
         <input type="text" th:field="*{numeroAchat}" readonly /><br>
 
-        <label>Produit :</label>
-        <input type="text" th:field="*{produit}" /><br>
-
         <label>Unité :</label>
-        <select th:field="*{unite}">
-            <option value="">-- Sélectionner --</option>
-            <option th:each="u : ${unites}"
-                    th:value="${u}"
-                    th:text="${u}"
-                    th:selected="${u == reception.unite}"></option>
-        </select><br>
+        <input type="text" th:field="*{unite}" readonly /><br>
 
         <label>Quantité :</label>
-        <input type="number" th:field="*{quantite}" /><br>
+        <input type="number" th:field="*{quantite}" readonly /><br>
 
         <label>Source :</label>
-        <input type="text" th:field="*{source}" /><br>
+        <input type="text" th:field="*{source}" readonly /><br>
 
         <label>Entrepôt :</label>
         <select th:field="*{entrepot}">
             <option value="">-- Sélectionner --</option>
             <option th:each="e : ${entrepots}"
-                    th:value="${e.nom}"
+                    th:value="${e.id}"
                     th:text="${e.nom}"
-                    th:selected="${e.nom == reception.entrepot}"></option>
+                    th:selected="${reception.entrepot != null and e.id == reception.entrepot.id}">
+            </option>
         </select><br>
 
         <label>Remarque :</label>
