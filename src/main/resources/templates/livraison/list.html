@@ -1,10 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Liste des livraisons</title>
+    <style>
+        body { font-family: Arial; margin: 0; display: flex; }
+        aside {
+          width: 220px; background: white; padding: 20px;
+          border-right: 1px solid black; height: 100vh;
+        }
+        aside a:hover, .active { background-color: #cce0ff; border-radius: 4px; }
+        main { flex: 1; padding: 30px; background: #f8f8f8; }
+        h2 { margin-bottom: 15px; color: purple; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ccc; }
+        th { background: #eaeaea; }
+        input, select { padding: 5px; margin: 5px 0; }
+        .top-bar { margin-top: 15px; }
+        .actions a { margin-right: 8px; color: purple; font-weight: bold; text-decoration: none; }
+        .form-row { margin-bottom: 10px; }
+    </style>
 </head>
 <body>
 
+<aside>
+    <div><b>Accueil</b></div>
+    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div><hr>
+    <div><b>Mouvements de stock</b></div>
+    <ul>
+        <li><a th:href="@{/receptions}">Réceptions</a></li>
+        <li><a th:href="@{/livraisons}" class="active">Livraisons</a></li>
+        <li><a th:href="@{/transferts}">Transferts</a></li>
+        <li><a th:href="@{/commandes}">Commandes</a></li>
+        <li><a th:href="@{/commandeLivraison}">Commandes de livraison</a></li>
+    </ul>
+    <hr>
+    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+</aside>
+
+<main>
+    <h2>Livraisons &gt; Liste des livraisons</h2>
+
+    <form method="get" th:action="@{/livraisons}">
+        <div class="form-row">
+            <label>Date de livraison :</label>
+            De: <input type="date" name="dateDebut" th:value="${dateDebut}" />
+            À: <input type="date" name="dateFin" th:value="${dateFin}" />
+        </div>
+
+        <div class="form-row">
+            <label style="display:inline-block; width: 80px;">Produit :</label>
+            <input type="text" name="referenceProduit" th:value="${referenceProduit}" style="width: 250px;" />
+        </div>
+
+        <div class="form-row">
+            <label style="display:inline-block; width: 80px;">Entrepôt :</label>
+            <select name="entrepotId">
+                <option value="" disabled selected>-- Choisir --</option>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"
+                        th:selected="${entrepotId == e.id}"></option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <input type="submit" value="Chercher" />
+        </div>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Date livraison</th>
+            <th>N° doc vent</th>
+            <th>Produit</th>
+            <th>Unité</th>
+            <th>Quantité</th>
+            <th>Client</th>
+            <th>Entrepôt</th>
+            <th>Remarque</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="liv : ${livraisons}">
+            <td th:text="${liv.dateLivraison}"></td>
+            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.numeroLivraison : '-'}"></td>
+            <td th:text="${liv.produit.reference}"></td>
+            <td th:text="${liv.unite}"></td>
+            <td th:text="${liv.quantite}"></td>
+            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.client : '-'}"></td>
+            <td th:text="${liv.entrepot.nom}"></td>
+            <td th:text="${liv.remarque}"></td>
+            <td class="actions">
+                <a th:href="@{'/livraisons/modifier/' + ${liv.id}}">Modifier</a>
+                <a th:href="@{'/livraisons/supprimer/' + ${liv.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(livraisons)}">
+            <td colspan="9" style="text-align: center;">Aucune livraison trouvée.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="top-bar">
+        <a th:href="@{/livraisons/nouvelle}">➕ Nouvelle livraison</a>
+    </div>
+</main>
 </body>
 </html>

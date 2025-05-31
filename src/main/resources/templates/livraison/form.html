@@ -1,10 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Nouvelle livraison</title>
+    <style>
+        body { font-family: Arial; margin: 0; display: flex; }
+        aside {
+          width: 220px; background: white; padding: 20px; border-right: 1px solid black; height: 100vh;
+        }
+        aside a:hover, .active { background-color: #cce0ff; border-radius: 4px; }
+        main { flex: 1; padding: 30px; background-color: #f8f8f8; }
+        .form-section {
+          background: white; padding: 25px; border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 650px;
+        }
+        h2 { margin-bottom: 15px; color: purple; }
+        label { display: inline-block; width: 140px; font-weight: bold; margin-bottom: 10px; }
+        input[type="text"], input[type="number"], input[type="date"], select {
+          width: 300px; padding: 6px; margin-bottom: 10px;
+        }
+        .buttons { margin-top: 20px; }
+        .buttons button, .buttons a {
+          padding: 8px 15px; margin-right: 10px; border: none; border-radius: 4px;
+          text-decoration: none; font-weight: bold;
+        }
+        .buttons button { background-color: purple; color: white; cursor: pointer; }
+        .buttons a { background-color: #ccc; color: black; }
+        .table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        .table th, .table td {
+          border: 1px solid #ccc; padding: 8px; text-align: left;
+        }
+        .table th { background-color: #eee; }
+        .actions a { color: purple; font-weight: bold; text-decoration: none; }
+        .top-link { color: purple; font-weight: bold; text-decoration: none; margin-right: 15px; }
+    </style>
 </head>
 <body>
 
+<aside>
+    <div><b>Accueil</b></div>
+    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div><hr>
+    <div><b>Mouvements de stock</b></div>
+    <ul>
+        <li><a th:href="@{/receptions}">Réceptions</a></li>
+        <li><a th:href="@{/livraisons}" class="active">Livraisons</a></li>
+        <li><a th:href="@{/transferts}">Transferts</a></li>
+        <li><a th:href="@{/commandes}">Commandes</a></li>
+        <li><a th:href="@{/commandeLivraison}">Commandes de livraison</a></li>
+    </ul>
+    <hr>
+    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+</aside>
+
+<main>
+    <h2>Livraisons &gt; Nouvelle livraison</h2>
+
+    <div>
+        <a th:href="@{/livraisons/nouvelle}" class="top-link">Livraisons des commandes</a>
+        <a th:href="@{/livraisons/nouvelle-independante}" class="top-link">Autre sortie</a>
+    </div>
+
+    <!-- 🔍 Formulaire de recherche commande -->
+    <form method="get" th:action="@{/livraisons/rechercherCommandes}" style="margin-top: 20px">
+        <label style="width: 120px">N commande :</label>
+        <input type="text" name="numero" />
+
+        <label style="width: 80px">Produit :</label>
+        <input type="text" name="produit" />
+
+        <button type="submit" style="margin-left: 20px">Chercher</button>
+    </form>
+
+    <!-- 📦 Tableau des commandes livrables -->
+    <table class="table" th:if="${commandeLivraisons != null}">
+        <thead>
+        <tr>
+            <th>N° Livraison</th>
+            <th>Date</th>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Client</th>
+            <th>Entrepôt</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="cmd : ${commandeLivraisons}">
+            <td th:text="${cmd.numeroLivraison}"></td>
+            <td th:text="${cmd.dateLivraison}"></td>
+            <td th:text="${cmd.produit.reference}"></td>
+            <td th:text="${cmd.quantite}"></td>
+            <td th:text="${cmd.client}"></td>
+            <td th:text="${cmd.entrepot.nom}"></td>
+            <td><a th:href="@{'/livraisons/livrerCommande/' + ${cmd.id}}">Livrer</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(commandeLivraisons)}">
+            <td colspan="7" style="text-align:center">Aucune commande à livrer.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- ✅ Formulaire affiché uniquement après clic sur Livrer -->
+    <div th:if="${livraison != null}" class="form-section">
+        <form th:action="@{/livraisons/save}" th:object="${livraison}" method="post">
+            <input type="hidden" th:field="*{id}" />
+
+            <label>Date livraison :</label>
+            <input type="date" th:field="*{dateLivraison}" required /><br>
+
+            <label>Produit :</label>
+            <input type="text" th:value="${livraison.produit != null ? livraison.produit.reference : ''}" readonly /><br>
+
+            <label>Unité :</label>
+            <input type="text" th:field="*{unite}" required /><br>
+
+            <label>Quantité :</label>
+            <input type="number" th:field="*{quantite}" required /><br>
+
+            <label>Client :</label>
+            <input type="text" th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.client : ''}" readonly /><br>
+
+            <label>Entrepôt :</label>
+            <select th:field="*{entrepot}" required>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}" th:selected="${livraison.entrepot != null && e.id == livraison.entrepot.id}"></option>
+            </select><br>
+
+            <label>Remarque :</label>
+            <input type="text" th:field="*{remarque}" /><br>
+
+            <div class="buttons">
+                <button type="submit">✅ Enregistrer</button>
+                <a th:href="@{/livraisons}">⬅ Retour</a>
+            </div>
+        </form>
+    </div>
+</main>
 </body>
 </html>

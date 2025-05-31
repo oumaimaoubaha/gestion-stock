@@ -48,4 +48,9 @@ public class LivraisonService {
     public Livraison getLivraisonById(Long id) {
         return livraisonRepository.findById(id).orElse(null);
     }
+
+    public List<Livraison> searchBetween(LocalDate dateDebut, LocalDate dateFin, String referenceProduit, Long entrepotId) {
+        return livraisonRepository.findByFilters(dateDebut, dateFin, referenceProduit, entrepotId);
+    }
+
 }
