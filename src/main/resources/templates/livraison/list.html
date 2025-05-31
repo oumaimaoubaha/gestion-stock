@@ -6,8 +6,8 @@
     <style>
         body { font-family: Arial; margin: 0; display: flex; }
         aside {
-          width: 220px; background: white; padding: 20px;
-          border-right: 1px solid black; height: 100vh;
+            width: 220px; background: white; padding: 20px;
+            border-right: 1px solid black; height: 100vh;
         }
         aside a:hover, .active { background-color: #cce0ff; border-radius: 4px; }
         main { flex: 1; padding: 30px; background: #f8f8f8; }
@@ -56,9 +56,9 @@
         <div class="form-row">
             <label style="display:inline-block; width: 80px;">Entrepôt :</label>
             <select name="entrepotId">
-                <option value="" disabled selected>-- Choisir --</option>
+                <option value="">-- Choisir --</option>
                 <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"
-                        th:selected="${entrepotId == e.id}"></option>
+                        th:selected="${entrepotId != null && entrepotId == e.id}"></option>
             </select>
         </div>
 
@@ -83,14 +83,14 @@
         </thead>
         <tbody>
         <tr th:each="liv : ${livraisons}">
-            <td th:text="${liv.dateLivraison}"></td>
-            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.numeroLivraison : '-'}"></td>
-            <td th:text="${liv.produit.reference}"></td>
-            <td th:text="${liv.unite}"></td>
-            <td th:text="${liv.quantite}"></td>
-            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.client : '-'}"></td>
-            <td th:text="${liv.entrepot.nom}"></td>
-            <td th:text="${liv.remarque}"></td>
+            <td th:text="${liv.dateLivraison}">-</td>
+            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.numeroLivraison : '-'}">-</td>
+            <td th:text="${liv.produit != null ? liv.produit.reference : '-'}">-</td>
+            <td th:text="${liv.unite != null ? liv.unite : '-'}">-</td>
+            <td th:text="${liv.quantite}">0</td>
+            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.client : '-'}">-</td>
+            <td th:text="${liv.entrepot != null ? liv.entrepot.nom : '-'}">-</td>
+            <td th:text="${liv.remarque != null ? liv.remarque : ''}"></td>
             <td class="actions">
                 <a th:href="@{'/livraisons/modifier/' + ${liv.id}}">Modifier</a>
                 <a th:href="@{'/livraisons/supprimer/' + ${liv.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>

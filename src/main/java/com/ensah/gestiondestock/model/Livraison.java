@@ -11,17 +11,16 @@ public class Livraison {
     private Long id;
 
     private LocalDate dateLivraison;
-
     private int quantite;
     private String remarque;
     private String unite;
 
-    @ManyToOne
-    @JoinColumn(name = "produit_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "produit_id", nullable = false)
     private Produit produit;
 
-    @ManyToOne
-    @JoinColumn(name = "entrepot_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "entrepot_id", nullable = false)
     private Entrepot entrepot;
 
     @ManyToOne

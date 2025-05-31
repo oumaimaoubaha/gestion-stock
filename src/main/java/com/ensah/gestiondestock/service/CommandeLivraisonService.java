@@ -13,8 +13,14 @@ public class CommandeLivraisonService {
     @Autowired
     private CommandeLivraisonRepository commandeLivraisonRepository;
 
+    // 🔁 Toutes les commandes
     public List<CommandeLivraison> getAll() {
         return commandeLivraisonRepository.findAll();
+    }
+
+    // 🔁 Commandes NON livrées uniquement (statut = 'non livré')
+    public List<CommandeLivraison> getCommandesNonLivrees() {
+        return commandeLivraisonRepository.findByStatut("non livré");
     }
 
     public CommandeLivraison getById(Long id) {
@@ -32,4 +38,8 @@ public class CommandeLivraisonService {
     public CommandeLivraison findByNumero(String numero) {
         return commandeLivraisonRepository.findByNumeroLivraison(numero);
     }
+    public List<CommandeLivraison> searchByNumeroOrProduit(String numero, String produit) {
+        return commandeLivraisonRepository.searchByNumeroOrProduit(numero, produit);
+    }
+
 }

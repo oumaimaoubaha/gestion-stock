@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Nouvelle livraison</title>
+    <title th:text="${edition} ? 'Modification de la livraison' : 'Nouvelle livraison'">Livraison</title>
     <style>
         body { font-family: Arial; margin: 0; display: flex; }
         aside {
@@ -53,15 +53,16 @@
 </aside>
 
 <main>
-    <h2>Livraisons &gt; Nouvelle livraison</h2>
+    <h2 th:text="${edition} ? 'Livraisons > Modification de la livraison' : 'Livraisons > Nouvelle livraison'">Livraison</h2>
 
-    <div>
+    <!-- 🔁 Ces deux liens ne s’affichent que si on N'EST PAS en édition -->
+    <div th:if="${edition} == null">
         <a th:href="@{/livraisons/nouvelle}" class="top-link">Livraisons des commandes</a>
         <a th:href="@{/livraisons/nouvelle-independante}" class="top-link">Autre sortie</a>
     </div>
 
-    <!-- 🔍 Formulaire de recherche commande -->
-    <form method="get" th:action="@{/livraisons/rechercherCommandes}" style="margin-top: 20px">
+    <!-- 🔍 Formulaire de recherche, affiché uniquement si pas en mode édition -->
+    <form method="get" th:action="@{/livraisons/rechercherCommandes}" style="margin-top: 20px" th:if="${edition} == null">
         <label style="width: 120px">N commande :</label>
         <input type="text" name="numero" />
 
@@ -71,69 +72,91 @@
         <button type="submit" style="margin-left: 20px">Chercher</button>
     </form>
 
-    <!-- 📦 Tableau des commandes livrables -->
-    <table class="table" th:if="${commandeLivraisons != null}">
+    <!-- 📦 Liste des commandes, affichée uniquement si pas en mode édition -->
+    <table class="table" th:if="${commandeLivraisons != null and edition == null}">
         <thead>
         <tr>
-            <th>N° Livraison</th>
-            <th>Date</th>
+            <th>Date livraison</th>
+            <th>N° commande</th>
             <th>Produit</th>
+            <th>Unité</th>
             <th>Quantité</th>
             <th>Client</th>
             <th>Entrepôt</th>
+            <th>Remarque</th>
             <th>Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="cmd : ${commandeLivraisons}">
-            <td th:text="${cmd.numeroLivraison}"></td>
             <td th:text="${cmd.dateLivraison}"></td>
+            <td th:text="${cmd.numeroLivraison}"></td>
             <td th:text="${cmd.produit.reference}"></td>
+            <td th:text="${cmd.unite}"></td>
             <td th:text="${cmd.quantite}"></td>
             <td th:text="${cmd.client}"></td>
             <td th:text="${cmd.entrepot.nom}"></td>
+            <td th:text="${cmd.remarque}"></td>
             <td><a th:href="@{'/livraisons/livrerCommande/' + ${cmd.id}}">Livrer</a></td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(commandeLivraisons)}">
-            <td colspan="7" style="text-align:center">Aucune commande à livrer.</td>
         </tr>
         </tbody>
     </table>
 
-    <!-- ✅ Formulaire affiché uniquement après clic sur Livrer -->
+    <!-- 🧾 Formulaire livraison -->
     <div th:if="${livraison != null}" class="form-section">
+        <h2 th:text="${edition} ? 'Modification de la livraison' : 'Nouvelle livraison'"></h2>
+
+        <p th:if="${error}" th:text="${error}" style="color: red; font-weight: bold;"></p>
+
         <form th:action="@{/livraisons/save}" th:object="${livraison}" method="post">
             <input type="hidden" th:field="*{id}" />
 
-            <label>Date livraison :</label>
+            <!-- champ commandeId uniquement en mode ajout -->
+            <input type="hidden" name="commandeId"
+                   th:if="${livraison.commandeLivraison != null}"
+                   th:value="${livraison.commandeLivraison.id}" />
+
+
+            <label>Date de livraison :</label>
             <input type="date" th:field="*{dateLivraison}" required /><br>
 
+            <label>Date commande :</label>
+            <input type="text"
+                   th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.dateLivraison : ''}" readonly /><br>
+
+            <label>N° commande :</label>
+            <input type="text"
+                   th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.numeroLivraison : ''}" readonly /><br>
+
             <label>Produit :</label>
-            <input type="text" th:value="${livraison.produit != null ? livraison.produit.reference : ''}" readonly /><br>
+            <input type="text"
+                   th:value="${livraison.commandeLivraison != null && livraison.commandeLivraison.produit != null ? livraison.commandeLivraison.produit.reference : (livraison.produit != null ? livraison.produit.reference : '')}" readonly /><br>
 
             <label>Unité :</label>
-            <input type="text" th:field="*{unite}" required /><br>
+            <input type="text" th:value="${livraison.unite}" readonly /><br>
 
             <label>Quantité :</label>
-            <input type="number" th:field="*{quantite}" required /><br>
+            <input type="number" th:value="${livraison.quantite}" readonly /><br>
 
             <label>Client :</label>
-            <input type="text" th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.client : ''}" readonly /><br>
+            <input type="text"
+                   th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.client : ''}" readonly /><br>
 
             <label>Entrepôt :</label>
-            <select th:field="*{entrepot}" required>
-                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}" th:selected="${livraison.entrepot != null && e.id == livraison.entrepot.id}"></option>
-            </select><br>
+            <input type="text"
+                   th:value="${livraison.entrepot != null ? livraison.entrepot.nom : ''}" readonly /><br>
 
-            <label>Remarque :</label>
+            <label>Remarques :</label>
             <input type="text" th:field="*{remarque}" /><br>
 
             <div class="buttons">
-                <button type="submit">✅ Enregistrer</button>
+                <button type="submit" th:text="${edition} ? '✏️ Modifier' : '✅ Enregistrer'"></button>
                 <a th:href="@{/livraisons}">⬅ Retour</a>
             </div>
         </form>
     </div>
+
+
 </main>
 </body>
 </html>

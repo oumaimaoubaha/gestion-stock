@@ -36,8 +36,9 @@ public class CommandeLivraisonController {
     public String nouveau(Model model) {
         CommandeLivraison commande = new CommandeLivraison();
         commande.setDateLivraison(LocalDate.now());
+        commande.setStatut("non livré"); // ⬅️ statut par défaut
         model.addAttribute("commande", commande);
-        model.addAttribute("produits", produitService.getAllProduits()); // utile au démarrage
+        model.addAttribute("produits", produitService.getAllProduits());
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
         return "commandeLivraison/form";
     }
@@ -56,6 +57,8 @@ public class CommandeLivraisonController {
         }
 
         Produit produit = produitService.getById(commande.getProduit().getId());
+        commande.setUnite(produit.getUnite());
+
         if (commande.getQuantite() > produit.getQuantiteStock()) {
             model.addAttribute("commande", commande);
             model.addAttribute("produits", produitService.getAllProduits());
@@ -64,11 +67,21 @@ public class CommandeLivraisonController {
             return "commandeLivraison/form";
         }
 
-        produit.setQuantiteStock(produit.getQuantiteStock() - commande.getQuantite());
-        produitService.save(produit);
+        if (ajout) {
+            commande.setStatut("non livré");
+        } else {
+            CommandeLivraison enBase = commandeLivraisonService.getById(commande.getId());
+            if (enBase != null) {
+                commande.setStatut(enBase.getStatut());
+            }
+        }
+
+        // ❌ NE PAS modifier le stock ici
         commandeLivraisonService.save(commande);
         return "redirect:/commandeLivraison";
     }
+
+
 
     @GetMapping("/supprimer/{id}")
     public String delete(@PathVariable Long id) {
@@ -85,7 +98,6 @@ public class CommandeLivraisonController {
         return "commandeLivraison/form";
     }
 
-    // ✅ Méthode supplémentaire pour filtrage dynamique JS (ne change pas les URLs)
     @GetMapping("/produits-par-entrepot")
     @ResponseBody
     public List<Produit> getProduitsParEntrepot(@RequestParam("entrepotId") Long entrepotId) {

@@ -1,7 +1,11 @@
 package com.ensah.gestiondestock.service;
 
+import com.ensah.gestiondestock.model.CommandeLivraison;
 import com.ensah.gestiondestock.model.Livraison;
+import com.ensah.gestiondestock.model.Produit;
+import com.ensah.gestiondestock.repository.CommandeLivraisonRepository;
 import com.ensah.gestiondestock.repository.LivraisonRepository;
+import com.ensah.gestiondestock.repository.ProduitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,43 +18,42 @@ public class LivraisonService {
     @Autowired
     private LivraisonRepository livraisonRepository;
 
-    // 3.1 Lister toutes les livraisons
+    @Autowired
+    private CommandeLivraisonRepository commandeLivraisonRepository;
+
+    @Autowired
+    private ProduitRepository produitRepository;
+
     public List<Livraison> getAllLivraisons() {
         return livraisonRepository.findAll();
     }
 
-    // 3.2 Rechercher par date, produit ou entrepôt
     public List<Livraison> search(LocalDate date, Long produitId, Long entrepotId) {
         return livraisonRepository.findByCriteria(date, produitId, entrepotId);
     }
 
-    // 3.3 Modifier une livraison (même que ajouter)
-    public Livraison saveOrUpdateLivraison(Livraison livraison) {
-        return livraisonRepository.save(livraison);
-    }
-
-    // 3.4 Supprimer une livraison
-    public void deleteLivraison(Long id) {
-        livraisonRepository.deleteById(id);
-    }
-
-    // 3.5.a Livraison via commande client (même logique pour l’instant)
-    public Livraison livraisonViaCommande(Livraison livraison) {
-        return livraisonRepository.save(livraison);
-    }
-
-    // 3.5.b Livraison interne (production, transfert, etc.)
-    public Livraison livraisonInterne(Livraison livraison) {
-        return livraisonRepository.save(livraison);
-    }
-
-    // 🔎 Obtenir une livraison par ID
     public Livraison getLivraisonById(Long id) {
         return livraisonRepository.findById(id).orElse(null);
+    }
+
+    public void deleteLivraison(Long id) {
+        livraisonRepository.deleteById(id);
     }
 
     public List<Livraison> searchBetween(LocalDate dateDebut, LocalDate dateFin, String referenceProduit, Long entrepotId) {
         return livraisonRepository.findByFilters(dateDebut, dateFin, referenceProduit, entrepotId);
     }
 
+    public Livraison saveOrUpdateLivraison(Livraison livraison) {
+        Livraison saved = livraisonRepository.save(livraison);
+
+        // ⚠️ Met à jour le statut que si c’est une nouvelle livraison (pas une modification)
+        if (livraison.getId() == null && livraison.getCommandeLivraison() != null) {
+            CommandeLivraison commande = livraison.getCommandeLivraison();
+            commande.setStatut("livré");
+            commandeLivraisonRepository.save(commande);
+        }
+
+        return saved;
+    }
 }

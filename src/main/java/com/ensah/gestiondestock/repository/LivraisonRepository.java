@@ -22,4 +22,5 @@ public interface LivraisonRepository extends JpaRepository<Livraison, Long> {
             + "(:entrepotId IS NULL OR l.entrepot.id = :entrepotId)")
     List<Livraison> findByFilters(LocalDate dateDebut, LocalDate dateFin, String referenceProduit, Long entrepotId);
 
+
 }
