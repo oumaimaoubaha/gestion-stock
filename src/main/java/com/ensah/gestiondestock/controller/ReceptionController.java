@@ -1,6 +1,7 @@
 package com.ensah.gestiondestock.controller;
 
 import com.ensah.gestiondestock.model.CommandeAchat;
+import com.ensah.gestiondestock.model.Produit;
 import com.ensah.gestiondestock.model.Reception;
 import com.ensah.gestiondestock.service.CommandeAchatService;
 import com.ensah.gestiondestock.service.EntrepotService;
@@ -85,7 +86,7 @@ public class ReceptionController {
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
         model.addAttribute("numeroAchat", numeroAchat);
         model.addAttribute("produit", produit);
-        model.addAttribute("aucuneCommande", commandes.stream().noneMatch(c -> c.getProduit() != null)); // ✅ Ajouté
+        model.addAttribute("aucuneCommande", commandes.stream().noneMatch(c -> c.getProduit() != null));
 
         Set<String> unites = new HashSet<>(produitService.getUnites());
         for (CommandeAchat cmd : commandes) {
@@ -144,6 +145,68 @@ public class ReceptionController {
     @GetMapping("/supprimer/{id}")
     public String supprimer(@PathVariable Long id) {
         receptionService.delete(id);
+        return "redirect:/receptions";
+    }
+
+    @GetMapping("/autre")
+    public String afficherFormulaireAutre(Model model) {
+        Reception reception = new Reception();
+        reception.setDateReception(LocalDate.now());
+
+        model.addAttribute("reception", reception);
+        model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+        return "reception/autre";
+    }
+
+    @PostMapping("/saveAutre")
+    public String enregistrerAutreReception(@ModelAttribute Reception reception,
+                                            @RequestParam("reference") String reference,
+                                            RedirectAttributes redirectAttributes,
+                                            Model model) {
+        if (reception.getProduit() == null || reception.getProduit().isBlank()
+                || reference == null || reference.isBlank()
+                || reception.getUnite() == null || reception.getUnite().isBlank()
+                || reception.getSource() == null || reception.getSource().isBlank()
+                || reception.getQuantite() <= 0
+                || reception.getEntrepot() == null) {
+
+            redirectAttributes.addFlashAttribute("message", "❌ Veuillez remplir tous les champs obligatoires.");
+            return "redirect:/receptions/autre";
+        }
+
+        reception.setDateAchat(reception.getDateReception());
+        receptionService.save(reception);
+
+        Produit produitExistant = produitService
+                .getAllProduits().stream()
+                .filter(p -> p.getLibelle() != null && p.getLibelle().equalsIgnoreCase(reception.getProduit())
+                        && p.getEntrepot() != null && p.getEntrepot().getId().equals(reception.getEntrepot().getId()))
+                .findFirst()
+                .orElse(null);
+
+        if (produitExistant != null) {
+            produitExistant.setQuantiteStock(produitExistant.getQuantiteStock() + reception.getQuantite());
+            produitService.save(produitExistant);
+        } else {
+            Produit nouveau = new Produit();
+            nouveau.setLibelle(reception.getProduit());
+            nouveau.setReference(reference);
+            nouveau.setUnite(reception.getUnite());
+            nouveau.setQuantiteStock(reception.getQuantite());
+            nouveau.setEntrepot(reception.getEntrepot());
+            nouveau.setType("Autre");
+
+            if (nouveau.getReference() != null && !nouveau.getReference().isBlank()
+                    && nouveau.getLibelle() != null && !nouveau.getLibelle().isBlank()
+                    && nouveau.getEntrepot() != null) {
+                produitService.save(nouveau);
+            } else {
+                redirectAttributes.addFlashAttribute("message", "❌ Référence ou libellé manquant pour le produit.");
+                return "redirect:/receptions/autre";
+            }
+        }
+
+        redirectAttributes.addFlashAttribute("message", "✅ Réception enregistrée avec succès !");
         return "redirect:/receptions";
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -42,17 +43,15 @@ public class CommandeAchatService {
         return commandeAchatRepository.findByNumeroAchat(numero);
     }
 
-    // ✅ tri des commandes par dateAchat décroissante
     public Page<CommandeAchat> getPageCommandes(Pageable pageable) {
         return commandeAchatRepository.findAllByOrderByDateAchatDesc(pageable);
     }
-    public List<CommandeAchat> getAll() {
-        return commandeAchatRepository.findAll();
+
+    public Page<CommandeAchat> searchCommandes(String numero, String produit, LocalDate date, Pageable pageable) {
+        return commandeAchatRepository.searchCommandes(numero, produit, date, pageable);
     }
 
     public List<CommandeAchat> getByIdNotIn(List<Long> ids) {
         return commandeAchatRepository.findByIdNotIn(ids);
     }
-
-
 }

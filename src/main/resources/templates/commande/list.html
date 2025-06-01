@@ -2,87 +2,166 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Commandes</title>
+    <title>Liste des commandes</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; display: flex; }
-        aside { width: 220px; background-color: #f0f0f0; padding: 20px; border-right: 1px solid #ccc; height: 100vh; }
-        aside h3 { margin-top: 0; }
-        .menu a { display: block; padding: 6px; text-decoration: none; color: black; }
-        .menu a.active { background-color: #cce0ff; border-radius: 4px; }
-        .menu a:hover { text-decoration: underline; }
-        main { flex: 1; padding: 30px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
-        th { background-color: #eaeaea; }
-        .top-bar { margin-bottom: 15px; }
-        .top-bar a { color: purple; font-weight: bold; text-decoration: none; }
-        .top-bar a:hover { text-decoration: underline; }
-        .actions a:first-child { color: purple; margin-right: 10px; }
-        .actions a:last-child { color: blue; }
-        .error { color: red; font-weight: bold; }
-        .pagination { margin-top: 15px; }
-        .pagination a { margin-right: 10px; text-decoration: none; color: blue; }
-        .pagination span { font-weight: bold; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: auto;
+            border: 2px solid black;
+            background-color: white;
+        }
+        aside {
+            width: 200px;
+            padding: 10px;
+            border-right: 2px solid black;
+            background-color: white;
+        }
+        aside h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid black;
+            padding-bottom: 5px;
+        }
+        aside a {
+            display: block;
+            padding: 8px;
+            text-decoration: none;
+            color: black;
+        }
+        aside a:hover, aside a.active-link {
+            background-color: #cce0ff;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: red;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #eaeaea;
+        }
+        .pagination {
+            margin-top: 15px;
+        }
+        .pagination a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: blue;
+            font-weight: bold;
+        }
+        .pagination span {
+            font-weight: bold;
+        }
+        .error, .alert {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        form input {
+            padding: 5px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
-
-<aside>
-    <h3>Gestion de stocks</h3>
-    <div class="menu">
+<div class="container">
+    <aside>
+        <h3>Gestion de stocks</h3>
         <a th:href="@{/}">Accueil</a>
-        <a th:href="@{/entrepots}">Gestion des entrepôts</a>
+        <a th:href="@{/entrepots}">Entrepôts</a>
         <a th:href="@{/produits}">Produits</a>
-        <a th:href="@{/receptions}" class="active">Réceptions</a>
+        <a th:href="@{/receptions}">Réceptions</a>
         <a th:href="@{/livraisons}">Livraisons</a>
         <a th:href="@{/transferts}">Transferts</a>
+        <a th:href="@{/commandes}" class="active-link">Commandes Achat</a>
+        <a th:href="@{/commandeLivraison}">Commandes Livraison</a>
         <a th:href="@{/inventaires}">Inventaires</a>
-    </div>
-</aside>
+    </aside>
+    <main>
+        <h2>🧾 Liste des commandes</h2>
 
-<main>
-    <div class="top-bar">
-        <a href="/commandes/nouveau">➕ Nouvelle commande</a>
-    </div>
+        <form th:action="@{/commandes}" method="get">
+            <input type="text" name="numero" placeholder="Numéro de commande" th:value="${numero}" />
+            <input type="text" name="produit" placeholder="Produit" th:value="${produit}" />
+            <input type="date" name="date" th:value="${date}" />
+            <button type="submit" class="btn">Rechercher</button>
+        </form>
 
-    <div th:if="${error}" class="error" th:text="${error}"></div>
+        <a th:href="@{/commandes/nouveau}" class="btn" style="margin-top:10px; display:inline-block;">➕ Nouvelle commande</a>
 
-    <table>
-        <thead>
-        <tr>
-            <th>N° Commande</th>
-            <th>Date</th>
-            <th>Fournisseur</th>
-            <th>Produits</th>
-            <th>Quantités</th>
-            <th>Unité</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="cmd : ${commandes.content}" th:if="${cmd.produit} != null">
-            <td th:text="${cmd.numeroAchat}">EX123</td>
-            <td th:text="${cmd.dateAchat}">2025-01-01</td>
-            <td th:text="${cmd.source}">Source</td>
-            <td><ul><li th:text="${cmd.produit}">Produit</li></ul></td>
-            <td><ul><li th:text="${cmd.quantite}">10</li></ul></td>
-            <td><ul><li th:text="${cmd.unite}">kg</li></ul></td>
-            <td class="actions">
-                <a th:href="@{'/commandes/modifier/' + ${cmd.id}}">Modifier</a>
-                <a th:href="@{'/commandes/supprimer/' + ${cmd.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
-            </td>
-        </tr>
-        <tr th:if="${commandes.content.?[produit != null].isEmpty()}">
-            <td colspan="7" style="text-align: center;">Aucune commande pour le moment.</td>
-        </tr>
-        </tbody>
-    </table>
+        <div th:if="${noResults}" class="alert" th:text="${noResults}"></div>
+        <div th:if="${error}" class="error" th:text="${error}"></div>
 
-    <div class="pagination">
-        <a th:if="${currentPage > 0}" th:href="@{/commandes(page=${currentPage - 1})}">« Précédent</a>
-        <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
-        <a th:if="${commandes.hasNext()}" th:href="@{/commandes(page=${currentPage + 1})}">Suivant »</a>
-    </div>
-</main>
+        <table>
+            <thead>
+            <tr>
+                <th>Numéro</th>
+                <th>Date</th>
+                <th>Fournisseur</th>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Unité</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cmd : ${commandes.content}" th:if="${cmd.produit} != null">
+                <td th:text="${cmd.numeroAchat}">N/A</td>
+                <td th:text="${cmd.dateAchat}">2025-01-01</td>
+                <td th:text="${cmd.source}">Source</td>
+                <td th:text="${cmd.produit}">Produit</td>
+                <td th:text="${cmd.quantite}">1</td>
+                <td th:text="${cmd.unite}">kg</td>
+                <td>
+                    <a th:href="@{'/commandes/modifier/' + ${cmd.id}}" class="btn">Modifier</a>
+                    <a th:href="@{'/commandes/supprimer/' + ${cmd.id}}" class="btn btn-danger" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/commandes(page=${currentPage - 1}, numero=${numero}, produit=${produit}, date=${date})}">« Précédent</a>
+
+            <span th:text="'Page ' + (${currentPage + 1}) + ' / ' + ${totalPages}"></span>
+
+            <a th:if="${currentPage + 1 < totalPages}"
+               th:href="@{/commandes(page=${currentPage + 1}, numero=${numero}, produit=${produit}, date=${date})}">Suivant »</a>
+        </div>
+    </main>
+</div>
 </body>
 </html>

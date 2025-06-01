@@ -4,149 +4,124 @@
     <meta charset="UTF-8">
     <title>Liste des inventaires</title>
     <style>
-        body { font-family: Arial; margin: 0; font-size: 14px; }
-        .header { background: #eee; padding: 10px; font-weight: bold; }
-
-        .sidebar {
-            float: left;
-            width: 200px;
-            background: #f4f4f4;
-            height: 100vh;
-            padding: 15px;
-            box-sizing: border-box;
+        body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; margin: 0; }
+        .container { display: flex; border: 2px solid black; background-color: white; }
+        aside {
+            width: 200px; background-color: white; border-right: 2px solid black; padding: 10px;
         }
-
-        .sidebar a { display: block; margin: 5px 0; }
-
-        .content {
-            margin-left: 220px;
-            padding: 20px;
+        aside h3 {
+            font-size: 18px; font-weight: bold; margin-bottom: 15px;
+            border-bottom: 2px solid black; padding-bottom: 5px;
         }
-
-        .nav-path {
-            font-size: 14px;
-            margin-bottom: 15px;
+        aside a {
+            display: block; padding: 8px; text-decoration: none; color: black;
         }
-
-        .filter-section { margin-bottom: 20px; }
-
-        .filter-section .row { margin: 8px 0; }
-
-        .filter-section input, .filter-section select {
-            padding: 5px;
-        }
-
-        .btn {
-            padding: 6px 12px;
-            border: 1px solid #333;
-            background-color: white;
-            cursor: pointer;
-        }
-
+        aside a:hover { background-color: #cce0ff; }
+        main { flex: 1; padding: 20px; background-color: #fff; }
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border: 2px solid #000;
+            width: 100%; border-collapse: collapse; margin-top: 15px;
+            background-color: white; border: 2px solid black;
         }
-
-        th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: left;
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        th { background-color: #eaeaea; }
+        .btn {
+            color: white; padding: 6px 10px; border-radius: 4px;
+            border: none; text-decoration: none; cursor: pointer;
         }
-
-        th {
-            background-color: #eee;
+        .btn-afficher { background-color: #00bfff; }
+        .btn-afficher:hover { background-color: #009acd; }
+        .btn-telecharger { background-color: #28a745; }
+        .btn-telecharger:hover { background-color: #218838; }
+        .btn-nouveau {
+            background-color: #007bff;
+            margin: 10px 0;
+        }
+        .btn-nouveau:hover { background-color: #0056b3; }
+        form input, form select {
+            padding: 5px; margin-right: 10px;
         }
     </style>
 </head>
 <body>
+<div class="container">
+    <aside>
+        <h3>Gestion de stocks</h3>
+        <a href="#">Accueil</a>
+        <a th:href="@{/entrepots}">Entrepôts</a>
+        <a th:href="@{/produits}">Produits</a>
+        <a th:href="@{/receptions}">Réceptions</a>
+        <a th:href="@{/livraisons}">Livraisons</a>
+        <a th:href="@{/transferts}">Transferts</a>
+        <a th:href="@{/commandes}">Commandes Achat</a>
+        <a th:href="@{/commandeLivraison}">Commandes de livraison</a>
+        <a th:href="@{/inventaires}">Inventaires</a>
+    </aside>
 
-<div class="header">Gestion de stocks</div>
+    <main>
+        <h2>Inventaires > Liste des inventaires</h2>
 
-<div class="sidebar">
-    <div><b>Gestion de stocks</b></div>
-    <div>Accueil</div>
-    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
-    <hr>
-    <div><a th:href="@{/produits}">Gestion des produits</a></div>
-    <hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-        <li><a th:href="@{/commandes}">Commandes</a></li>
-        <li><a th:href="@{/commandeLivraison}">Commandes de livraison</a></li>
-    </ul>
-    <hr>
-    <div><b>Inventaires</b></div>
-    <ul>
-        <li><a th:href="@{/inventaires}">Liste des inventaires</a></li>
-        <li><a th:href="@{/inventaires/form}">Nouveau inventaire</a></li>
-    </ul>
-</div>
-
-<div class="content">
-
-    <div class="nav-path">
-        <a th:href="@{/inventaires}">Inventaires</a> > Liste des inventaires
-    </div>
-
-    <form method="get" th:action="@{/inventaires}" class="filter-section">
-        <div class="row">
-            <b>Date inventaire :</b>
-            &nbsp;&nbsp; De :
-            <input type="date" name="dateMin" />
-            &nbsp;&nbsp; À :
-            <input type="date" name="dateMax" />
-        </div>
-
-        <div class="row">
-            <label>Entrepôt :</label>
+        <form method="get" th:action="@{/inventaires}">
+            Date inventaire:
+            De: <input type="date" name="dateMin" th:value="${dateMin}"/>
+            À: <input type="date" name="dateMax" th:value="${dateMax}"/>
+            Entrepôt:
             <select name="entrepotId">
                 <option value="">-- Tous --</option>
-                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}" th:selected="${entrepotId} == ${e.id}"></option>
             </select>
+            <button type="submit" class="btn btn-afficher">🔍 Chercher</button>
+        </form>
+
+        <!-- ✅ Nouveau bouton déplacé ici, à gauche -->
+        <div style="margin-top: 10px; margin-bottom: 10px;">
+            <a th:href="@{/inventaires/form}" class="btn btn-nouveau">+ Nouveau inventaire</a>
         </div>
 
-        <div class="row">
-            <button type="submit" class="btn">Chercher</button>
+        <table>
+            <thead>
+            <tr>
+                <th>Date inventaire</th>
+                <th>Entrepôt</th>
+                <th>Effectué par</th>
+                <th>Validé par</th>
+                <th>Remarque</th>
+                <th>Écarts</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="inv : ${inventairesPage.content}">
+                <td th:text="${inv.dateInventaire}">-</td>
+                <td th:text="${inv.entrepot.nom}">-</td>
+                <td th:text="${inv.effectuePar}">-</td>
+                <td th:text="${inv.validePar}">-</td>
+                <td th:text="${inv.remarque}">-</td>
+                <td>
+                    <a th:href="@{'/inventaires/ecarts/' + ${inv.id}}" class="btn btn-afficher">Afficher</a>
+                </td>
+                <td>
+                    <a th:href="@{'/inventaires/download/' + ${inv.id}}" class="btn btn-telecharger">Télécharger</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 20px;">
+            <strong>Page <span th:text="${inventairesPage.number + 1}"></span> / <span th:text="${inventairesPage.totalPages}"></span></strong>
+
+            <a th:if="${inventairesPage.hasPrevious()}"
+               th:href="@{|/inventaires?page=${inventairesPage.number - 1}|}"
+               style="color: blue; font-weight: bold; text-decoration: none; margin-left: 15px;">
+                « Précédent
+            </a>
+
+            <a th:if="${inventairesPage.hasNext()}"
+               th:href="@{|/inventaires?page=${inventairesPage.number + 1}|}"
+               style="color: blue; font-weight: bold; text-decoration: none; margin-left: 10px;">
+                Suivant »
+            </a>
         </div>
-    </form>
-
-    <table>
-        <thead>
-        <tr>
-            <th>Date inventaire</th>
-            <th>Entrepôt</th>
-            <th>Effectué par</th>
-            <th>Validé par</th>
-            <th>Remarque</th>
-            <th>Écarts</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="inv : ${inventaires}">
-            <td th:text="${inv.dateInventaire}"></td>
-            <td th:text="${inv.entrepot.nom}"></td>
-            <td th:text="${inv.effectuePar}">-</td>
-            <td th:text="${inv.validePar}">-</td>
-            <td th:text="${inv.remarque}">-</td>
-            <td><a th:href="@{'/inventaires/ecarts/' + ${inv.id}}">Afficher</a></td>
-            <td><a th:href="@{'/inventaires/download/' + ${inv.id}}">Télécharger inventaire</a></td>
-
-        </tr>
-        </tbody>
-    </table>
-
-    <div style="margin-top: 20px;">
-        <a th:href="@{/inventaires/form}"><b>Nouveau inventaire</b></a> 
-
-    </div>
+    </main>
 </div>
-
 </body>
 </html>

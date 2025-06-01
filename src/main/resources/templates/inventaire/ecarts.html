@@ -4,40 +4,142 @@
   <meta charset="UTF-8">
   <title>Détails de l’inventaire</title>
   <style>
-    body { font-family: Arial; margin: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid black; padding: 8px; text-align: left; }
-    th { background-color: #eee; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      border: 2px solid black;
+      background-color: white;
+    }
+
+    aside {
+      width: 200px;
+      background-color: white;
+      border-right: 2px solid black;
+      padding: 10px;
+    }
+
+    aside h3 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      border-bottom: 2px solid black;
+      padding-bottom: 5px;
+    }
+
+    aside a {
+      display: block;
+      padding: 8px;
+      text-decoration: none;
+      color: black;
+    }
+
+    aside a:hover {
+      background-color: #cce0ff;
+    }
+
+    main {
+      flex: 1;
+      padding: 20px;
+      background-color: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: white;
+      border: 2px solid black;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #eaeaea;
+      font-weight: bold;
+    }
+
+    .btn {
+      background-color: #007bff;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: none;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
   </style>
 </head>
 <body>
+<div class="container">
+  <aside>
+    <h3>Gestion de stocks</h3>
+    <a href="#">Accueil</a>
+    <a th:href="@{/entrepots}">Gestion des entrepôts</a>
+    <a th:href="@{/produits}">Produits</a>
+    <a th:href="@{/receptions}">Réceptions</a>
+    <a th:href="@{/livraisons}">Livraisons</a>
+    <a th:href="@{/transferts}">Transferts</a>
+    <a th:href="@{/commandes}">Commandes Achat</a>
+    <a th:href="@{/commandeLivraison}">Commandes de livraison</a>
+    <a th:href="@{/inventaires}">Inventaires</a>
+  </aside>
 
-<h2>Inventaire du <span th:text="${inventaire.dateInventaire}"></span> - Entrepôt : <span th:text="${inventaire.entrepot.nom}"></span></h2>
+  <main>
+    <h2>
+      Inventaire du <span th:text="${inventaire.dateInventaire}"></span> - Entrepôt :
+      <span th:text="${inventaire.entrepot.nom}"></span>
+    </h2>
 
-<table>
-  <thead>
-  <tr>
-    <th>Produit</th>
-    <th>Unité</th>
-    <th>Quantité avant</th>
-    <th>Quantité après</th>
-    <th>Écart</th>
-    <th>Justification</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="ligne : ${ecarts}">
-    <td th:text="${ligne.produit.libelle}"></td>
-    <td th:text="${ligne.produit.unite}"></td>
-    <td th:text="${ligne.quantitePhysique}"></td>
-    <td th:text="${ligne.quantiteTheorique}"></td>
-    <td th:text="${ligne.ecart}"></td>
-    <td th:text="${ligne.justification}">-</td>
-  </tr>
-  </tbody>
-</table>
+    <table>
+      <thead>
+      <tr>
+        <th>Produit</th>
+        <th>Unité</th>
+        <th>Quantité avant</th>
+        <th>Quantité après</th>
+        <th>Écart</th>
+        <th>Justification</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="ligne : ${ecarts}">
+        <td th:text="${ligne.produit.libelle}"></td>
+        <td th:text="${ligne.produit.unite}"></td>
+        <td th:text="${ligne.quantitePhysique}"></td>
+        <td th:text="${ligne.quantiteTheorique}"></td>
+        <td th:text="${ligne.ecart}"></td>
+        <td th:text="${ligne.justification}">-</td>
+      </tr>
+      </tbody>
+    </table>
 
-<a th:href="@{/inventaires}">← Retour à la liste des inventaires</a>
-
+    <br>
+    <a th:href="@{/inventaires}" class="btn">← Retour à la liste des inventaires</a>
+  </main>
+</div>
 </body>
 </html>
