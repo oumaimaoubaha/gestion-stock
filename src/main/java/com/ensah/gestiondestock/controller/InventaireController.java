@@ -15,6 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -35,15 +38,17 @@ public class InventaireController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateMin,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateMax,
             @RequestParam(required = false) Long entrepotId,
+            @RequestParam(defaultValue = "0") int page,
             Model model) {
 
-        List<Inventaire> inventaires = inventaireService.searchInventairesParPeriodeEtEntrepot(dateMin, dateMax, entrepotId);
-        model.addAttribute("inventaires", inventaires);
+        Pageable pageable = PageRequest.of(page, 4, org.springframework.data.domain.Sort.by("dateInventaire").descending());
+        Page<Inventaire> inventairesPage = inventaireService.searchInventairesParPeriodeEtEntrepotPaged(dateMin, dateMax, entrepotId, pageable);
+
+        model.addAttribute("inventairesPage", inventairesPage);
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
         model.addAttribute("dateMin", dateMin);
         model.addAttribute("dateMax", dateMax);
         model.addAttribute("entrepotId", entrepotId);
-
         return "inventaire/list";
     }
 

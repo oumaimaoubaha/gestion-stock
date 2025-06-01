@@ -13,7 +13,7 @@ public interface ReceptionRepository extends JpaRepository<Reception, Long> {
 
     @Query("SELECT r FROM Reception r WHERE " +
             "(:produit IS NULL OR LOWER(r.produit) LIKE LOWER(CONCAT('%', :produit, '%'))) AND " +
-            "(:entrepot IS NULL OR r.entrepot = :entrepot) AND " +
+            "(:entrepot IS NULL OR LOWER(r.entrepot.nom) LIKE LOWER(CONCAT('%', :entrepot, '%'))) AND " +
             "(:dateMin IS NULL OR r.dateReception >= :dateMin) AND " +
             "(:dateMax IS NULL OR r.dateReception <= :dateMax)")
     Page<Reception> findByCriteria(@Param("dateMin") LocalDate dateMin,

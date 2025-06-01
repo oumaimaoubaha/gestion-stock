@@ -4,79 +4,121 @@
     <meta charset="UTF-8">
     <title>Ajouter un produit</title>
     <style>
-        body { font-family: Arial; margin: 0; }
-        .header { background: #eee; padding: 10px 20px; font-weight: bold; border-bottom: 1px solid #ccc; }
-        .sidebar { float: left; width: 200px; background: #f0f0f0; height: 100vh; padding: 10px; box-sizing: border-box; }
-        .content { margin-left: 200px; padding: 20px; }
-        input[type="text"], input[type="number"], select { width: 100%; padding: 5px; margin-bottom: 10px; }
-        .buttons input { margin-right: 10px; padding: 5px 15px; }
-        .error { color: red; font-size: 13px; margin-bottom: 15px; }
-        .active-link { font-weight: bold; background: #ddd; display: block; padding: 4px; }
-        hr { margin: 10px 0; }
+        body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+        .container { display: flex; }
+        aside {
+            width: 200px;
+            background-color: white;
+            border: 2px solid black;
+            border-right: none;
+            padding: 10px;
+            height: 100vh;
+        }
+        aside h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid black;
+            padding-bottom: 5px;
+        }
+        aside a {
+            display: block;
+            padding: 8px;
+            text-decoration: none;
+            color: black;
+        }
+        aside a:hover, aside a.active-link {
+            background-color: #cce0ff;
+        }
+        main {
+            flex: 1;
+            padding: 30px;
+            background-color: #fff;
+            border: 2px solid #000;
+        }
+        h2 { margin-top: 0; }
+        form label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        form input[type="text"],
+        form input[type="number"],
+        form select {
+            width: 300px;
+            padding: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .buttons input {
+            padding: 6px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .buttons input:hover {
+            background-color: #3e8e41;
+        }
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
+<div class="container">
+    <aside>
+        <h3>Gestion de stocks</h3>
+        <a th:href="@{/}">Accueil</a>
+        <a th:href="@{/entrepots}">Gestion des entrepôts</a>
+        <a th:href="@{/produits}" class="active-link">Produits</a>
+        <a th:href="@{/receptions}">Réceptions</a>
+        <a th:href="@{/livraisons}">Livraisons</a>
+        <a th:href="@{/transferts}">Transferts</a>
+        <a th:href="@{/commandes}">Commandes</a>
+        <a th:href="@{/commandeLivraison}">Commandes de livraison</a>
+        <a th:href="@{/inventaires}">Inventaires</a>
+    </aside>
 
-<div class="header">Gestion de stocks</div>
+    <main>
+        <h2>Ajouter un produit</h2>
+        <div th:if="${erreur}" class="error" th:text="${erreur}"></div>
 
-<div class="sidebar">
-    <div><a th:href="@{/}">Accueil</a></div>
-    <hr>
-    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
-    <hr>
-    <div><b>Produits</b></div>
-    <ul>
-        <li><a th:href="@{/produits}">Liste des produits</a></li>
-        <li><a th:href="@{/produits/form}" class="active-link">Ajouter produit</a></li>
-    </ul>
-    <hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-        <li><a th:href="@{/commandes}">Commandes</a></li>
+        <form th:action="@{/produits/save}" th:object="${produit}" method="post">
+            <input type="hidden" th:field="*{id}" />
 
-        <li><a th:href="@{/commandeLivraison}">Commandes de livraison</a></li>
-    </ul>
-    <hr>
-    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+            <label>Référence :</label>
+            <input type="text" th:field="*{reference}" required /><br>
+
+            <label>Libellé :</label>
+            <input type="text" th:field="*{libelle}" required /><br>
+
+            <label>Type :</label>
+            <input type="text" th:field="*{type}" required /><br>
+
+            <label>Unité :</label>
+            <input type="text" th:field="*{unite}" required /><br>
+
+            <label>Quantité en stock :</label>
+            <input type="number" th:field="*{quantiteStock}" min="0" required /><br>
+
+            <label>Entrepôt :</label>
+            <select th:field="*{entrepot.id}" required>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+            </select><br>
+
+            <div class="buttons">
+                <input type="submit" value="Enregistrer" />
+                <a th:href="@{/produits}"><input type="button" value="Annuler" /></a>
+            </div>
+        </form>
+    </main>
 </div>
-
-<div class="content">
-    <h2>Ajouter un produit</h2>
-
-    <div th:if="${erreur}" class="error" th:text="${erreur}"></div>
-
-    <form th:action="@{/produits/save}" th:object="${produit}" method="post">
-        <input type="hidden" th:field="*{id}" />
-
-        <label>Référence :</label>
-        <input type="text" th:field="*{reference}" required />
-
-        <label>Libellé :</label>
-        <input type="text" th:field="*{libelle}" required />
-
-        <label>Type :</label>
-        <input type="text" th:field="*{type}" required />
-
-        <label>Unité :</label>
-        <input type="text" th:field="*{unite}" required />
-
-        <label>Quantité en stock :</label>
-        <input type="number" th:field="*{quantiteStock}" min="0" required />
-
-        <label>Entrepôt :</label>
-        <select th:field="*{entrepot.id}" required>
-            <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
-        </select>
-
-        <div class="buttons">
-            <input type="submit" value="Enregistrer" />
-            <a th:href="@{/produits}"><input type="button" value="Annuler" /></a>
-        </div>
-    </form>
-</div>
-
 </body>
 </html>
