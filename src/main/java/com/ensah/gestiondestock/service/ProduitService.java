@@ -4,6 +4,9 @@ import com.ensah.gestiondestock.model.Produit;
 import com.ensah.gestiondestock.model.Transfert;
 import com.ensah.gestiondestock.repository.ProduitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +59,20 @@ public class ProduitService {
                 .toList();
     }
 
+    public Page<Produit> getProduitsFiltresParPage(String ref, Long entrepotId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        if ((ref == null || ref.isBlank()) && entrepotId == null) {
+            return produitRepository.findAll(pageable);
+        } else if (ref != null && !ref.isBlank() && entrepotId == null) {
+            return produitRepository.findAllByReferenceContainingIgnoreCase(ref, pageable);
+        } else if ((ref == null || ref.isBlank()) && entrepotId != null) {
+            return produitRepository.findAllByEntrepotId(entrepotId, pageable);
+        } else {
+            return produitRepository.findAllByReferenceContainingIgnoreCaseAndEntrepotId(ref, entrepotId, pageable);
+        }
+    }
+
     public Produit getProduitByReference(String reference) {
         List<Produit> produits = produitRepository.findByReference(reference);
         return produits.isEmpty() ? null : produits.get(0);
@@ -79,11 +96,11 @@ public class ProduitService {
         }
         return produit;
     }
+
     @Autowired
     public List<String> getUnites() {
         return produitRepository.findDistinctUnites();
     }
-
 
     public List<Produit> getProduitsByEntrepot(Long entrepotId) {
         return produitRepository.findByEntrepotId(entrepotId);
@@ -136,6 +153,7 @@ public class ProduitService {
             produitRepository.save(nouveau);
         }
     }
+
     public Produit findByReference(String reference) {
         List<Produit> produits = produitRepository.findByReference(reference);
         if (produits.isEmpty()) {
@@ -143,13 +161,12 @@ public class ProduitService {
         }
         return produits.get(0);
     }
+
     public Produit getById(Long id) {
         return produitRepository.findById(id).orElse(null);
     }
+
     public Produit save(Produit produit) {
         return produitRepository.save(produit);
     }
-
-
-
 }

@@ -10,4 +10,9 @@ public class AuthController {
     public String loginPage() {
         return "login"; // Thymeleaf va afficher login.html
     }
+
+    @GetMapping("/")
+    public String accueil() {
+        return "accueil";
+    }
 }

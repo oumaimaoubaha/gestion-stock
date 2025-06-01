@@ -2,100 +2,147 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Gestion des Entrepôts</title>
+    <title>Liste des entrepôts</title>
     <style>
-        body { font-family: Arial; margin: 0; }
-        .header { background: #f4f4f4; padding: 10px 20px; border-bottom: 1px solid #ccc; font-weight: bold; }
-        .sidebar { float: left; width: 200px; background: #f0f0f0; height: 100vh; padding: 10px; box-sizing: border-box; }
-        .content { margin-left: 200px; padding: 20px; }
-        .section-title { border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
-        th { background-color: #eee; }
-        .actions a { margin-right: 10px; }
-        .form-container { margin-top: 30px; width: 300px; }
-        input[type="text"] { width: 100%; padding: 5px; margin-bottom: 10px; }
-        .buttons input { margin-right: 10px; padding: 5px 15px; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: auto;
+            border: 2px solid black;
+            background-color: white;
+        }
+        aside {
+            width: 200px;
+            padding: 10px;
+            border-right: 2px solid black;
+            background-color: white;
+        }
+        aside h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid black;
+            padding-bottom: 5px;
+        }
+        aside a {
+            display: block;
+            padding: 8px;
+            text-decoration: none;
+            color: black;
+        }
+        aside a:hover,
+        aside a.active-link {
+            background-color: #cce0ff;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+            background-color: #fff;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #eaeaea;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: red;
+        }
+        .pagination {
+            margin-top: 15px;
+        }
+        .pagination a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: blue;
+            font-weight: bold;
+        }
+        .pagination span {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-<div class="header">Gestion de stocks</div>
+<div class="container">
+    <aside>
+        <h3>Gestion de stocks</h3>
+        <a th:href="@{/}">Accueil</a>
+        <a th:href="@{/entrepots}" class="active-link">Entrepôts</a>
+        <a th:href="@{/produits}">Produits</a>
+        <a th:href="@{/receptions}">Réceptions</a>
+        <a th:href="@{/livraisons}">Livraisons</a>
+        <a th:href="@{/transferts}">Transferts</a>
+        <a th:href="@{/commandes}">Commandes Achat</a>
+        <a th:href="@{/commandeLivraison}">Commandes Livraison</a>
+        <a th:href="@{/inventaires}">Inventaires</a>
+    </aside>
 
-<div class="sidebar">
-    <div><b>Accueil</b></div>
-    <div><a th:href="@{/entrepots}" class="active-link">Gestion des entrepôts</a></div>
-    <hr>
-    <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div>
-    <hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-        <li><a th:href="@{/commandes}">Commandes</a></li>
-        <li><a th:href="@{/commandeLivraison}">Commandes de livraison</a></li>
-    </ul>
-    <hr>
-    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
-</div>
+    <main>
+        <h2>🏢 Liste des entrepôts</h2>
 
-<div class="content">
-    <h2 class="section-title">Liste des entrepôts</h2>
+        <a th:href="@{/entrepots/form}" class="btn">➕ Ajouter un entrepôt</a>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Nom</th>
-            <th>Code</th>
-            <th>Adresse</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="e : ${entrepots}">
-            <td th:text="${e.nom}">Nom</td>
-            <td th:text="${e.code}">Code</td>
-            <td th:text="${e.adresse}">Adresse</td>
-            <td class="actions">
-                <a th:href="@{/entrepots/edit/{id}(id=${e.id})}">Modifier</a>
-                <a th:href="@{/entrepots/delete/{id}(id=${e.id})}" onclick="return confirm('Supprimer cet entrepôt ?');">Supprimer</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+        <table>
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Code</th>
+                <th>Adresse</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="e : ${entrepots}">
+                <td th:text="${e.nom}">Nom</td>
+                <td th:text="${e.code}">Code</td>
+                <td th:text="${e.adresse}">Adresse</td>
+                <td>
+                    <a th:href="@{/entrepots/edit/{id}(id=${e.id})}" class="btn">Modifier</a>
+                    <a th:href="@{/entrepots/delete/{id}(id=${e.id})}" class="btn btn-danger"
+                       onclick="return confirm('Supprimer cet entrepôt ?');">Supprimer</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(entrepots)}">
+                <td colspan="4" style="text-align:center; color:red; font-weight:bold;">
+                    ⚠️ Aucun entrepôt trouvé.
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-    <!-- Pagination -->
-    <div style="margin-top: 10px;">
-        <span th:if="${currentPage > 0}">
-            <a th:href="@{/entrepots(page=${currentPage - 1})}">&lt;&lt; précédent</a>
-        </span>
-        <span th:if="${hasNext}" style="margin-left: 10px;">
-            <a th:href="@{/entrepots(page=${currentPage + 1})}">suivant &gt;&gt;</a>
-        </span>
-    </div>
-
-    <!-- Formulaire -->
-    <div class="form-container">
-        <h3 th:text="${entrepot.id == null} ? 'Ajouter un entrepôt' : 'Modifier un entrepôt'"></h3>
-        <form th:action="@{/entrepots/save}" th:object="${entrepot}" method="post">
-            <input type="hidden" th:field="*{id}" />
-
-            <label>Nom:</label>
-            <input type="text" th:field="*{nom}" required />
-
-            <label>Code:</label>
-            <input type="text" th:field="*{code}" required />
-
-            <label>Adresse:</label>
-            <input type="text" th:field="*{adresse}" required />
-
-            <div class="buttons">
-                <input type="submit" value="Ajouter" />
-                <a th:href="@{/entrepots}"><input type="button" value="Annuler" /></a>
-            </div>
-        </form>
-    </div>
+        <div class="pagination">
+            <a th:if="${currentPage > 0}" th:href="@{/entrepots(page=${currentPage - 1})}">« Précédent</a>
+            <span th:text="'Page ' + (${currentPage + 1}) + ' / ' + ${totalPages}"></span>
+            <a th:if="${currentPage + 1 < totalPages}" th:href="@{/entrepots(page=${currentPage + 1})}">Suivant »</a>
+        </div>
+    </main>
 </div>
 
 </body>
