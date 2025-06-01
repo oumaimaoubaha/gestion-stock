@@ -14,6 +14,11 @@ public class Livraison {
     private int quantite;
     private String remarque;
     private String unite;
+    private String pour;
+
+    // ✅ Champs ajoutés pour afficher dans le formulaire
+    private LocalDate dateCommande;
+    private String numeroCommande;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "produit_id", nullable = false)
@@ -51,8 +56,16 @@ public class Livraison {
     public CommandeLivraison getCommandeLivraison() { return commandeLivraison; }
     public void setCommandeLivraison(CommandeLivraison commandeLivraison) { this.commandeLivraison = commandeLivraison; }
 
+    public LocalDate getDateCommande() { return dateCommande; }
+    public void setDateCommande(LocalDate dateCommande) { this.dateCommande = dateCommande; }
+
+    public String getNumeroCommande() { return numeroCommande; }
+    public void setNumeroCommande(String numeroCommande) { this.numeroCommande = numeroCommande; }
+
     @Override
     public String toString() {
         return "Livraison{id=" + id + ", date=" + dateLivraison + "}";
     }
+    public String getPour() { return pour; }
+    public void setPour(String pour) { this.pour = pour; }
 }

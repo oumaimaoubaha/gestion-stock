@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle Réception (Autre)</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f4f4f4;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-container {
+            background: white;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h1>Réception Autre (hors commande)</h1>
+
+    <form th:action="@{/receptions/saveAutre}" method="post" th:object="${reception}">
+        <label>Date de Réception :</label>
+        <input type="date" th:field="*{dateReception}" required />
+
+        <label>Produit :</label>
+        <input type="text" th:field="*{produit}" required />
+
+        <label>Référence :</label>
+        <input type="text" name="reference" required />
+
+        <label>Unité :</label>
+        <input type="text" th:field="*{unite}" required />
+
+        <label>Quantité :</label>
+        <input type="number" min="1" th:field="*{quantite}" required />
+
+        <label>Source :</label>
+        <input type="text" th:field="*{source}" required />
+
+        <label>Entrepôt :</label>
+        <select th:field="*{entrepot}" required>
+            <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+        </select>
+
+        <label>Remarque :</label>
+        <textarea th:field="*{remarque}"></textarea>
+
+        <div class="error" th:if="${message}" th:text="${message}"></div>
+
+        <button type="submit" class="btn">Valider</button>
+    </form>
+
+    <a th:href="@{/receptions}" class="back-link">← Retour à la liste</a>
+</div>
+
+</body>
+</html>

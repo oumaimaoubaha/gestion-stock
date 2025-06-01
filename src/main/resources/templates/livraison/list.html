@@ -88,7 +88,7 @@
             <td th:text="${liv.produit != null ? liv.produit.reference : '-'}">-</td>
             <td th:text="${liv.unite != null ? liv.unite : '-'}">-</td>
             <td th:text="${liv.quantite}">0</td>
-            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.client : '-'}">-</td>
+            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.client : liv.pour}">-</td>
             <td th:text="${liv.entrepot != null ? liv.entrepot.nom : '-'}">-</td>
             <td th:text="${liv.remarque != null ? liv.remarque : ''}"></td>
             <td class="actions">
@@ -96,9 +96,7 @@
                 <a th:href="@{'/livraisons/supprimer/' + ${liv.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
             </td>
         </tr>
-        <tr th:if="${#lists.isEmpty(livraisons)}">
-            <td colspan="9" style="text-align: center;">Aucune livraison trouvée.</td>
-        </tr>
+
         </tbody>
     </table>
 

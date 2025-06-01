@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle Livraison Indépendante</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; margin: 0; background-color: #f4f4f4; }
+        aside {
+          width: 220px; background-color: white; padding: 20px; height: 100vh; border-right: 1px solid black;
+        }
+        aside a:hover { background-color: #cce0ff; border-radius: 4px; }
+        main { flex: 1; padding: 30px; background-color: #f8f8f8; }
+        .form-container {
+          max-width: 600px; margin: auto;
+          background-color: white; padding: 25px;
+          border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 { margin-bottom: 20px; color: #333; }
+        label {
+          display: inline-block; width: 120px; font-weight: bold; margin-bottom: 10px;
+        }
+        input[type="text"], input[type="number"], input[type="date"], select {
+          width: 300px; padding: 6px; margin-bottom: 10px;
+        }
+        .error { color: red; font-weight: bold; margin-bottom: 10px; }
+        .buttons { margin-top: 20px; }
+        .buttons button, .buttons a {
+          padding: 8px 15px; margin-right: 10px; border: none; border-radius: 4px;
+          text-decoration: none; font-weight: bold;
+        }
+        .buttons button { background-color: #4CAF50; color: white; cursor: pointer; }
+        .buttons a { background-color: #ccc; color: black; }
+    </style>
+</head>
+<body>
+
+<aside>
+    <div><b>Accueil</b></div>
+    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div><hr>
+    <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div><hr>
+    <div><b>Mouvements de stock</b></div>
+    <ul>
+        <li><a th:href="@{/receptions}">Réceptions</a></li>
+        <li><a th:href="@{/livraisons}" class="active">Livraisons</a></li>
+        <li><a th:href="@{/transferts}">Transferts</a></li>
+    </ul>
+    <hr>
+    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+</aside>
+
+<main>
+    <div class="form-container">
+        <h2>Nouvelle Livraison Indépendante</h2>
+
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+
+        <form th:action="@{/livraisons/save-independante}" th:object="${livraison}" method="post" onsubmit="return verifierQuantite()">
+            <label>Date de livraison :</label>
+            <input type="date" th:field="*{dateLivraison}" required /><br>
+
+            <label>Entrepôt :</label>
+            <select id="entrepotSelect" th:field="*{entrepot}" onchange="filtrerProduits()" required>
+                <option value="">-- Sélectionner --</option>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+            </select><br>
+
+            <label>Produit :</label>
+            <select id="produitSelect" th:field="*{produit}" onchange="mettreAJourUniteEtStock()" required>
+                <option value="">-- Sélectionner --</option>
+                <option th:each="p : ${produits}"
+                        th:if="${p.entrepot != null}"
+                        th:value="${p.id}"
+                        th:text="${p.reference}"
+                        th:attr="data-unite=${p.unite},data-stock=${p.quantiteStock},data-entrepot=${p.entrepot.id}">
+                </option>
+
+            </select><br>
+
+            <label>Quantité :</label>
+            <input type="number" th:field="*{quantite}" id="quantiteInput" min="1" required /><br>
+
+            <label>Unité :</label>
+            <input type="text" id="uniteField" readonly /><br>
+
+            <label>Pour :</label>
+            <input type="text" th:field="*{pour}" required /><br>
+
+            <label>Remarque :</label>
+            <input type="text" th:field="*{remarque}" /><br>
+
+            <div class="buttons">
+                <button type="submit">✅ Enregistrer</button>
+                <a href="/livraisons">⬅ Retour</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    function mettreAJourUniteEtStock() {
+        const select = document.getElementById("produitSelect");
+        const option = select.options[select.selectedIndex];
+        if (!option) return;
+        const unite = option.getAttribute("data-unite");
+        const stock = option.getAttribute("data-stock");
+        document.getElementById("uniteField").value = unite || "";
+        document.getElementById("quantiteInput").setAttribute("max", stock);
+        document.getElementById("quantiteInput").setAttribute("data-stock", stock);
+    }
+
+    function verifierQuantite() {
+        const quantite = parseInt(document.getElementById("quantiteInput").value);
+        const stock = parseInt(document.getElementById("quantiteInput").getAttribute("data-stock"));
+        if (isNaN(quantite) || isNaN(stock)) return true;
+        if (quantite > stock) {
+            alert("❌ Quantité demandée (" + quantite + ") > stock disponible (" + stock + ") !");
+            return false;
+        }
+        return true;
+    }
+
+    function filtrerProduits() {
+        const entrepotId = document.getElementById("entrepotSelect").value;
+        const produitSelect = document.getElementById("produitSelect");
+        let produitTrouve = false;
+        for (let i = 0; i < produitSelect.options.length; i++) {
+            const option = produitSelect.options[i];
+            const prodEntrepotId = option.getAttribute("data-entrepot");
+            const visible = prodEntrepotId === entrepotId;
+            option.style.display = visible ? "" : "none";
+            if (visible && !produitTrouve) {
+                produitSelect.selectedIndex = i;
+                produitTrouve = true;
+            }
+        }
+        if (!produitTrouve) produitSelect.selectedIndex = -1;
+        mettreAJourUniteEtStock();
+    }
+
+    window.onload = filtrerProduits;
+</script>
+
+</body>
+</html>

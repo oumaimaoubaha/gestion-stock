@@ -1,11 +1,8 @@
 package com.ensah.gestiondestock.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Min;
-
 
 import java.time.LocalDate;
 
@@ -14,7 +11,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reception {
-
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +22,6 @@ public class Reception {
         @NotNull(message = "La date d'achat est obligatoire")
         private LocalDate dateAchat;
 
-        @NotBlank(message = "Le numéro d'achat est obligatoire")
         private String numeroAchat;
 
         @NotBlank(message = "Le produit est obligatoire")
@@ -41,14 +36,13 @@ public class Reception {
         @NotBlank(message = "La source est obligatoire")
         private String source;
 
-        @NotBlank(message = "L'entrepôt est obligatoire")
-        private String entrepot;
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "entrepot_id")
+        private Entrepot entrepot;
 
-        private String remarque; // ✅ champ corrigé
+        private String remarque;
 
-        @ManyToOne
+        @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "commande_achat_id")
         private CommandeAchat commandeAchat;
-
-        // ✅ getters et setters générés automatiquement avec Lombok (@Data) ou manuellement si nécessaire
-    }
+}

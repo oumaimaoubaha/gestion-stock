@@ -103,8 +103,9 @@
     </table>
 
     <!-- 🧾 Formulaire livraison -->
-    <div th:if="${livraison != null}" class="form-section">
-        <h2 th:text="${edition} ? 'Modification de la livraison' : 'Nouvelle livraison'"></h2>
+    <div th:if="${livraison != null and edition == null}" class="form-section">
+
+    <h2 th:text="${edition} ? 'Modification de la livraison' : 'Nouvelle livraison'"></h2>
 
         <p th:if="${error}" th:text="${error}" style="color: red; font-weight: bold;"></p>
 
@@ -150,7 +151,7 @@
             <input type="text" th:field="*{remarque}" /><br>
 
             <div class="buttons">
-                <button type="submit" th:text="${edition} ? '✏️ Modifier' : '✅ Enregistrer'"></button>
+                <button type="submit" th:text="${edition} ? '✏ Modifier' : '✅ Enregistrer'"></button>
                 <a th:href="@{/livraisons}">⬅ Retour</a>
             </div>
         </form>

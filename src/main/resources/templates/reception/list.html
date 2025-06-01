@@ -107,11 +107,13 @@
     <aside>
         <h3>Gestion de stocks</h3>
         <a th:href="@{/}">Accueil</a>
-        <a th:href="@{/entrepots}">Gestion des entrepôts</a>
-        <a th:href="@{/produits}">Produits</a>
-        <a th:href="@{/receptions}" class="active" style="background-color: #cce0ff;">Réceptions</a>
+        <a th:href="@{/entrepots}">entrepôts</a>
+        <a th:href="@{/produits}" class="active-link">Produits</a>
+        <a th:href="@{/receptions}">Réceptions</a>
         <a th:href="@{/livraisons}">Livraisons</a>
         <a th:href="@{/transferts}">Transferts</a>
+        <a th:href="@{/commandes}">Commandes Achat</a>
+        <a th:href="@{/commandeLivraison}">Commandes de livraison</a>
         <a th:href="@{/inventaires}">Inventaires</a>
     </aside>
 
@@ -141,6 +143,7 @@
         </form>
 
         <a href="/receptions/nouvelle" class="btn" style="margin-top:10px;">➕ Nouvelle réception</a>
+        <a href="/receptions/autre" class="btn" style="margin-top:10px; margin-left:10px;">➕ Autre</a>
 
         <table>
             <thead>
@@ -160,16 +163,22 @@
             <tbody>
             <tr th:each="rec : ${receptions}">
                 <td th:text="${rec.dateReception}">15/02/2023</td>
-                <td th:text="${rec.numeroAchat}">F52631</td>
+                <td th:text="${rec.commandeAchat == null ? 'indépendante' : rec.numeroAchat}">F52631</td>
                 <td th:text="${rec.produit}">Sucre</td>
                 <td th:text="${rec.unite}">Kg</td>
                 <td th:text="${rec.quantite}">100</td>
                 <td th:text="${rec.source}">Fournisseur</td>
-                <td th:text="${rec.entrepot}">MAG1</td>
-                <!-- ✅ Remarque sécurisée -->
+                <td th:text="${rec.entrepot != null ? rec.entrepot.nom : 'N/A'}">MAG1</td>
                 <td th:text="${rec.remarque != null ? rec.remarque : 'Néant'}">Néant</td>
                 <td><a th:href="@{'/receptions/modifier/' + ${rec.id}}" class="btn">Modifier</a></td>
                 <td><a th:href="@{'/receptions/supprimer/' + ${rec.id}}" class="btn btn-danger" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a></td>
+            </tr>
+
+            <!-- ✅ Message si aucun résultat -->
+            <tr th:if="${#lists.isEmpty(receptions)}">
+                <td colspan="10" style="text-align:center; color:red; font-weight:bold;">
+                    ⚠️ Aucune réception ne correspond à la recherche.
+                </td>
             </tr>
             </tbody>
         </table>

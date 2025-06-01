@@ -2,98 +2,152 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Gestion des Produits</title>
+    <title>Liste des produits</title>
     <style>
-        body { font-family: Arial; margin: 0; }
-        .header { background: #eee; padding: 10px 20px; font-weight: bold; border-bottom: 1px solid #ccc; }
-        .sidebar { float: left; width: 200px; background: #f0f0f0; height: 100vh; padding: 10px; box-sizing: border-box; }
-        .content { margin-left: 200px; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ccc; padding: 8px; }
-        th { background-color: #eee; }
-        .actions a { margin-right: 10px; }
-        .error { color: red; font-size: 13px; margin-bottom: 15px; }
-        hr { margin: 10px 0; }
-        .active-link { font-weight: bold; background: #ddd; display: block; padding: 4px; }
-        .add-link { margin-top: 20px; display: inline-block; font-weight: bold; }
+        body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+        .container { display: flex; }
+        aside {
+            width: 200px;
+            background-color: white;
+            border: 2px solid black;
+            border-right: none;
+            padding: 10px;
+        }
+        aside h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid black;
+            padding-bottom: 5px;
+        }
+        aside a {
+            display: block;
+            padding: 8px;
+            text-decoration: none;
+            color: black;
+        }
+        aside a:hover, aside a.active-link {
+            background-color: #cce0ff;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+            background-color: #fff;
+            border: 2px solid #000;
+        }
+        h2 { margin-top: 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th { background-color: #eaeaea; }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .btn:hover { background-color: #0056b3; }
+        .btn-danger { background-color: red; }
+        .pagination { margin-top: 15px; }
+        .pagination a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: blue;
+        }
+        .pagination span {
+            font-weight: bold;
+        }
+        .alert {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+<div class="container">
+    <aside>
+        <h3>Gestion de stocks</h3>
+        <a th:href="@{/}">Accueil</a>
+        <a th:href="@{/entrepots}">entrepôts</a>
+        <a th:href="@{/produits}" class="active-link">Produits</a>
+        <a th:href="@{/receptions}">Réceptions</a>
+        <a th:href="@{/livraisons}">Livraisons</a>
+        <a th:href="@{/transferts}">Transferts</a>
+        <a th:href="@{/commandes}">Commandes Achat</a>
+        <a th:href="@{/commandeLivraison}">Commandes de livraison</a>
+        <a th:href="@{/inventaires}">Inventaires</a>
+    </aside>
 
-<div class="header">Gestion de stocks</div>
+    <main>
+        <h2>Liste des produits</h2>
+        <p th:if="${erreurSuppression}" th:text="${erreurSuppression}" style="color: red;"></p>
 
-<div class="sidebar">
-    <div><a th:href="@{/}" class="active-link">Accueil</a></div>
-    <hr>
-    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
-    <hr>
-    <div><b>Produits</b></div>
-    <ul>
-        <li><a th:href="@{/produits}">Liste des produits</a></li>
-        <li><a th:href="@{/produits/form}">Ajouter produit</a></li>
-    </ul>
-    <hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-        <li><a th:href="@{/commandes}">Commandes</a></li>
-        <li><a th:href="@{/commandes-livraison}">Commandes de livraison</a></li>
-    </ul>
-    <hr>
-    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
+        <form th:action="@{/produits}" method="get" style="margin-bottom: 20px;">
+            <input type="text" name="ref" placeholder="Référence" th:value="${ref}" />
+            <select name="entrepotId">
+                <option value="">-- Tous les entrepôts --</option>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}" th:selected="${entrepotId} == ${e.id}"></option>
+            </select>
+            <button type="submit" class="btn">🔍 Rechercher</button>
+        </form>
+
+        <a th:href="@{/produits/form}" class="btn" style="margin-bottom: 15px;">➕ Ajouter un produit</a>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Référence</th>
+                <th>Libellé</th>
+                <th>Type</th>
+                <th>Unité</th>
+                <th>Quantité</th>
+                <th>Entrepôt</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${produits}">
+                <td th:text="${p.reference}">Réf</td>
+                <td th:text="${p.libelle}">Libellé</td>
+                <td th:text="${p.type}">Type</td>
+                <td th:text="${p.unite}">Unité</td>
+                <td th:text="${p.quantiteStock}">0</td>
+                <td th:text="${p.entrepot != null ? p.entrepot.nom : '—'}">Entrepôt</td>
+                <td>
+                    <a th:href="@{/produits/edit/{id}(id=${p.id})}" class="btn">Modifier</a>
+                    <a th:href="@{/produits/delete/{id}(id=${p.id})}" onclick="return confirm('Supprimer ce produit ?');" class="btn btn-danger">Supprimer</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(produits)}">
+                <td colspan="7" style="text-align:center; color:red; font-weight:bold;">
+                    ⚠️ Aucun produit ne correspond à la recherche.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/produits(page=${currentPage - 1}, ref=${ref}, entrepotId=${entrepotId})}">« Précédent</a>
+
+            <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
+
+            <a th:if="${currentPage + 1 < totalPages}"
+               th:href="@{/produits(page=${currentPage + 1}, ref=${ref}, entrepotId=${entrepotId})}">Suivant »</a>
+        </div>
+    </main>
 </div>
-
-<div class="content">
-    <h2>Liste des produits</h2>
-    <p th:if="${erreurSuppression}" th:text="${erreurSuppression}" style="color: red;"></p>
-
-
-    <!-- 🔍 Formulaire de recherche -->
-    <form th:action="@{/produits}" method="get" style="margin-bottom: 20px;">
-        <input type="text" name="ref" placeholder="Référence" th:value="${ref}" />
-        <select name="entrepotId">
-            <option value="">-- Tous les entrepôts --</option>
-            <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}" th:selected="${entrepotId} == ${e.id}"></option>
-        </select>
-        <button type="submit">Rechercher</button>
-    </form>
-
-    <!-- 📄 Tableau des produits -->
-    <table>
-        <thead>
-        <tr>
-            <th>Référence</th>
-            <th>Libellé</th>
-            <th>Type</th>
-            <th>Unité</th>
-            <th>Quantité</th>
-            <th>Entrepôt</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="p : ${produits}">
-            <td th:text="${p.reference}">Réf</td>
-            <td th:text="${p.libelle}">Libellé</td>
-            <td th:text="${p.type}">Type</td>
-            <td th:text="${p.unite}">Unité</td>
-            <td th:text="${p.quantiteStock}">0</td>
-            <td th:text="${p.entrepot != null ? p.entrepot.nom : '—'}">Entrepôt</td>
-            <td class="actions">
-                <a th:href="@{/produits/edit/{id}(id=${p.id})}">Modifier</a>
-                <a th:href="@{/produits/delete/{id}(id=${p.id})}" onclick="return confirm('Supprimer ce produit ?');">Supprimer</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- ➕ Lien vers page d'ajout -->
-    <div style="margin-top: 30px;">
-        <a th:href="@{/produits/form}" class="add-link">➕ Ajouter un produit</a>
-    </div>
-</div>
-
 </body>
 </html>

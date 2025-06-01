@@ -55,7 +55,7 @@ public class LivraisonController {
         model.addAttribute("commandeLivraisons", commandeLivraisonService.getCommandesNonLivrees());
         model.addAttribute("produits", produitService.getAllProduits());
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
-        model.addAttribute("livraison", new Livraison());
+        model.addAttribute("livraison", null);
         return "livraison/form";
     }
 
@@ -150,6 +150,60 @@ public class LivraisonController {
         model.addAttribute("edition", true); // 🟣 Pour signaler qu'on est en mode édition
         return "livraison/form";
     }
+
+    @GetMapping("/nouvelle-independante")
+    public String nouvelleHorsCommande(Model model) {
+        model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+        model.addAttribute("livraison", new Livraison());
+        model.addAttribute("produits", produitService.getAllProduits());
+
+        return "livraison/form_independante";
+    }
+    @GetMapping("/independante")
+    public String showFormIndependante(Model model) {
+        List<Entrepot> entrepots = entrepotService.getAllEntrepots();
+        List<Produit> produits = produitService.getAllProduits(); // à filtrer plus tard si besoin
+
+        model.addAttribute("livraison", new Livraison());
+        model.addAttribute("entrepots", entrepots);
+        model.addAttribute("produits", produits);
+
+        return "livraison/form_independante";
+    }
+
+
+    @PostMapping("/save-independante")
+    public String saveHorsCommande(@ModelAttribute Livraison livraison, Model model) {
+        if (livraison.getProduit() == null || livraison.getEntrepot() == null) {
+            model.addAttribute("error", "❌ Produit ou entrepôt manquant.");
+            model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+            return "livraison/form_independante";
+        }
+
+        Produit produit = produitService.getById(livraison.getProduit().getId());
+        if (produit == null) {
+            model.addAttribute("error", "❌ Produit introuvable.");
+            model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+            return "livraison/form_independante";
+        }
+
+        if (livraison.getQuantite() > produit.getQuantiteStock()) {
+            model.addAttribute("error", "❌ Stock insuffisant !");
+            model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+            return "livraison/form_independante";
+        }
+
+        produit.setQuantiteStock(produit.getQuantiteStock() - livraison.getQuantite());
+        produitService.save(produit);
+
+        livraison.setDateLivraison(LocalDate.now());
+        livraison.setCommandeLivraison(null); // indépendant
+        livraison.setUnite(produit.getUnite());
+
+        livraisonService.saveOrUpdateLivraison(livraison);
+        return "redirect:/livraisons";
+    }
+
 
 
     @GetMapping("/supprimer/{id}")

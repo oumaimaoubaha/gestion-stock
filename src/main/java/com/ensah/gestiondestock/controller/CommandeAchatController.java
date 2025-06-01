@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 @Controller
 @RequestMapping("/commandes")
@@ -20,11 +21,40 @@ public class CommandeAchatController {
     private CommandeAchatService commandeService;
 
     @GetMapping
-    public String listCommandes(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<CommandeAchat> commandes = commandeService.getPageCommandes(PageRequest.of(page, 5));
+    public String listCommandes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String numero,
+            @RequestParam(required = false) String produit,
+            @RequestParam(required = false) String date,
+            Model model) {
+
+        LocalDate dateAchat = null;
+        if (date != null && !date.isEmpty()) {
+            try {
+                dateAchat = LocalDate.parse(date);
+            } catch (DateTimeParseException e) {
+                model.addAttribute("error", "⚠️ Date invalide. Format attendu : yyyy-MM-dd");
+            }
+        }
+
+        Page<CommandeAchat> commandes = commandeService.searchCommandes(
+                numero != null && !numero.isEmpty() ? numero : null,
+                produit != null && !produit.isEmpty() ? produit : null,
+                dateAchat,
+                PageRequest.of(page, 5)
+        );
+
         model.addAttribute("commandes", commandes);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", commandes.getTotalPages());
+        model.addAttribute("numero", numero);
+        model.addAttribute("produit", produit);
+        model.addAttribute("date", date);
+
+        if (commandes.isEmpty()) {
+            model.addAttribute("noResults", "⚠️ Aucun résultat trouvé pour cette recherche.");
+        }
+
         return "commande/list";
     }
 
@@ -39,7 +69,6 @@ public class CommandeAchatController {
     @GetMapping("/modifier/{id}")
     public String modifier(@PathVariable Long id, Model model) {
         CommandeAchat commande = commandeService.getById(id);
-        commande.setDateAchat(LocalDate.now()); // mise à jour automatique à la date du jour
         model.addAttribute("commande", commande);
         return "commande/form";
     }
@@ -51,7 +80,7 @@ public class CommandeAchatController {
 
         if (existante != null && (ajout || !existante.getId().equals(commande.getId()))) {
             model.addAttribute("commande", commande);
-            model.addAttribute("erreurNumero", "Le numéro de commande existe déjà.");
+            model.addAttribute("erreurNumero", "❌ Le numéro de commande existe déjà.");
             return "commande/form";
         }
 
@@ -64,8 +93,8 @@ public class CommandeAchatController {
         try {
             commandeService.delete(id);
         } catch (DataIntegrityViolationException e) {
-            model.addAttribute("error", "Impossible de supprimer la commande car elle est liée à des lignes de commande.");
-            return listCommandes(0, model);
+            model.addAttribute("error", "❌ Suppression impossible : commande liée à des lignes.");
+            return listCommandes(0, null, null, null, model);
         }
         return "redirect:/commandes";
     }
