@@ -1,3 +1,4 @@
+// src/main/java/com/ensah/gestiondestock/repository/TransfertRepository.java
 package com.ensah.gestiondestock.repository;
 
 import com.ensah.gestiondestock.model.Transfert;
@@ -12,11 +13,11 @@ import java.util.List;
 
 public interface TransfertRepository extends JpaRepository<Transfert, Long> {
 
-    // Méthode existante (retourne List) – on la conserve telle quelle :
+    // 1) Méthode existante (retourne List) – on la conserve tel quel
     @Query("SELECT t FROM Transfert t WHERE " +
-            "(:date IS NULL OR t.date = :date) AND " +
+            "(:date IS NULL   OR t.date = :date) AND " +
             "(:produitId IS NULL OR (t.produit IS NOT NULL AND t.produit.id = :produitId)) AND " +
-            "(:sourceId IS NULL OR t.source.id = :sourceId) AND " +
+            "(:sourceId IS NULL   OR t.source.id = :sourceId) AND " +
             "(:destinationId IS NULL OR t.destination.id = :destinationId)")
     List<Transfert> findByCriteria(
             @Param("date") LocalDate date,
@@ -25,7 +26,7 @@ public interface TransfertRepository extends JpaRepository<Transfert, Long> {
             @Param("destinationId") Long destinationId
     );
 
-    // Nouvelle méthode paginée :
+    // 2) Nouvelle méthode paginée avec filtrage sur référence du produit
     @Query("SELECT t FROM Transfert t WHERE " +
             "(:date IS NULL OR t.date = :date) AND " +
             "(:referenceProduit IS NULL OR (t.produit IS NOT NULL AND t.produit.reference LIKE %:referenceProduit%)) AND " +
