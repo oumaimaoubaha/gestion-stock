@@ -4,71 +4,160 @@
   <meta charset="UTF-8">
   <title>Nouveau inventaire</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 20px; }
-    .container { display: flex; border: 2px solid black; background-color: white; }
-    aside {
-      width: 200px;
-      background-color: white;
-      border-right: 2px solid black;
-      padding: 10px;
+    /* Corps en dégradé bleu ciel */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #eaf6ff, #e6f4ff);
     }
-    aside h3 {
-      font-size: 18px;
+
+    /* Barre du haut sombre pour afficher l’utilisateur */
+    .topbar {
+      width: 100%;
+      background-color: #002147; /* bleu foncé */
+      padding: 10px 20px;
+      box-sizing: border-box;
+      color: #ffffff; /* texte blanc */
       font-weight: bold;
-      margin-bottom: 15px;
-      border-bottom: 2px solid black;
-      padding-bottom: 5px;
+      font-size: 1rem;
     }
-    aside a {
+
+    /* Conteneur principal centré */
+    .main-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 0;
+    }
+
+    /* Card blanche pour le formulaire inventaire */
+    .form-card {
+      background-color: #ffffff;
+      padding: 25px 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 600px;
+      box-sizing: border-box;
+    }
+
+    /* Titre de la card */
+    .form-card h2, .form-card h3 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #002147; /* bleu foncé */
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    /* Styles des labels */
+    .form-card label {
       display: block;
-      padding: 8px;
-      text-decoration: none;
-      color: black;
+      margin-top: 12px;
+      color: #000000; /* noir */
+      font-weight: bold;
+      font-size: 1rem;
     }
-    aside a:hover {
-      background-color: #cce0ff;
+
+    /* Styles des champs de saisie (bleu ciel de fond) */
+    .form-card input[type="text"],
+    .form-card input[type="number"],
+    .form-card input[type="date"],
+    .form-card select {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 6px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      box-sizing: border-box;
+      background-color: #eaf6ff; /* bleu ciel */
+      font-size: 1rem;
+      color: #000000;
     }
-    main {
-      flex: 1;
-      padding: 30px;
-      background-color: #fff;
-    }
-    table {
+
+    /* Styles du tableau (étape 3) */
+    .form-card table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      background: white;
-      border: 2px solid black;
+      background: #eaf6ff; /* bleu ciel pour la table */
+      border: 2px solid #002147;
     }
-    th, td {
+    .form-card th, .form-card td {
       border: 1px solid #ccc;
       padding: 10px;
       text-align: left;
+      background: #ffffff;
     }
-    th {
-      background-color: #eaeaea;
+    .form-card th {
+      background-color: #cce0ff; /* clair bleu pour l’en-tête */
     }
-    input, select {
-      padding: 6px;
-      margin: 8px 0;
+
+    /* Conteneur des boutons */
+    .buttons {
+      margin-top: 25px;
+      display: flex;
+      justify-content: space-between;
     }
-    .btn {
+
+    /* Bouton bleu (Fichier du stock, Suivant, OK, Valider) */
+    .btn-primary {
       background-color: #007bff;
       color: white;
-      padding: 6px 10px;
-      border-radius: 4px;
       border: none;
+      padding: 10px 0;
+      border-radius: 4px;
+      font-size: 1rem;
       cursor: pointer;
-      margin-right: 10px;
+      width: 48%;
+      text-align: center;
     }
-    .btn:hover {
+    .btn-primary:hover {
       background-color: #0056b3;
     }
+
+    /* Bouton Enregistrer/Valider vert */
+    .btn-save {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 0;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 48%;
+      text-align: center;
+    }
+    .btn-save:hover {
+      background-color: #218838;
+    }
+
+    /* Bouton Annuler gris foncé */
+    .btn-cancel {
+      display: inline-block;
+      background-color: #6c757d; /* gris foncé */
+      color: white;
+      text-decoration: none;
+      padding: 10px 0;
+      border-radius: 4px;
+      font-size: 1rem;
+      width: 48%;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .btn-cancel:hover {
+      background-color: #5a6268;
+    }
+
+    /* Lien “Retour” centré */
     .back-link {
       display: block;
       margin-top: 20px;
+      text-align: center;
       text-decoration: none;
-      color: #007bff;
+      color: #002147; /* bleu foncé */
+      font-weight: bold;
+      font-size: 0.95rem;
     }
     .back-link:hover {
       text-decoration: underline;
@@ -76,47 +165,64 @@
   </style>
 </head>
 <body>
-<div class="container">
-  <aside>
-    <h3>Gestion de stocks</h3>
-    <a href="#">Accueil</a>
-    <a th:href="@{/entrepots}">Gestion des entrepôts</a>
-    <a th:href="@{/produits}">Produits</a>
-    <a th:href="@{/receptions}">Réceptions</a>
-    <a th:href="@{/livraisons}">Livraisons</a>
-    <a th:href="@{/transferts}">Transferts</a>
-    <a th:href="@{/commandes}">Commandes Achat</a>
-    <a th:href="@{/commandeLivraison}">Commandes de livraison</a>
-    <a th:href="@{/inventaires}">Inventaires</a>
-  </aside>
 
-  <main>
-    <h2>Nouveau inventaire</h2>
+<!-- Barre du haut affichant l'utilisateur -->
+<div class="topbar">
+  <span th:text="'User : ' + ${#authentication.name}">User : nom_utilisateur</span>
+</div>
 
-    <!-- Étape 1 -->
-    <form th:if="${etape == 1}" th:action="@{/inventaires/etape2}" method="post">
-      Date inventaire : <input type="date" name="dateInventaire" required />
-      Entrepôt :
-      <select name="entrepotId" required>
-        <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
-      </select>
-      <br><br>
-      <button formaction="/inventaires/generer" formmethod="post" class="btn">Fichier du stock</button>
-      <button type="submit" class="btn">Suivant</button>
-      <a th:href="@{/inventaires}" class="back-link">← Retour à la liste des inventaires</a>
-    </form>
+<!-- Conteneur principal centré -->
+<div class="main-container">
+  <div class="form-card">
 
-    <!-- Étape 2 -->
-    <form th:if="${etape == 2}" th:action="@{/inventaires/upload}" method="post" enctype="multipart/form-data">
-      Fichier corrigé : <input type="file" name="fichier" required />
-      <br><br>
-      <button type="submit" class="btn">OK</button>
-      <a th:href="@{/inventaires}" class="back-link">← Retour à la liste des inventaires</a>
-    </form>
+    <!-- Étape 1 : Sélection date & entrepôt -->
+    <div th:if="${etape == 1}">
+      <h2>Nouveau inventaire - Étape 1</h2>
+      <div th:if="${error}" class="error" th:text="${error}"></div>
+      <form th:action="@{/inventaires/etape2}" method="post">
+        <label>Date inventaire :</label>
+        <input type="date" name="dateInventaire" required />
 
-    <!-- Étape 3 -->
+        <label>Entrepôt :</label>
+        <select name="entrepotId" required>
+          <option value="">-- Choisir --</option>
+          <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+        </select>
+
+        <div class="buttons">
+          <!-- Bouton Fichier du stock -->
+          <button formaction="/inventaires/generer" formmethod="post" class="btn-primary">
+            Fichier du stock
+          </button>
+          <!-- Bouton Suivant -->
+          <button type="submit" class="btn-primary">Suivant</button>
+        </div>
+
+        <a th:href="@{/inventaires}" class="back-link">← Retour à la liste des inventaires</a>
+      </form>
+    </div>
+
+    <!-- Étape 2 : Upload du fichier corrigé -->
+    <div th:if="${etape == 2}">
+      <h2>Nouveau inventaire - Étape 2</h2>
+      <div th:if="${error}" class="error" th:text="${error}"></div>
+      <form th:action="@{/inventaires/upload}" method="post" enctype="multipart/form-data">
+        <label>Fichier corrigé :</label>
+        <input type="file" name="fichier" required />
+
+        <div class="buttons">
+          <!-- Bouton OK -->
+          <button type="submit" class="btn-primary">OK</button>
+          <!-- Bouton Retour -->
+          <a th:href="@{/inventaires}" class="btn-cancel">← Retour</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Étape 3 : Liste des écarts et validation -->
     <div th:if="${etape == 3}">
-      <h3>Liste des écarts</h3>
+      <h2>Nouveau inventaire - Étape 3</h2>
+      <div th:if="${error}" class="error" th:text="${error}"></div>
       <form th:action="@{/inventaires/valider}" method="post">
         <table>
           <thead>
@@ -133,22 +239,36 @@
           <tr th:each="e, iStat : ${ecarts}">
             <td th:text="${e.produit.libelle}"></td>
             <td th:text="${e.produit.unite}"></td>
-            <td th:text="${e.quantitePhysique}"></td>
             <td th:text="${e.quantiteTheorique}"></td>
+            <td th:text="${e.quantitePhysique}"></td>
             <td th:text="${e.ecart}"></td>
-            <td><input type="text" name="justifications" placeholder="Justification" /></td>
+            <td>
+              <input type="text"
+                     name="justifications"
+                     placeholder="Justification"
+                     style="width: 100%; background-color: #eaf6ff; border: 1px solid #aaa; border-radius: 4px; padding: 6px;" />
+            </td>
           </tr>
           </tbody>
         </table>
-        <br>
-        Effectué par : <input type="text" name="effectuePar" required />
-        Validé par : <input type="text" name="validePar" required />
-        <br><br>
-        <button type="submit" class="btn">Valider</button>
-        <a th:href="@{/inventaires}" class="back-link">← Retour à la liste des inventaires</a>
+
+        <label>Effectué par :</label>
+        <input type="text" name="effectuePar" required />
+
+        <label>Validé par :</label>
+        <input type="text" name="validePar" required />
+
+        <div class="buttons">
+          <!-- Bouton Valider -->
+          <button type="submit" class="btn-save">Valider</button>
+          <!-- Bouton Retour -->
+          <a th:href="@{/inventaires}" class="btn-cancel">← Retour</a>
+        </div>
       </form>
     </div>
-  </main>
+
+  </div>
 </div>
+
 </body>
 </html>

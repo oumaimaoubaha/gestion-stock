@@ -1,158 +1,236 @@
-<!-- commandeLivraison/form.html corrigé avec champ statut -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Commande Livraison</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; display: flex; }
-    aside {
-      width: 220px;
-      background-color: white;
-      padding: 20px;
-      border-right: 1px solid black;
-      height: 100vh;
+    /* Corps en dégradé bleu ciel */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #eaf6ff, #e6f4ff);
     }
-    aside a:hover { background-color: #cce0ff; border-radius: 4px; }
-    main {
-      flex: 1; padding: 30px; background-color: #f8f8f8;
+
+    /* Barre du haut sombre pour afficher l’utilisateur */
+    .topbar {
+        width: 100%;
+        background-color: #002147; /* bleu foncé */
+        padding: 10px 20px;
+        box-sizing: border-box;
+        color: #ffffff; /* texte blanc */
+        font-weight: bold;
+        font-size: 1rem;
     }
-    .form-container {
-      max-width: 600px; margin: auto;
-      background-color: white; padding: 25px;
-      border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+    /* Conteneur principal centré */
+    .main-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 30px 0;
     }
-    h2 { margin-bottom: 20px; color: #333; }
-    label {
-      display: inline-block; width: 120px; font-weight: bold; margin-bottom: 10px;
+
+    /* Card blanche pour le formulaire de commande de livraison */
+    .form-card {
+        background-color: #ffffff;
+        padding: 25px 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        width: 600px;
+        box-sizing: border-box;
     }
-    input[type="text"], input[type="number"], input[type="date"], select {
-      width: 300px; padding: 6px; margin-bottom: 10px;
+
+    /* Titre du formulaire */
+    .form-card h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #002147; /* bleu foncé */
+        font-size: 1.4rem;
+        text-align: center;
     }
-    .error { color: red; font-weight: bold; margin-bottom: 10px; }
-    .buttons { margin-top: 20px; }
-    .buttons button, .buttons a {
-      padding: 8px 15px; margin-right: 10px; border: none; border-radius: 4px;
-      text-decoration: none; font-weight: bold;
+
+    /* Message d’erreur en rouge */
+    .form-card .error {
+        color: red;
+        font-weight: bold;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
     }
-    .buttons button {
-      background-color: #4CAF50; color: white; cursor: pointer;
+
+    /* Styles des labels */
+    .form-card label {
+        display: block;
+        margin-top: 12px;
+        color: #000000; /* noir */
+        font-weight: bold;
+        font-size: 1rem;
     }
-    .buttons a {
-      background-color: #ccc; color: black;
+
+    /* Styles des champs de saisie (bleu ciel de fond) */
+    .form-card input[type="text"],
+    .form-card input[type="number"],
+    .form-card input[type="date"],
+    .form-card select {
+        width: 100%;
+        padding: 8px 10px;
+        margin-top: 6px;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background-color: #eaf6ff; /* bleu ciel */
+        font-size: 1rem;
+        color: #000000;
+    }
+
+    /* Conteneur des boutons */
+    .buttons {
+        margin-top: 25px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Bouton Enregistrer vert */
+    .btn-save {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 0;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        width: 48%;
+        text-align: center;
+    }
+    .btn-save:hover {
+        background-color: #218838;
+    }
+
+    /* Bouton Annuler gris foncé */
+    .btn-cancel {
+        display: inline-block;
+        background-color: #6c757d; /* gris foncé */
+        color: white;
+        text-decoration: none;
+        padding: 10px 0;
+        border-radius: 4px;
+        font-size: 1rem;
+        width: 48%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+    .btn-cancel:hover {
+        background-color: #5a6268;
     }
   </style>
 </head>
 <body>
 
-<aside>
-  <div><b>Accueil</b></div>
-  <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div><hr>
-  <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div><hr>
-  <div><b>Mouvements de stock</b></div>
-  <ul>
-    <li><a th:href="@{/receptions}">Réceptions</a></li>
-    <li><a th:href="@{/livraisons}">Livraisons</a></li>
-    <li><a th:href="@{/transferts}">Transferts</a></li>
-    <li><a th:href="@{/commandeLivraison}" class="active">Commandes de livraison</a></li>
-  </ul>
-  <hr>
-  <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
-</aside>
+<!-- Barre du haut affichant l'utilisateur -->
+<div class="topbar">
+  <span th:text="'User : ' + ${#authentication.name}">User : nom_utilisateur</span>
+</div>
 
-<main>
-  <div class="form-container">
-    <h2 th:text="${commande.id == null ? 'Nouvelle Commande de Livraison' : 'Modification de la Commande'}"></h2>
+<!-- Conteneur principal centré -->
+<div class="main-container">
+  <div class="form-card">
+    <!-- Titre dynamique -->
+    <h2 th:text="${commande.id == null} ? 'Nouvelle Commande de Livraison' : 'Modification de la Commande'">
+      Nouvelle Commande de Livraison
+    </h2>
 
-    <div th:if="${error}" class="error" th:text="${error}"></div>
+    <!-- Message d'erreur éventuel -->
+    <div th:if="${error}" class="error" th:text="${error}">Erreur</div>
 
+    <!-- Formulaire Thymeleaf -->
     <form th:action="@{/commandeLivraison/save}" th:object="${commande}" method="post" onsubmit="return verifierQuantite()">
       <input type="hidden" th:field="*{id}" />
 
       <label>Numéro :</label>
-      <input type="text" th:field="*{numeroLivraison}" required /><br>
+      <input type="text" th:field="*{numeroLivraison}" required />
 
       <label>Date :</label>
-      <input type="date" th:field="*{dateLivraison}" required /><br>
+      <input type="date" th:field="*{dateLivraison}" required />
 
       <label>Client :</label>
-      <input type="text" th:field="*{client}" required /><br>
+      <input type="text" th:field="*{client}" required />
 
       <label>Entrepôt :</label>
       <select id="entrepotSelect" th:field="*{entrepot}" onchange="filtrerProduits()" required>
+        <option value="">-- Choisir --</option>
         <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
-      </select><br>
+      </select>
 
       <label>Produit :</label>
       <select id="produitSelect" th:field="*{produit}" onchange="mettreAJourUniteEtStock()" required>
+        <option value="">-- Choisir --</option>
         <option th:each="p : ${produits}"
-                th:if="${p.entrepot != null}"
                 th:value="${p.id}"
                 th:text="${p.reference}"
                 th:attr="data-unite=${p.unite},data-stock=${p.quantiteStock},data-entrepot=${p.entrepot.id}">
         </option>
-      </select><br>
+      </select>
 
       <label>Quantité :</label>
-      <input type="number" th:field="*{quantite}" id="quantiteInput" required /><br>
+      <input type="number" th:field="*{quantite}" id="quantiteInput" min="1" required />
 
       <label>Unité :</label>
-      <input type="text" id="uniteField" readonly /><br>
+      <input type="text" id="uniteField" readonly />
 
       <label>Statut :</label>
-      <input type="text" th:field="*{statut}" readonly /><br>
+      <input type="text" th:field="*{statut}" readonly />
 
       <label>Remarque :</label>
-      <input type="text" th:field="*{remarque}" /><br>
+      <input type="text" th:field="*{remarque}" />
 
       <div class="buttons">
-        <button type="submit">✅ Enregistrer</button>
-        <a href="/commandeLivraison">⬅ Retour</a>
+        <button type="submit" class="btn-save">✅ Enregistrer</button>
+        <a th:href="@{/commandeLivraison}" class="btn-cancel">⬅ Retour</a>
       </div>
     </form>
   </div>
-</main>
+</div>
 
+<!-- Script JS pour filtrer produits, mettre à jour unité/stock et vérifier quantité -->
 <script>
   function mettreAJourUniteEtStock() {
-    const select = document.getElementById("produitSelect");
-    const option = select.options[select.selectedIndex];
-    if (!option) return;
-    const unite = option.getAttribute("data-unite");
-    const stock = option.getAttribute("data-stock");
-    document.getElementById("uniteField").value = unite || "";
-    document.getElementById("quantiteInput").setAttribute("max", stock);
-    document.getElementById("quantiteInput").setAttribute("data-stock", stock);
+      const select = document.getElementById("produitSelect");
+      const option = select.options[select.selectedIndex];
+      if (!option) return;
+      const unite = option.getAttribute("data-unite");
+      const stock = option.getAttribute("data-stock");
+      document.getElementById("uniteField").value = unite || "";
+      document.getElementById("quantiteInput").setAttribute("max", stock);
+      document.getElementById("quantiteInput").setAttribute("data-stock", stock);
   }
 
   function verifierQuantite() {
-    const quantite = parseInt(document.getElementById("quantiteInput").value);
-    const stock = parseInt(document.getElementById("quantiteInput").getAttribute("data-stock"));
-    if (isNaN(quantite) || isNaN(stock)) return true;
-    if (quantite > stock) {
-      alert("❌ Quantité demandée (" + quantite + ") > stock disponible (" + stock + ") !");
-      return false;
-    }
-    return true;
+      const quantite = parseInt(document.getElementById("quantiteInput").value);
+      const stock = parseInt(document.getElementById("quantiteInput").getAttribute("data-stock"));
+      if (isNaN(quantite) || isNaN(stock)) return true;
+      if (quantite > stock) {
+          alert("❌ Quantité demandée (" + quantite + ") > stock disponible (" + stock + ") !");
+          return false;
+      }
+      return true;
   }
 
   function filtrerProduits() {
-    const entrepotId = document.getElementById("entrepotSelect").value;
-    const produitSelect = document.getElementById("produitSelect");
-    let produitTrouve = false;
-    for (let i = 0; i < produitSelect.options.length; i++) {
-      const option = produitSelect.options[i];
-      const prodEntrepotId = option.getAttribute("data-entrepot");
-      const visible = prodEntrepotId === entrepotId;
-      option.style.display = visible ? "" : "none";
-      if (visible) produitTrouve = true;
-    }
-    if (!produitTrouve) produitSelect.selectedIndex = -1;
-    mettreAJourUniteEtStock();
+      const entrepotId = document.getElementById("entrepotSelect").value;
+      const produitSelect = document.getElementById("produitSelect");
+      let produitTrouve = false;
+      for (let i = 0; i < produitSelect.options.length; i++) {
+          const option = produitSelect.options[i];
+          const prodEntrepotId = option.getAttribute("data-entrepot");
+          const visible = (prodEntrepotId === entrepotId || option.value === "");
+          option.style.display = visible ? "" : "none";
+          if (visible && option.value !== "") produitTrouve = true;
+      }
+      if (!produitTrouve) produitSelect.selectedIndex = 0;
+      mettreAJourUniteEtStock();
   }
 
   window.onload = filtrerProduits;
 </script>
-
 </body>
 </html>

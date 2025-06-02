@@ -4,79 +4,137 @@
     <meta charset="UTF-8">
     <title>Nouveau transfert</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; }
+        /* Corps avec dégradé bleu ciel appliqué partout */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #eaf6ff, #e6f4ff);
+        }
 
-        .container { display: flex; }
+        /* Barre du haut sombre pour afficher l’utilisateur */
+        .topbar {
+            width: 100%;
+            background-color: #002147; /* bleu foncé */
+            padding: 10px 20px;
+            box-sizing: border-box;
+            color: #ffffff; /* texte blanc */
+            font-weight: bold;
+            font-size: 1rem;
+        }
 
-        .sidebar {
-            width: 200px;
-            background-color: #f2f2f2;
-            padding: 15px;
-            height: 100vh;
+        /* Conteneur principal centré */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 0;
+        }
+
+        /* Card blanche pour le formulaire, avec léger ombrage */
+        .form-card {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 420px;
             box-sizing: border-box;
         }
 
-        .sidebar a {
+        /* Titre de la page en haut de la card */
+        .form-card h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #002147; /* bleu foncé */
+            font-size: 1.35rem;
+            text-align: center;
+        }
+
+        /* Styles des labels */
+        .form-card label {
             display: block;
-            margin: 5px 0;
-            text-decoration: none;
-            color: blueviolet;
+            margin-top: 12px;
+            color: #000000; /* noir */
             font-weight: bold;
+            font-size: 1rem;
         }
 
-        .content {
-            flex: 1;
-            padding: 20px;
+        /* Styles des champs de saisie – fond bleu ciel */
+        .form-card input[type="date"],
+        .form-card input[type="number"],
+        .form-card input[type="text"],
+        .form-card select {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 6px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #eaf6ff; /* même bleu ciel que le fond */
+            font-size: 1rem;
+            color: #000000;
         }
 
-        form label {
-            display: block;
-            margin-top: 10px;
+        /* Bouton de validation vert */
+        .btn-submit {
+            margin-top: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
         }
 
-        form input, form select {
-            width: 300px;
-            padding: 5px;
-            margin-top: 5px;
+        .btn-submit:hover {
+            background-color: #218838;
         }
 
-        form button {
-            margin-top: 15px;
-            padding: 8px 16px;
-        }
-
+        /* Message d'erreur en rouge */
         .error {
             color: red;
             font-weight: bold;
-            margin-top: 5px;
+            margin-top: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Lien "Retour à la liste" centré sous le formulaire */
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #002147; /* bleu foncé */
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="sidebar">
-        <div><b>Accueil</b></div>
-        <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
-        <hr>
-        <div><a th:href="@{/produits}">Gestion des produits</a></div>
-        <hr>
-        <div><b>Mouvements de stock</b></div>
-        <ul>
-            <li><a th:href="@{/receptions}">Réceptions</a></li>
-            <li><a th:href="@{/livraisons}">Livraisons</a></li>
-            <li><a th:href="@{/transferts}" style="color:blueviolet;"><b>Transferts</b></a></li>
-            <li><a th:href="@{/commandes}">Commandes</a></li>
-            <li><a th:href="@{/commandeLivraison}">Commandes de livraison</a></li>
-        </ul>
-        <hr>
-        <div><a th:href="@{/inventaires}">Inventaires</a></div>
-    </div>
 
-    <div class="content">
-        <h3 style="color: blueviolet;">Transferts > Nouveau transfert</h3>
+<!-- Barre du haut affichant l'utilisateur -->
+<div class="topbar">
+    <span th:text="'User : ' + ${#authentication.name}">User : nom_utilisateur</span>
+</div>
+
+<!-- Conteneur principal centré -->
+<div class="main-container">
+    <div class="form-card">
+        <!-- Titre de la page -->
+        <h3>Transferts &gt; Nouveau transfert</h3>
+
+        <!-- Message d'erreur éventuel -->
         <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
 
+        <!-- Formulaire de création/édition d'un transfert -->
         <form th:action="@{/transferts/save}" th:object="${transfert}" method="post" onsubmit="return checkQuantite()">
+
             <label>Date de transfert</label>
             <input type="date" th:field="*{date}" required>
 
@@ -95,7 +153,7 @@
             <input type="text" id="uniteInput" readonly>
 
             <label>Quantité</label>
-            <input type="number" th:field="*{quantite}" id="quantiteInput" required>
+            <input type="number" th:field="*{quantite}" id="quantiteInput" min="1" required>
             <div id="quantiteErreur" class="error" style="display: none;">Quantité dépassée</div>
 
             <label>Entrepôt cible</label>
@@ -107,14 +165,14 @@
             <label>Remarque</label>
             <input type="text" th:field="*{remarque}" placeholder="Remarque facultative">
 
-            <button type="submit">OK</button>
+            <button type="submit" class="btn-submit">OK</button>
         </form>
 
-        <br>
-        <a th:href="@{/transferts}">&lt; Liste des transferts</a>
+        <a th:href="@{/transferts}" class="back-link">&lt; Liste des transferts</a>
     </div>
 </div>
 
+<!-- Script JS pour peupler la liste déroulante Produit et vérifier la quantité -->
 <script>
     document.getElementById('sourceSelect').addEventListener('change', function () {
         const entrepotId = this.value;
@@ -164,6 +222,5 @@
         return true;
     }
 </script>
-
 </body>
 </html>
