@@ -4,113 +4,140 @@
     <meta charset="UTF-8">
     <title>Liste des transferts</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-
-        .container { display: flex; }
-
-        .sidebar {
-            width: 200px;
-            background-color: #f2f2f2;
-            padding: 15px;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #dfefff, #ffffff);
+        }
+        .container {
+            display: flex;
+        }
+        aside {
+            width: 230px;
+            background-color: #002147;
+            color: white;
             height: 100vh;
-        }
-
-        .sidebar a {
-            display: block;
-            margin: 5px 0;
-            text-decoration: none;
-            color: blueviolet;
-            font-weight: bold;
-        }
-
-        .content {
-            flex: 1;
             padding: 20px;
         }
-
-        form label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
+        aside h3 {
+            font-size: 18px;
+            margin-bottom: 30px;
         }
-
-        form input, form select, form button {
+        aside a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        aside a:hover {
+            background-color: #0056b3;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+            background-color: transparent;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        form input, form select {
             padding: 5px;
-            margin-top: 5px;
+            margin-right: 10px;
             margin-bottom: 10px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 15px;
         }
-
         th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
         }
-
-        a {
-            color: blueviolet;
-            font-weight: bold;
+        th {
+            background-color: #eaeaea;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
             text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: red;
+        }
+        .pagination {
+            margin-top: 15px;
+        }
+        .pagination a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: blue;
+        }
+        .pagination span {
+            font-weight: bold;
+        }
+        .alert {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="sidebar">
-        <div><b>Accueil</b></div>
-        <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div>
-        <hr>
-        <div><a th:href="@{/produits}">Gestion des produits</a></div>
-        <hr>
-        <div><b>Mouvements de stock</b></div>
-        <ul>
-            <li><a th:href="@{/receptions}">Réceptions</a></li>
-            <li><a th:href="@{/livraisons}">Livraisons</a></li>
-            <li><a th:href="@{/transferts}">Transferts</a></li>
-            <li><a th:href="@{/commandes}">Commandes</a></li>
-            <li><a th:href="@{/commandeLivraison}">Commandes de livraison</a></li>
-        </ul>
-        <hr>
-        <div><a th:href="@{/inventaires}">Inventaires</a></div>
-    </div>
-
-    <div class="content">
-        <h3 style="color: blueviolet;">Transferts > Liste des transferts</h3>
-
-        <form method="get" th:action="@{/transferts}">
-            <label>Date de transfert</label>
-            <div>
-                De: <input type="date" name="date" th:value="${date}">
-            </div>
-
-            <label>Produit</label>
-            <input type="text" name="referenceProduit" placeholder="Référence produit" th:value="${referenceProduit}">
-
-
-            <label>Entrepôt source</label>
+    <aside>
+        <h3 th:text="'User : ' + ${#authentication.name}">Utilisateur</h3>
+        <a th:href="@{/}">🏠 Accueil</a>
+        <a th:href="@{/entrepots}">🏠 Entrepôts</a>
+        <a th:href="@{/produits}">📦 Produits</a>
+        <a th:href="@{/commandes}">📄 Commandes Achat</a>
+        <a th:href="@{/commandeLivraison}">🧾 Commandes de livraison</a>
+        <a th:href="@{/receptions}">📥 Réceptions</a>
+        <a th:href="@{/livraisons}">📤 Livraisons</a>
+        <a th:href="@{/transferts}" class="active-link">🔁 Transferts</a>
+        <a th:href="@{/inventaires}">📊 Inventaires</a>
+    </aside>
+    <main>
+        <h2>🔁 Liste des transferts</h2>
+        <form method="get" th:action="@{/transferts}" style="margin-bottom: 15px;">
+            <label>Date de transfert :</label>
+            De : <input type="date" name="date" th:value="${date}" />
+            <label>Produit :</label>
+            <input type="text" name="referenceProduit" placeholder="Référence produit" th:value="${referenceProduit}" />
+            <label>Entrepôt source :</label>
             <select name="sourceId">
                 <option value="">-- Tous --</option>
                 <option th:each="e : ${entrepots}"
                         th:value="${e.id}"
                         th:text="${e.nom}"
-                        th:selected="${sourceId} == ${e.id}"></option>
+                        th:selected="${sourceId == e.id}">
+                </option>
             </select>
-
-            <label>Entrepôt destination</label>
+            <label>Entrepôt destination :</label>
             <select name="destinationId">
                 <option value="">-- Tous --</option>
                 <option th:each="e : ${entrepots}"
                         th:value="${e.id}"
                         th:text="${e.nom}"
-                        th:selected="${destinationId} == ${e.id}"></option>
+                        th:selected="${destinationId == e.id}">
+                </option>
             </select>
-
-            <div><button type="submit">Chercher</button></div>
+            <button type="submit" class="btn">Chercher</button>
         </form>
+
+        <a th:href="@{/transferts/new}" class="btn" style="margin-top:10px;">➕ Nouveau transfert</a>
 
         <table>
             <thead>
@@ -120,7 +147,7 @@
                 <th>Unité</th>
                 <th>Quantité</th>
                 <th>Entrepôt source</th>
-                <th>Entrepôt cible</th>
+                <th>Entrepôt destination</th>
                 <th>Remarque</th>
                 <th>Modifier</th>
                 <th>Supprimer</th>
@@ -129,21 +156,43 @@
             <tbody>
             <tr th:each="t : ${transferts}">
                 <td th:text="${t.date}">15/02/2023</td>
-                <td th:text="${t.produit.reference}">prod 1</td>
-                <td th:text="${t.produit.unite}">boîte</td>
+                <td th:text="${t.produit.reference}">PROD-001</td>
+                <td th:text="${t.produit.unite}">Kg</td>
                 <td th:text="${t.quantite}">100</td>
-                <td th:text="${t.source.nom}">MAG1</td>
-                <td th:text="${t.destination.nom}">MAG2</td>
-                <td th:text="${t.remarque}">-</td>
-                <td><a th:href="@{'/transferts/edit/' + ${t.id}}">Modifier</a></td>
-                <td><a th:href="@{'/transferts/delete/' + ${t.id}}" onclick="return confirm('Confirmer ?')">Supprimer</a></td>
+                <td th:text="${t.source.nom}">ENTREPÔT A</td>
+                <td th:text="${t.destination.nom}">ENTREPÔT B</td>
+                <td th:text="${t.remarque == null ? '-' : t.remarque}">–</td>
+                <td>
+                    <a th:href="@{'/transferts/edit/' + ${t.id}}" class="btn">Modifier</a>
+                </td>
+                <td>
+                    <a th:href="@{'/transferts/delete/' + ${t.id}}"
+                       class="btn btn-danger"
+                       onclick="return confirm('Confirmer la suppression ?');">
+                        Supprimer
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(transferts)}">
+                <td colspan="9" style="text-align:center; color:red; font-weight:bold;">
+                    ⚠️ Aucune donnée de transfert ne correspond à la recherche.
+                </td>
             </tr>
             </tbody>
         </table>
 
-        <br>
-        <a th:href="@{/transferts/new}">Nouveau transfert</a>
-    </div>
+        <div class="pagination">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/transferts(page=${currentPage - 1}, date=${date}, referenceProduit=${referenceProduit}, sourceId=${sourceId}, destinationId=${destinationId})}">
+                « Précédent
+            </a>
+            <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
+            <a th:if="${currentPage + 1 < totalPages}"
+               th:href="@{/transferts(page=${currentPage + 1}, date=${date}, referenceProduit=${referenceProduit}, sourceId=${sourceId}, destinationId=${destinationId})}">
+                Suivant »
+            </a>
+        </div>
+    </main>
 </div>
 </body>
 </html>

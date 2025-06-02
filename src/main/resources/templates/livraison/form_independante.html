@@ -4,65 +4,155 @@
     <meta charset="UTF-8">
     <title>Nouvelle Livraison Indépendante</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; margin: 0; background-color: #f4f4f4; }
-        aside {
-          width: 220px; background-color: white; padding: 20px; height: 100vh; border-right: 1px solid black;
+        /* Corps en dégradé bleu ciel */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #eaf6ff, #e6f4ff);
         }
-        aside a:hover { background-color: #cce0ff; border-radius: 4px; }
-        main { flex: 1; padding: 30px; background-color: #f8f8f8; }
-        .form-container {
-          max-width: 600px; margin: auto;
-          background-color: white; padding: 25px;
-          border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+        /* Barre du haut sombre pour afficher l’utilisateur */
+        .topbar {
+            width: 100%;
+            background-color: #002147; /* bleu foncé */
+            padding: 10px 20px;
+            box-sizing: border-box;
+            color: #ffffff; /* texte blanc */
+            font-weight: bold;
+            font-size: 1rem;
         }
-        h2 { margin-bottom: 20px; color: #333; }
-        label {
-          display: inline-block; width: 120px; font-weight: bold; margin-bottom: 10px;
+
+        /* Conteneur principal centré */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 0;
         }
-        input[type="text"], input[type="number"], input[type="date"], select {
-          width: 300px; padding: 6px; margin-bottom: 10px;
+
+        /* Card blanche pour le formulaire */
+        .form-card {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            width: 600px;
+            box-sizing: border-box;
         }
-        .error { color: red; font-weight: bold; margin-bottom: 10px; }
-        .buttons { margin-top: 20px; }
-        .buttons button, .buttons a {
-          padding: 8px 15px; margin-right: 10px; border: none; border-radius: 4px;
-          text-decoration: none; font-weight: bold;
+
+        /* Titre du formulaire */
+        .form-card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #002147; /* bleu foncé */
+            font-size: 1.4rem;
+            text-align: center;
         }
-        .buttons button { background-color: #4CAF50; color: white; cursor: pointer; }
-        .buttons a { background-color: #ccc; color: black; }
+
+        /* Message d'erreur en rouge */
+        .form-card .error {
+            color: red;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        /* Styles des labels */
+        .form-card label {
+            display: block;
+            margin-top: 12px;
+            color: #000000; /* noir */
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* Styles des champs de saisie (bleu ciel de fond) */
+        .form-card input[type="text"],
+        .form-card input[type="number"],
+        .form-card input[type="date"],
+        .form-card select {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 6px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #eaf6ff; /* bleu ciel */
+            font-size: 1rem;
+            color: #000000;
+        }
+
+        /* Conteneur des boutons */
+        .buttons {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Bouton Enregistrer (vert) */
+        .btn-save {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 0;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 48%;
+            text-align: center;
+        }
+        .btn-save:hover {
+            background-color: #218838;
+        }
+
+        /* Bouton Annuler (gris foncé) */
+        .btn-cancel {
+            display: inline-block;
+            background-color: #6c757d; /* gris foncé */
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 48%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
 
-<aside>
-    <div><b>Accueil</b></div>
-    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div><hr>
-    <div><a th:href="@{/produits}"><b>Gestion des produits</b></a></div><hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}" class="active">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-    </ul>
-    <hr>
-    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
-</aside>
+<!-- Barre du haut affichant l’utilisateur -->
+<div class="topbar">
+    <span th:text="'User : ' + ${#authentication.name}">User : nom_utilisateur</span>
+</div>
 
-<main>
-    <div class="form-container">
+<div class="main-container">
+    <div class="form-card">
+
         <h2>Nouvelle Livraison Indépendante</h2>
 
         <div th:if="${error}" class="error" th:text="${error}"></div>
 
-        <form th:action="@{/livraisons/save-independante}" th:object="${livraison}" method="post" onsubmit="return verifierQuantite()">
+        <form th:action="@{/livraisons/save-independante}"
+              th:object="${livraison}"
+              method="post"
+              onsubmit="return verifierQuantite()">
+
             <label>Date de livraison :</label>
-            <input type="date" th:field="*{dateLivraison}" required /><br>
+            <input type="date" th:field="*{dateLivraison}" required />
 
             <label>Entrepôt :</label>
             <select id="entrepotSelect" th:field="*{entrepot}" onchange="filtrerProduits()" required>
                 <option value="">-- Sélectionner --</option>
-                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
-            </select><br>
+                <option th:each="e : ${entrepots}"
+                        th:value="${e.id}"
+                        th:text="${e.nom}">
+                </option>
+            </select>
 
             <label>Produit :</label>
             <select id="produitSelect" th:field="*{produit}" onchange="mettreAJourUniteEtStock()" required>
@@ -73,28 +163,28 @@
                         th:text="${p.reference}"
                         th:attr="data-unite=${p.unite},data-stock=${p.quantiteStock},data-entrepot=${p.entrepot.id}">
                 </option>
-
-            </select><br>
+            </select>
 
             <label>Quantité :</label>
-            <input type="number" th:field="*{quantite}" id="quantiteInput" min="1" required /><br>
+            <input type="number" th:field="*{quantite}" id="quantiteInput" min="1" required />
 
             <label>Unité :</label>
-            <input type="text" id="uniteField" readonly /><br>
+            <input type="text" id="uniteField" readonly />
 
             <label>Pour :</label>
-            <input type="text" th:field="*{pour}" required /><br>
+            <input type="text" th:field="*{pour}" required />
 
             <label>Remarque :</label>
-            <input type="text" th:field="*{remarque}" /><br>
+            <input type="text" th:field="*{remarque}" />
 
             <div class="buttons">
-                <button type="submit">✅ Enregistrer</button>
-                <a href="/livraisons">⬅ Retour</a>
+                <button type="submit" class="btn-save">✅ Enregistrer</button>
+                <a th:href="@{/livraisons}" class="btn-cancel">⬅ Retour</a>
             </div>
         </form>
+
     </div>
-</main>
+</div>
 
 <script>
     function mettreAJourUniteEtStock() {

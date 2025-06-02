@@ -4,107 +4,168 @@
     <meta charset="UTF-8">
     <title>Nouvelle Réception (Autre)</title>
     <style>
+        /* Corps en dégradé bleu ciel */
         body {
-            font-family: Arial;
-            background-color: #f4f4f4;
-            padding: 30px;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #eaf6ff, #e6f4ff);
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        .form-container {
-            background: white;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px #ccc;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-        }
-
-        input, select, textarea {
+        /* Barre du haut sombre pour afficher l’utilisateur */
+        .topbar {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            background-color: #002147; /* bleu foncé */
+            padding: 10px 20px;
+            box-sizing: border-box;
+            color: #ffffff; /* texte blanc */
+            font-weight: bold;
+            font-size: 1rem;
         }
 
-        .btn {
+        /* Conteneur principal centré */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 0;
+        }
+
+        /* Card blanche pour le formulaire */
+        .form-card {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 600px;
+            box-sizing: border-box;
+        }
+
+        /* Titre du formulaire */
+        .form-card h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #002147; /* bleu foncé */
+            font-size: 1.6rem;
+            text-align: center;
+        }
+
+        /* Styles des labels */
+        .form-card label {
+            display: block;
+            margin-top: 12px;
+            color: #000000; /* noir */
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* Styles des champs de saisie (bleu ciel de fond) */
+        .form-card input[type="date"],
+        .form-card input[type="text"],
+        .form-card input[type="number"],
+        .form-card select,
+        .form-card textarea {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 6px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #eaf6ff; /* bleu ciel */
+            font-size: 1rem;
+            color: #000000;
+        }
+
+        /* Message d’erreur en rouge */
+        .form-card .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        /* Bouton Valider vert */
+        .btn-submit {
             margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #28a745;
             color: white;
             border: none;
-            border-radius: 5px;
+            padding: 10px 0;
+            border-radius: 4px;
+            font-size: 1rem;
             cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #45a049;
-        }
-
-        .error {
-            color: red;
-            margin-top: 10px;
-            font-weight: bold;
+            width: 100%;
             text-align: center;
         }
+        .btn-submit:hover {
+            background-color: #218838;
+        }
 
+        /* Lien “Retour” centré */
         .back-link {
             display: block;
-            text-align: center;
             margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #002147; /* bleu foncé */
+            font-weight: bold;
+            font-size: 0.95rem;
         }
-
+        .back-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h1>Réception Autre (hors commande)</h1>
+<!-- Barre du haut affichant l'utilisateur -->
+<div class="topbar">
+    <span th:text="'User : ' + ${#authentication.name}">User : nom_utilisateur</span>
+</div>
 
-    <form th:action="@{/receptions/saveAutre}" method="post" th:object="${reception}">
-        <label>Date de Réception :</label>
-        <input type="date" th:field="*{dateReception}" required />
+<!-- Conteneur principal centré -->
+<div class="main-container">
+    <div class="form-card">
+        <!-- Titre du formulaire -->
+        <h1>Réception Autre (hors commande)</h1>
 
-        <label>Produit :</label>
-        <input type="text" th:field="*{produit}" required />
+        <!-- Formulaire Thymeleaf -->
+        <form th:action="@{/receptions/saveAutre}" method="post" th:object="${reception}">
+            <label>Date de Réception :</label>
+            <input type="date" th:field="*{dateReception}" required />
 
-        <label>Référence :</label>
-        <input type="text" name="reference" required />
+            <label>Produit :</label>
+            <input type="text" th:field="*{produit}" required />
 
-        <label>Unité :</label>
-        <input type="text" th:field="*{unite}" required />
+            <label>Référence :</label>
+            <input type="text" name="reference" required />
 
-        <label>Quantité :</label>
-        <input type="number" min="1" th:field="*{quantite}" required />
+            <label>Unité :</label>
+            <input type="text" th:field="*{unite}" required />
 
-        <label>Source :</label>
-        <input type="text" th:field="*{source}" required />
+            <label>Quantité :</label>
+            <input type="number" min="1" th:field="*{quantite}" required />
 
-        <label>Entrepôt :</label>
-        <select th:field="*{entrepot}" required>
-            <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
-        </select>
+            <label>Source :</label>
+            <input type="text" th:field="*{source}" required />
 
-        <label>Remarque :</label>
-        <textarea th:field="*{remarque}"></textarea>
+            <label>Entrepôt :</label>
+            <select th:field="*{entrepot}" required>
+                <option value="">-- Choisir --</option>
+                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
+            </select>
 
-        <div class="error" th:if="${message}" th:text="${message}"></div>
+            <label>Remarque :</label>
+            <textarea th:field="*{remarque}" rows="3"></textarea>
 
-        <button type="submit" class="btn">Valider</button>
-    </form>
+            <div class="error" th:if="${message}" th:text="${message}"></div>
 
-    <a th:href="@{/receptions}" class="back-link">← Retour à la liste</a>
+            <button type="submit" class="btn-submit">Valider</button>
+        </form>
+
+        <a th:href="@{/receptions}" class="back-link">← Retour à la liste</a>
+    </div>
 </div>
 
 </body>

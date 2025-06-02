@@ -4,75 +4,173 @@
     <meta charset="UTF-8">
     <title th:text="${edition} ? 'Modification de la livraison' : 'Nouvelle livraison'">Livraison</title>
     <style>
-        /* ==== Copier exactement les styles du formulaire de réception ==== */
+        /* === Corps en dégradé bleu ciel === */
         body {
-            font-family: Arial;
-            padding: 30px;
-            background: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #eaf6ff, #e6f4ff);
         }
-        h2 {
-            margin-bottom: 10px;
-        }
-        table {
+
+        /* === Barre du haut sombre pour afficher l’utilisateur === */
+        .topbar {
             width: 100%;
+            background-color: #002147;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* === Conteneur principal centré === */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 0;
+        }
+
+        /* === Carte blanche qui englobe tout le contenu === */
+        .card {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;           /* largeur max de la carte */
+            width: 100%;                /* prend 100 % de l’espace disponible */
+            box-sizing: border-box;
+            overflow-x: auto;           /* défilement si le tableau déborde */
+        }
+
+        /* === Titres à l’intérieur de la carte === */
+        .card h2, .card h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #002147;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        /* === Formulaire de recherche (“Commandes non livrées”) === */
+        .search-form label {
+            display: block;
+            margin-top: 12px;
+            color: #000000;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .search-form input[type="text"] {
+            width: calc(100% - 12px);
+            padding: 6px;
+            margin-top: 6px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            background-color: #eaf6ff;
+            font-size: 1rem;
+            color: #000000;
+            box-sizing: border-box;
+        }
+        .search-form .btn {
+            margin-top: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .search-form .btn:hover {
+            background-color: #218838;
+        }
+
+        /* === Tableau des commandes non livrées, ajuste à 100 % de la carte === */
+        table {
+            width: 95%;
+            margin: 20px auto 0 auto;
             border-collapse: collapse;
-            margin-bottom: 25px;
+
+            background: #ffffff;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            min-width: 700px; /* garantit une largeur minimale pour éviter l’écrasement trop important */
         }
         th, td {
             padding: 10px;
             border: 1px solid #ccc;
             text-align: left;
+            background: #ffffff;
+            box-sizing: border-box;
         }
         th {
-            background-color: #e6f0ff;
+            background-color: #cce0ff;
+            color: #002147;
         }
-        .btn {
-            padding: 6px 12px;
-            background-color: #4CAF50;
+        .action-btn {
+            background-color: #28a745;
             color: white;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 4px;
             font-weight: bold;
+            cursor: pointer;
         }
-        .btn:hover {
-            background-color: #3e8e41;
+        .action-btn:hover {
+            background-color: #218838;
         }
+
+        /* === Formulaire d’enregistrement (sous le tableau) === */
         .form-section {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px #ccc;
-            max-width: 650px;
-            margin: auto;
-        }
-        .form-section h3 {
-            margin-top: 0;
-            color: #333;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #002147;
         }
         .form-section label {
-            display: inline-block;
-            width: 140px;
-            margin-bottom: 8px;
+            display: block;
+            margin-top: 12px;
+            color: #000000;
             font-weight: bold;
+            font-size: 1rem;
         }
-        .form-section input,
+        .form-section input[type="date"],
+        .form-section input[type="text"],
+        .form-section input[type="number"],
         .form-section select {
-            width: 300px;
-            padding: 6px;
-            margin-bottom: 12px;
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 6px;
+            border: 1px solid #aaa;
             border-radius: 4px;
-            border: 1px solid #ccc;
+            background-color: #eaf6ff;
+            font-size: 1rem;
+            color: #000000;
+            box-sizing: border-box;
         }
-        .back-link {
-            display: inline-block;
+        .form-section .btn-validate {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 0;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .form-section .btn-validate:hover {
+            background-color: #218838;
+        }
+
+        /* === Message d’erreur === */
+        .error-message {
+            color: red;
+            font-weight: bold;
             margin-bottom: 15px;
-            color: #007bff;
-            text-decoration: none;
+            text-align: center;
         }
-        .back-link:hover {
-            text-decoration: underline;
-        }
+
+        /* === Message de succès === */
         .success-message {
             background-color: #e0ffe0;
             border: 1px solid #00aa00;
@@ -80,139 +178,155 @@
             padding: 10px;
             margin-bottom: 15px;
             font-weight: bold;
+            text-align: center;
         }
-        .error-message {
-            color: red;
+
+        /* === Lien “Retour” === */
+        .back-link {
+            display: block;
+            margin-bottom: 20px;
+            text-align: left;
+            text-decoration: none;
+            color: #002147;
             font-weight: bold;
-            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-<!-- ==== Bloc “Commandes non livrées” identique à l’exemple réception, sans menu latéral ==== -->
-<div th:if="${edition} == null">
-
-    <h2>Commandes non livrées</h2>
-
-    <form method="get" th:action="@{/livraisons/rechercherCommandes}">
-        <label>N° commande :</label>
-        <input type="text" name="numero" th:value="${numero}" />
-        <br>
-        <label>Produit :</label>
-        <input type="text" name="produit" th:value="${produit}" />
-        <br>
-        <button type="submit" class="btn">Chercher</button>
-    </form>
-
-    <table>
-        <thead>
-        <tr>
-            <th>Date commande</th>
-            <th>N° commande</th>
-            <th>Produit</th>
-            <th>Unité</th>
-            <th>Quantité</th>
-            <th>Client</th>
-            <th>Entrepôt</th>
-            <th>Remarque</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="cmd : ${commandeLivraisons}">
-            <td th:text="${cmd.dateLivraison}">2025-01-01</td>
-            <td th:text="${cmd.numeroLivraison}">L123</td>
-            <td th:text="${cmd.produit.reference}">Farine</td>
-            <td th:text="${cmd.unite}">kg</td>
-            <td th:text="${cmd.quantite}">50</td>
-            <td th:text="${cmd.client}">Client A</td>
-            <td th:text="${cmd.entrepot.nom}">Dada</td>
-            <td th:text="${cmd.remarque}">Remarque</td>
-            <td>
-                <a th:href="@{'/livraisons/livrerCommande/' + ${cmd.id}}" class="btn">Livrer</a>
-            </td>
-        </tr>
-        <tr th:if="${commandeLivraisons.empty}">
-            <td colspan="9" style="text-align:center; color:red; font-weight:bold;">
-                ⚠️ Aucune commande ne correspond à la recherche.
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <a th:href="@{/livraisons}" class="back-link">⬅ Retour à la liste des livraisons</a>
+<!-- Barre du haut affichant l’utilisateur -->
+<div class="topbar">
+    <span th:text="'User : ' + ${#authentication.name}">User : nom_utilisateur</span>
 </div>
 
-<!-- ==== Bloc “Formulaire de livraison” identique en style au formulaire de réception ==== -->
-<div class="form-section" th:if="${livraison != null}">
+<div class="main-container">
+    <div class="card">
+        <!-- ========================================= -->
+        <!-- SECTION “COMMANDES NON LIVRÉES” (TABLEAU)  -->
+        <!-- S’affiche si edition == null -->
+        <div th:if="${edition} == null">
+            <h2>Commandes non livrées</h2>
 
-    <a th:href="@{/livraisons}" class="back-link">⬅ Retour à la liste des livraisons</a>
+            <form method="get" th:action="@{/livraisons/rechercherCommandes}" class="search-form">
+                <label>N° commande :</label>
+                <input type="text" name="numero" th:value="${numero}" />
 
-    <div th:if="${error}" class="error-message" th:text="${error}"></div>
-    <div th:if="${message}" class="success-message" th:text="${message}"></div>
+                <label>Produit :</label>
+                <input type="text" name="produit" th:value="${produit}" />
 
-    <h3 th:text="${edition} ? 'Modification de la livraison' : 'Livraison à enregistrer'"></h3>
+                <button type="submit" class="btn">Chercher</button>
+            </form>
 
-    <form th:action="@{/livraisons/save}" th:object="${livraison}" method="post">
-        <input type="hidden" th:field="*{id}" />
+            <table>
+                <thead>
+                <tr>
+                    <th>Date commande</th>
+                    <th>N° commande</th>
+                    <th>Produit</th>
+                    <th>Unité</th>
+                    <th>Quantité</th>
+                    <th>Client</th>
+                    <th>Entrepôt</th>
+                    <th>Remarque</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="cmd : ${commandeLivraisons}">
+                    <td th:text="${cmd.dateLivraison}">2025-01-01</td>
+                    <td th:text="${cmd.numeroLivraison}">L123</td>
+                    <td th:text="${cmd.produit.reference}">Farine</td>
+                    <td th:text="${cmd.unite}">kg</td>
+                    <td th:text="${cmd.quantite}">50</td>
+                    <td th:text="${cmd.client}">Client A</td>
+                    <td th:text="${cmd.entrepot.nom}">Dada</td>
+                    <td th:text="${cmd.remarque}">Remarque</td>
+                    <td>
+                        <a th:href="@{'/livraisons/livrerCommande/' + ${cmd.id}}">
+                            <button type="button" class="action-btn">Livrer</button>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${commandeLivraisons.empty}">
+                    <td colspan="9" style="text-align:center; color:red; font-weight:bold;">
+                        ⚠️ Aucune commande ne correspond à la recherche.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- FIN SECTION “COMMANDES NON LIVRÉES” -->
+        <!-- ========================================= -->
 
-        <!-- champ commandeId uniquement en mode ajout -->
-        <input type="hidden" name="commandeId"
-               th:if="${livraison.commandeLivraison != null}"
-               th:value="${livraison.commandeLivraison.id}" />
+        <!-- ========================================= -->
+        <!-- SECTION “FORMULAIRE DE LIVRAISON” (SOUS LE TABLEAU) -->
+        <!-- S’affiche si livraison != null -->
+        <div class="form-section" th:if="${livraison != null}">
+            <a th:href="@{/livraisons}" class="back-link">← Retour à la liste des livraisons</a>
 
-        <label>Date de livraison :</label>
-        <input type="date" th:field="*{dateLivraison}" required />
-        <br>
+            <div th:if="${error}" class="error-message" th:text="${error}"></div>
+            <div th:if="${message}" class="success-message" th:text="${message}"></div>
 
-        <label>Date commande :</label>
-        <input type="text"
-               th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.dateLivraison : ''}"
-               readonly />
-        <br>
+            <h3 th:text="${edition} ? 'Modification de la livraison' : 'Livraison à enregistrer'"></h3>
 
-        <label>N° commande :</label>
-        <input type="text"
-               th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.numeroLivraison : ''}"
-               readonly />
-        <br>
+            <form th:action="@{/livraisons/save}" th:object="${livraison}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <!-- Si on vient d’une commande à livrer, on transmet l’ID ici -->
+                <input type="hidden" name="commandeId"
+                       th:if="${livraison.commandeLivraison != null}"
+                       th:value="${livraison.commandeLivraison.id}" />
 
-        <label>Produit :</label>
-        <input type="text"
-               th:value="${livraison.commandeLivraison != null && livraison.commandeLivraison.produit != null
-                         ? livraison.commandeLivraison.produit.reference
-                         : (livraison.produit != null ? livraison.produit.reference : '')}"
-               readonly />
-        <br>
+                <label>Date de livraison :</label>
+                <input type="date" th:field="*{dateLivraison}" required />
 
-        <label>Unité :</label>
-        <input type="text" th:value="${livraison.unite}" readonly />
-        <br>
+                <label>Date commande :</label>
+                <input type="text"
+                       th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.dateLivraison : ''}"
+                       readonly />
 
-        <label>Quantité :</label>
-        <input type="number" th:value="${livraison.quantite}" readonly />
-        <br>
+                <label>N° commande :</label>
+                <input type="text"
+                       th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.numeroLivraison : ''}"
+                       readonly />
 
-        <label>Client :</label>
-        <input type="text"
-               th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.client : ''}"
-               readonly />
-        <br>
+                <label>Produit :</label>
+                <input type="text"
+                       th:value="${livraison.commandeLivraison != null && livraison.commandeLivraison.produit != null
+                                         ? livraison.commandeLivraison.produit.reference
+                                         : (livraison.produit != null ? livraison.produit.reference : '')}"
+                       readonly />
 
-        <label>Entrepôt :</label>
-        <input type="text"
-               th:value="${livraison.entrepot != null ? livraison.entrepot.nom : ''}"
-               readonly />
-        <br>
+                <label>Unité :</label>
+                <input type="text" th:value="${livraison.unite}" readonly />
 
-        <label>Remarques :</label>
-        <input type="text" th:field="*{remarque}" placeholder="Optionnel" />
-        <br>
+                <label>Quantité :</label>
+                <input type="number" th:value="${livraison.quantite}" readonly />
 
-        <button type="submit" class="btn" th:text="${edition} ? '✏ Modifier' : '✅ Enregistrer'"></button>
-    </form>
-</div>
+                <label>Client :</label>
+                <input type="text"
+                       th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.client : ''}"
+                       readonly />
+
+                <label>Entrepôt :</label>
+                <input type="text"
+                       th:value="${livraison.entrepot != null ? livraison.entrepot.nom : ''}"
+                       readonly />
+
+                <label>Remarques :</label>
+                <input type="text" th:field="*{remarque}" placeholder="Optionnel" />
+
+                <button type="submit" class="btn-validate"
+                        th:text="${edition} ? '✏ Modifier' : '✅ Enregistrer'"></button>
+            </form>
+        </div>
+        <!-- FIN SECTION “FORMULAIRE DE LIVRAISON” -->
+        <!-- ========================================= -->
+    </div><!-- /.card -->
+</div><!-- /.main-container -->
 
 </body>
 </html>
