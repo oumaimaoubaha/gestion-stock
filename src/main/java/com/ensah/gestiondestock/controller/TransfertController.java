@@ -5,14 +5,12 @@ import com.ensah.gestiondestock.model.Transfert;
 import com.ensah.gestiondestock.service.EntrepotService;
 import com.ensah.gestiondestock.service.ProduitService;
 import com.ensah.gestiondestock.service.TransfertService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,15 +32,22 @@ public class TransfertController {
                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                            @RequestParam(required = false) String referenceProduit,
                            @RequestParam(required = false) Long sourceId,
-                           @RequestParam(required = false) Long destinationId) {
+                           @RequestParam(required = false) Long destinationId,
+                           @RequestParam(defaultValue = "0") int page) {
 
-        List<Transfert> transferts = transfertService.searchByReference(date, referenceProduit, sourceId, destinationId);
-        model.addAttribute("transferts", transferts);
+        int size = 4;
+        var pageResult = transfertService.search(date, referenceProduit, sourceId, destinationId, page, size);
+
+        model.addAttribute("transferts", pageResult.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageResult.getTotalPages());
         model.addAttribute("referenceProduit", referenceProduit);
+        model.addAttribute("sourceId", sourceId);
+        model.addAttribute("destinationId", destinationId);
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+
         return "transfert/list";
     }
-
 
     @GetMapping("/new")
     public String showForm(Model model,
@@ -58,7 +63,6 @@ public class TransfertController {
     public String save(@ModelAttribute Transfert transfert, Model model) {
         Produit p = transfert.getProduit();
         if (transfert.getSource().getId().equals(transfert.getDestination().getId())) {
-            // Même entrepôt source et destination → erreur affichée dans le formulaire
             model.addAttribute("transfert", transfert);
             model.addAttribute("produits", produitService.getAllProduits());
             model.addAttribute("entrepots", entrepotService.getAllEntrepots());
@@ -96,16 +100,13 @@ public class TransfertController {
         return "transfert/form";
     }
 
+    /**
+     * Cette méthode renvoie, en JSON, la liste des produits filtrés par entrepôt.
+     */
     @GetMapping("/produits-par-entrepot")
     @ResponseBody
     public List<Produit> getProduitsParEntrepot(@RequestParam("entrepotId") Long entrepotId) {
+        // Appel corrigé vers la méthode existante dans ProduitService :
         return produitService.getProduitsByEntrepot(entrepotId);
-    }
-
-    @GetMapping("/unite-produit")
-    @ResponseBody
-    public String getUniteProduit(@RequestParam("produitId") Long produitId) {
-        Produit p = produitService.getProduitById(produitId);
-        return (p != null) ? p.getUnite() : "";
     }
 }

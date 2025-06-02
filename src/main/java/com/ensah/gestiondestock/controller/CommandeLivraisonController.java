@@ -8,6 +8,7 @@ import com.ensah.gestiondestock.service.ProduitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class CommandeLivraisonController {
             @RequestParam(required = false) String statut,
             Model model
     ) {
-        // Normalisation des filtres ("" -> null)
+        // Normalisation des filtres ("" → null)
         if (numero != null && numero.trim().isEmpty()) numero = null;
         if (produit != null && produit.trim().isEmpty()) produit = null;
         if (statut != null && statut.trim().isEmpty()) statut = null;
@@ -56,12 +57,17 @@ public class CommandeLivraisonController {
             }
         }
 
-        // Recherche paginée
+        // Recherche paginée triée par dateLivraison décroissante
         Page<CommandeLivraison> commandes = commandeLivraisonService.search(
-                numero, produit, dateLivraison, entrepotId, statut, PageRequest.of(page, 5)
+                numero,
+                produit,
+                dateLivraison,
+                entrepotId,
+                statut,
+                PageRequest.of(page, 5, Sort.by("dateLivraison").descending())
         );
 
-        // Redirection vers la première page si on dépasse la dernière
+        // Redirection à la première page si on dépasse la dernière
         if (commandes.getTotalPages() > 0 && page >= commandes.getTotalPages()) {
             return "redirect:/commandeLivraison?page=0"
                     + (numero != null ? "&numero=" + numero : "")
@@ -74,7 +80,6 @@ public class CommandeLivraisonController {
         model.addAttribute("commandes", commandes);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", commandes.getTotalPages());
-
         model.addAttribute("numero", numero);
         model.addAttribute("produit", produit);
         model.addAttribute("date", date);

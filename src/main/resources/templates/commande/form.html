@@ -4,74 +4,116 @@
   <meta charset="UTF-8">
   <title>Commande</title>
   <style>
+    /* Corps en dégradé bleu ciel */
     body {
+        margin: 0;
+        padding: 0;
         font-family: Arial, sans-serif;
-        padding: 30px;
-        background-color: #f8f8f8;
+        background: linear-gradient(to right, #eaf6ff, #e6f4ff);
     }
 
-    .form-container {
-        max-width: 600px;
-        margin: auto;
-        background-color: white;
-        padding: 25px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-        margin-bottom: 20px;
-        color: #333;
-    }
-
-    label {
-        display: inline-block;
-        width: 120px;
+    /* Barre du haut sombre pour afficher l’utilisateur */
+    .topbar {
+        width: 100%;
+        background-color: #002147; /* bleu foncé */
+        padding: 10px 20px;
+        box-sizing: border-box;
+        color: #ffffff; /* texte blanc */
         font-weight: bold;
-        margin-bottom: 10px;
+        font-size: 1rem;
     }
 
-    input[type="text"],
-    input[type="number"],
-    input[type="date"] {
-        width: 300px;
-        padding: 6px;
-        margin-bottom: 10px;
+    /* Conteneur principal centré */
+    .main-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 30px 0;
     }
 
+    /* Card blanche pour le formulaire */
+    .form-card {
+        background-color: #ffffff;
+        padding: 25px 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        width: 500px;
+        box-sizing: border-box;
+    }
+
+    /* Titre de la page */
+    .form-card h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #002147; /* bleu foncé */
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    /* Message d'erreur en rouge */
     .error {
         color: red;
         font-weight: bold;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
     }
 
-    .buttons {
-        margin-top: 20px;
-    }
-
-    .buttons button,
-    .buttons a {
-        padding: 8px 15px;
-        margin-right: 10px;
-        border: none;
-        border-radius: 4px;
-        text-decoration: none;
+    /* Styles des labels */
+    .form-card label {
+        display: block;
+        margin-top: 12px;
+        color: #000000; /* noir */
         font-weight: bold;
+        font-size: 1rem;
     }
 
+    /* Styles des champs de saisie (bleu ciel de fond) */
+    .form-card input[type="text"],
+    .form-card input[type="number"],
+    .form-card input[type="date"] {
+        width: 100%;
+        padding: 8px 10px;
+        margin-top: 6px;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background-color: #eaf6ff; /* bleu ciel */
+        font-size: 1rem;
+        color: #000000;
+    }
+
+    /* Conteneur des boutons */
+    .buttons {
+        margin-top: 25px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Bouton Enregistrer vert */
     .buttons button {
-        background-color: #4CAF50;
+        background-color: #28a745;
         color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 4px;
+        font-size: 1rem;
         cursor: pointer;
     }
 
+    .buttons button:hover {
+        background-color: #218838;
+    }
+
+    /* Lien Retour gris */
     .buttons a {
         background-color: #ccc;
         color: black;
-    }
-
-    .buttons button:hover {
-        background-color: #45a049;
+        text-decoration: none;
+        display: inline-block;
+        padding: 10px 18px;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 1rem;
     }
 
     .buttons a:hover {
@@ -81,42 +123,59 @@
 </head>
 <body>
 
-<div class="form-container">
-  <h2 th:text="${commande.id == null ? 'Nouvelle Commande d’Achat' : 'Modification de la Commande'}"></h2>
+<!-- Barre du haut affichant l'utilisateur -->
+<div class="topbar">
+  <span th:text="'User : ' + ${#authentication.name}">User : nom_utilisateur</span>
+</div>
 
-  <div th:if="${erreurNumero}" class="error">
-    ⚠ <span th:text="${erreurNumero}"></span>
-  </div>
+<div class="main-container">
+  <div class="form-card">
+    <!-- Titre dynamique -->
+    <h2 th:text="${commande.id == null} ? 'Nouvelle Commande d’Achat' : 'Modification de la Commande'">
+      Nouvelle Commande d’Achat
+    </h2>
 
-  <form th:action="@{/commandes/save}" th:object="${commande}" method="post">
-    <input type="hidden" th:field="*{id}" />
-
-    <label>Numéro :</label>
-    <input type="text" th:field="*{numeroAchat}" required /><br>
-
-    <label>Date :</label>
-    <input type="date" name="dateAchat" id="dateAchat"
-           th:value="${commande.dateAchat != null ? #temporals.format(commande.dateAchat, 'yyyy-MM-dd') : #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
-           required /><br>
-    <label>Fournisseur :</label>
-    <input type="text" th:field="*{source}" required /><br>
-
-    <h3 style="margin-top: 20px; margin-bottom: 10px;">Ligne de commande</h3>
-
-    <label>Produit :</label>
-    <input type="text" th:field="*{produit}" required /><br>
-
-    <label>Quantité :</label>
-    <input type="number" th:field="*{quantite}" required /><br>
-
-    <label>Unité :</label>
-    <input type="text" th:field="*{unite}" required /><br>
-
-    <div class="buttons">
-      <button type="submit">✅ Enregistrer</button>
-      <a href="/commandes">⬅ Retour</a>
+    <!-- Message d'erreur éventuel -->
+    <div th:if="${erreurNumero}" class="error">
+      ⚠ <span th:text="${erreurNumero}">Erreur de numéro</span>
     </div>
-  </form>
+
+    <!-- Formulaire Thymeleaf -->
+    <form th:action="@{/commandes/save}" th:object="${commande}" method="post">
+      <input type="hidden" th:field="*{id}" />
+
+      <label>Numéro :</label>
+      <input type="text" th:field="*{numeroAchat}" required />
+
+      <label>Date :</label>
+      <input type="date" name="dateAchat" id="dateAchat"
+             th:value="${commande.dateAchat != null ?
+                                   #temporals.format(commande.dateAchat, 'yyyy-MM-dd') :
+                                   #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+             required />
+
+      <label>Fournisseur :</label>
+      <input type="text" th:field="*{source}" required />
+
+      <h3 style="margin-top: 20px; margin-bottom: 10px; color: #002147; font-size: 1.2rem;">
+        Ligne de commande
+      </h3>
+
+      <label>Produit :</label>
+      <input type="text" th:field="*{produit}" required />
+
+      <label>Quantité :</label>
+      <input type="number" th:field="*{quantite}" min="1" required />
+
+      <label>Unité :</label>
+      <input type="text" th:field="*{unite}" required />
+
+      <div class="buttons">
+        <button type="submit">✅ Enregistrer</button>
+        <a th:href="@{/commandes}">⬅ Retour</a>
+      </div>
+    </form>
+  </div>
 </div>
 
 </body>

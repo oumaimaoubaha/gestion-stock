@@ -1,41 +1,66 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Liste des produits</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
-        .container { display: flex; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #dfefff, #ffffff);
+        }
+        .container {
+            display: flex;
+        }
         aside {
-            width: 200px;
-            background-color: white;
-            border: 2px solid black;
-            border-right: none;
-            padding: 10px;
+            width: 230px;
+            background-color: #002147;
+            color: white;
+            height: 100vh;
+            padding: 20px;
         }
         aside h3 {
             font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            border-bottom: 2px solid black;
-            padding-bottom: 5px;
+            margin-bottom: 30px;
         }
         aside a {
-            display: block;
-            padding: 8px;
+            color: white;
             text-decoration: none;
-            color: black;
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
         }
         aside a:hover, aside a.active-link {
-            background-color: #cce0ff;
+            background-color: #0056b3;
         }
         main {
             flex: 1;
             padding: 20px;
-            background-color: #fff;
-            border: 2px solid #000;
+            background-color: transparent;
         }
-        h2 { margin-top: 0; }
+        h2 {
+            margin-top: 0;
+        }
+        form input, form select {
+            padding: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: red;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -46,17 +71,12 @@
             border: 1px solid #ccc;
             text-align: left;
         }
-        th { background-color: #eaeaea; }
-        .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 4px;
-            text-decoration: none;
+        th {
+            background-color: #eaeaea;
         }
-        .btn:hover { background-color: #0056b3; }
-        .btn-danger { background-color: red; }
-        .pagination { margin-top: 15px; }
+        .pagination {
+            margin-top: 15px;
+        }
         .pagination a {
             margin-right: 10px;
             text-decoration: none;
@@ -78,23 +98,21 @@
 <body>
 <div class="container">
     <aside>
-        <h3>Gestion de stocks</h3>
-        <a th:href="@{/}">Accueil</a>
-        <a th:href="@{/entrepots}">entrepôts</a>
-        <a th:href="@{/produits}" class="active-link">Produits</a>
-        <a th:href="@{/receptions}">Réceptions</a>
-        <a th:href="@{/livraisons}">Livraisons</a>
-        <a th:href="@{/transferts}">Transferts</a>
-        <a th:href="@{/commandes}">Commandes Achat</a>
-        <a th:href="@{/commandeLivraison}">Commandes de livraison</a>
-        <a th:href="@{/inventaires}">Inventaires</a>
+        <h3 th:text="'User : ' + ${#authentication.name}">Utilisateur</h3>
+        <a th:href="@{/}">🏠 Accueil</a>
+        <a th:href="@{/entrepots}">🏠 Entrepôts</a>
+        <a th:href="@{/produits}" class="active-link">📦 Produits</a>
+        <a th:href="@{/receptions}">📥 Réceptions</a>
+        <a th:href="@{/livraisons}">📤 Livraisons</a>
+        <a th:href="@{/transferts}">🔁 Transferts</a>
+        <a th:href="@{/commandes}">📄 Commandes Achat</a>
+        <a th:href="@{/commandeLivraison}">🧾 Commandes de livraison</a>
+        <a th:href="@{/inventaires}">📊 Inventaires</a>
     </aside>
-
     <main>
         <h2>Liste des produits</h2>
         <p th:if="${erreurSuppression}" th:text="${erreurSuppression}" style="color: red;"></p>
-
-        <form th:action="@{/produits}" method="get" style="margin-bottom: 20px;">
+        <form th:action="@{/produits}" method="get" style="margin-bottom: 15px;">
             <input type="text" name="ref" placeholder="Référence" th:value="${ref}" />
             <select name="entrepotId">
                 <option value="">-- Tous les entrepôts --</option>
@@ -102,9 +120,7 @@
             </select>
             <button type="submit" class="btn">🔍 Rechercher</button>
         </form>
-
         <a th:href="@{/produits/form}" class="btn" style="margin-bottom: 15px;">➕ Ajouter un produit</a>
-
         <table>
             <thead>
             <tr>
@@ -137,13 +153,10 @@
             </tr>
             </tbody>
         </table>
-
         <div class="pagination">
             <a th:if="${currentPage > 0}"
                th:href="@{/produits(page=${currentPage - 1}, ref=${ref}, entrepotId=${entrepotId})}">« Précédent</a>
-
             <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
-
             <a th:if="${currentPage + 1 < totalPages}"
                th:href="@{/produits(page=${currentPage + 1}, ref=${ref}, entrepotId=${entrepotId})}">Suivant »</a>
         </div>

@@ -4,83 +4,149 @@
     <meta charset="UTF-8">
     <title>Formulaire Entrepôt</title>
     <style>
-        body { font-family: Arial; background: #f5f5f5; padding: 30px; }
-        .form-container {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 450px;
-            margin: auto;
+        /* Corps en dégradé bleu ciel */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #eaf6ff, #e6f4ff);
         }
-        h2 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-        }
-        input[type="text"] {
+
+        /* Barre du haut sombre pour afficher l’utilisateur */
+        .topbar {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            background-color: #002147; /* bleu foncé */
+            padding: 10px 20px;
+            box-sizing: border-box;
+            color: #ffffff; /* texte blanc */
+            font-weight: bold;
+            font-size: 1rem;
         }
+
+        /* Conteneur principal centré */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 0;
+        }
+
+        /* Card blanche pour le formulaire d’entrepôt */
+        .form-card {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            width: 450px;
+            box-sizing: border-box;
+        }
+
+        /* Titre du formulaire */
+        .form-card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #002147; /* bleu foncé */
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        /* Styles des labels */
+        .form-card label {
+            display: block;
+            margin-top: 12px;
+            color: #000000; /* noir */
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* Styles des champs de saisie (bleu ciel de fond) */
+        .form-card input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 6px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #eaf6ff; /* bleu ciel */
+            font-size: 1rem;
+            color: #000000;
+        }
+
+        /* Conteneur des boutons */
         .buttons {
-            margin-top: 20px;
+            margin-top: 25px;
             display: flex;
             justify-content: space-between;
         }
-        .buttons input[type="submit"],
-        .buttons input[type="button"] {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .buttons input[type="submit"] {
-            background-color: #4CAF50;
+
+        /* Bouton Ajouter vert */
+        .btn-add {
+            background-color: #28a745;
             color: white;
+            border: none;
+            padding: 10px 0;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 48%;
+            text-align: center;
         }
-        .buttons input[type="button"] {
-            background-color: #ccc;
-            color: black;
+        .btn-add:hover {
+            background-color: #218838;
         }
-        .buttons input[type="submit"]:hover {
-            background-color: #45a049;
+
+        /* Lien Annuler stylisé comme bouton gris */
+        .btn-cancel {
+            display: inline-block;
+            background-color: #6c757d; /* gris foncé */
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 48%;
+            text-align: center;
+            box-sizing: border-box;
         }
-        .buttons input[type="button"]:hover {
-            background-color: #bbb;
+        .btn-cancel:hover {
+            background-color: #5a6268;
         }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h2 th:text="${entrepot.id == null} ? 'Ajouter un entrepôt' : 'Modifier un entrepôt'">Formulaire</h2>
+<!-- Barre du haut affichant l'utilisateur -->
+<div class="topbar">
+    <span th:text="'User : ' + ${#authentication.name}">User : nom_utilisateur</span>
+</div>
 
-    <form th:action="@{/entrepots/save}" th:object="${entrepot}" method="post">
-        <input type="hidden" th:field="*{id}" />
+<!-- Conteneur principal centré -->
+<div class="main-container">
+    <div class="form-card">
+        <!-- Titre dynamique -->
+        <h2 th:text="${entrepot.id == null} ? 'Ajouter un entrepôt' : 'Modifier un entrepôt'">Formulaire Entrepôt</h2>
 
-        <label>Nom:</label>
-        <input type="text" th:field="*{nom}" required />
+        <!-- Formulaire Thymeleaf -->
+        <form th:action="@{/entrepots/save}" th:object="${entrepot}" method="post">
+            <input type="hidden" th:field="*{id}" />
 
-        <label>Code:</label>
-        <input type="text" th:field="*{code}" required />
+            <label>Nom :</label>
+            <input type="text" th:field="*{nom}" required />
 
-        <label>Adresse:</label>
-        <input type="text" th:field="*{adresse}" required />
+            <label>Code :</label>
+            <input type="text" th:field="*{code}" required />
 
-        <div class="buttons">
-            <input type="submit" value="Ajouter" />
-            <a th:href="@{/entrepots}"><input type="button" value="Annuler" /></a>
-        </div>
-    </form>
+            <label>Adresse :</label>
+            <input type="text" th:field="*{adresse}" required />
+
+            <div class="buttons">
+                <!-- Bouton Ajouter -->
+                <button type="submit" class="btn-add">Ajouter</button>
+                <!-- Lien Annuler -->
+                <a th:href="@{/entrepots}" class="btn-cancel">Annuler</a>
+            </div>
+        </form>
+    </div>
 </div>
 
 </body>
