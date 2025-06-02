@@ -4,121 +4,172 @@
     <meta charset="UTF-8">
     <title>Ajouter un produit</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
-        .container { display: flex; }
-        aside {
-            width: 200px;
-            background-color: white;
-            border: 2px solid black;
-            border-right: none;
-            padding: 10px;
-            height: 100vh;
+        /* Corps en dégradé bleu ciel */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #eaf6ff, #e6f4ff);
         }
-        aside h3 {
-            font-size: 18px;
+
+        /* Barre du haut sombre pour afficher l’utilisateur */
+        .topbar {
+            width: 100%;
+            background-color: #002147; /* bleu foncé */
+            padding: 10px 20px;
+            box-sizing: border-box;
+            color: #ffffff; /* texte blanc */
             font-weight: bold;
-            margin-bottom: 15px;
-            border-bottom: 2px solid black;
-            padding-bottom: 5px;
+            font-size: 1rem;
         }
-        aside a {
+
+        /* Conteneur principal centré */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 0;
+        }
+
+        /* Card blanche pour le formulaire produit */
+        .form-card {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            box-sizing: border-box;
+        }
+
+        /* Titre du formulaire */
+        .form-card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #002147; /* bleu foncé */
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        /* Message d'erreur en rouge */
+        .form-card .error {
+            color: red;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        /* Styles des labels */
+        .form-card label {
             display: block;
-            padding: 8px;
-            text-decoration: none;
-            color: black;
-        }
-        aside a:hover, aside a.active-link {
-            background-color: #cce0ff;
-        }
-        main {
-            flex: 1;
-            padding: 30px;
-            background-color: #fff;
-            border: 2px solid #000;
-        }
-        h2 { margin-top: 0; }
-        form label {
-            display: inline-block;
-            width: 150px;
+            margin-top: 12px;
+            color: #000000; /* noir */
             font-weight: bold;
-            margin-bottom: 8px;
+            font-size: 1rem;
         }
-        form input[type="text"],
-        form input[type="number"],
-        form select {
-            width: 300px;
-            padding: 6px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
+
+        /* Styles des champs de saisie (bleu ciel de fond) */
+        .form-card input[type="text"],
+        .form-card input[type="number"],
+        .form-card select {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 6px;
+            border: 1px solid #aaa;
             border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #eaf6ff; /* bleu ciel */
+            font-size: 1rem;
+            color: #000000;
         }
-        .buttons input {
-            padding: 6px 12px;
-            background-color: #4CAF50;
+
+        /* Conteneur des boutons */
+        .buttons {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Bouton Enregistrer vert */
+        .btn-save {
+            background-color: #28a745;
             color: white;
             border: none;
+            padding: 10px 0;
             border-radius: 4px;
+            font-size: 1rem;
             cursor: pointer;
-            font-weight: bold;
+            width: 48%;
+            text-align: center;
         }
-        .buttons input:hover {
-            background-color: #3e8e41;
+        .btn-save:hover {
+            background-color: #218838;
         }
-        .error {
-            color: red;
-            font-size: 13px;
-            margin-bottom: 15px;
+
+        /* Bouton Annuler gris foncé */
+        .btn-cancel {
+            display: inline-block;
+            background-color: #6c757d; /* gris foncé */
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 48%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .btn-cancel:hover {
+            background-color: #5a6268;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <aside>
-        <h3>Gestion de stocks</h3>
-        <a th:href="@{/}">Accueil</a>
-        <a th:href="@{/entrepots}">Gestion des entrepôts</a>
-        <a th:href="@{/produits}" class="active-link">Produits</a>
-        <a th:href="@{/receptions}">Réceptions</a>
-        <a th:href="@{/livraisons}">Livraisons</a>
-        <a th:href="@{/transferts}">Transferts</a>
-        <a th:href="@{/commandes}">Commandes</a>
-        <a th:href="@{/commandeLivraison}">Commandes de livraison</a>
-        <a th:href="@{/inventaires}">Inventaires</a>
-    </aside>
 
-    <main>
+<!-- Barre du haut affichant l'utilisateur -->
+<div class="topbar">
+    <span th:text="'User : ' + ${#authentication.name}">User : nom_utilisateur</span>
+</div>
+
+<!-- Conteneur principal centré -->
+<div class="main-container">
+    <div class="form-card">
+        <!-- Titre dynamique -->
         <h2>Ajouter un produit</h2>
+
+        <!-- Message d'erreur éventuel -->
         <div th:if="${erreur}" class="error" th:text="${erreur}"></div>
 
+        <!-- Formulaire Thymeleaf -->
         <form th:action="@{/produits/save}" th:object="${produit}" method="post">
             <input type="hidden" th:field="*{id}" />
 
             <label>Référence :</label>
-            <input type="text" th:field="*{reference}" required /><br>
+            <input type="text" th:field="*{reference}" required />
 
             <label>Libellé :</label>
-            <input type="text" th:field="*{libelle}" required /><br>
+            <input type="text" th:field="*{libelle}" required />
 
             <label>Type :</label>
-            <input type="text" th:field="*{type}" required /><br>
+            <input type="text" th:field="*{type}" required />
 
             <label>Unité :</label>
-            <input type="text" th:field="*{unite}" required /><br>
+            <input type="text" th:field="*{unite}" required />
 
             <label>Quantité en stock :</label>
-            <input type="number" th:field="*{quantiteStock}" min="0" required /><br>
+            <input type="number" th:field="*{quantiteStock}" min="0" required />
 
             <label>Entrepôt :</label>
             <select th:field="*{entrepot.id}" required>
+                <option value="">-- Choisir --</option>
                 <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"></option>
-            </select><br>
+            </select>
 
             <div class="buttons">
-                <input type="submit" value="Enregistrer" />
-                <a th:href="@{/produits}"><input type="button" value="Annuler" /></a>
+                <button type="submit" class="btn-save">Enregistrer</button>
+                <a th:href="@{/produits}" class="btn-cancel">Annuler</a>
             </div>
         </form>
-    </main>
+    </div>
 </div>
+
 </body>
 </html>

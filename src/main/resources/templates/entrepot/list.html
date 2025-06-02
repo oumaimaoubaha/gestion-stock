@@ -1,65 +1,48 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Liste des entrepôts</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f9f9f9;
-            padding: 20px;
             margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #dfefff, #ffffff);
         }
         .container {
             display: flex;
-            max-width: 1200px;
-            margin: auto;
-            border: 2px solid black;
-            background-color: white;
         }
         aside {
-            width: 200px;
-            padding: 10px;
-            border-right: 2px solid black;
-            background-color: white;
+            width: 230px;
+            background-color: #002147;
+            color: white;
+            height: 100vh;
+            padding: 20px;
         }
         aside h3 {
             font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            border-bottom: 2px solid black;
-            padding-bottom: 5px;
+            margin-bottom: 30px;
         }
         aside a {
-            display: block;
-            padding: 8px;
+            color: white;
             text-decoration: none;
-            color: black;
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
         }
         aside a:hover,
         aside a.active-link {
-            background-color: #cce0ff;
+            background-color: #0056b3;
         }
         main {
             flex: 1;
             padding: 20px;
-            background-color: #fff;
+            background-color: transparent;
         }
         h2 {
             margin-top: 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: left;
-        }
-        th {
-            background-color: #eaeaea;
         }
         .btn {
             background-color: #007bff;
@@ -67,48 +50,69 @@
             padding: 6px 10px;
             border-radius: 4px;
             text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
         .btn:hover {
             background-color: #0056b3;
         }
         .btn-danger {
             background-color: red;
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+            background-color: #f0f7ff; /* bleu ciel très clair */
+        }
+        th {
+            background-color: #d0e1ff; /* bleu ciel plus soutenu */
+            font-weight: bold;
+        }
+        /* Colonne Actions plus étroite */
+        td:last-child, th:last-child {
+            width: 130px;
+            white-space: nowrap;
         }
         .pagination {
-            margin-top: 15px;
+            margin-top: 20px;
         }
         .pagination a {
-            margin-right: 10px;
-            text-decoration: none;
             color: blue;
             font-weight: bold;
-        }
-        .pagination span {
-            font-weight: bold;
+            text-decoration: none;
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
-
 <div class="container">
     <aside>
-        <h3>Gestion de stocks</h3>
-        <a th:href="@{/}">Accueil</a>
-        <a th:href="@{/entrepots}" class="active-link">Entrepôts</a>
-        <a th:href="@{/produits}">Produits</a>
-        <a th:href="@{/receptions}">Réceptions</a>
-        <a th:href="@{/livraisons}">Livraisons</a>
-        <a th:href="@{/transferts}">Transferts</a>
-        <a th:href="@{/commandes}">Commandes Achat</a>
-        <a th:href="@{/commandeLivraison}">Commandes Livraison</a>
-        <a th:href="@{/inventaires}">Inventaires</a>
+        <h3 th:text="'User : ' + ${#authentication.name}">Utilisateur</h3>
+        <a th:href="@{/}">🏠 Accueil</a>
+        <a th:href="@{/entrepots}" class="active-link">🏢 Entrepôts</a>
+        <a th:href="@{/produits}">📦 Produits</a>
+        <a th:href="@{/receptions}">📥 Réceptions</a>
+        <a th:href="@{/livraisons}">📤 Livraisons</a>
+        <a th:href="@{/transferts}">🔁 Transferts</a>
+        <a th:href="@{/commandes}">📄 Commandes Achat</a>
+        <a th:href="@{/commandeLivraison}">🧾 Commandes Livraison</a>
+        <a th:href="@{/inventaires}">📊 Inventaires</a>
     </aside>
-
     <main>
         <h2>🏢 Liste des entrepôts</h2>
-
         <a th:href="@{/entrepots/form}" class="btn">➕ Ajouter un entrepôt</a>
-
         <table>
             <thead>
             <tr>
@@ -125,8 +129,7 @@
                 <td th:text="${e.adresse}">Adresse</td>
                 <td>
                     <a th:href="@{/entrepots/edit/{id}(id=${e.id})}" class="btn">Modifier</a>
-                    <a th:href="@{/entrepots/delete/{id}(id=${e.id})}" class="btn btn-danger"
-                       onclick="return confirm('Supprimer cet entrepôt ?');">Supprimer</a>
+                    <a th:href="@{/entrepots/delete/{id}(id=${e.id})}" class="btn btn-danger" onclick="return confirm('Supprimer cet entrepôt ?');">Supprimer</a>
                 </td>
             </tr>
             <tr th:if="${#lists.isEmpty(entrepots)}">
@@ -136,7 +139,6 @@
             </tr>
             </tbody>
         </table>
-
         <div class="pagination">
             <a th:if="${currentPage > 0}" th:href="@{/entrepots(page=${currentPage - 1})}">« Précédent</a>
             <span th:text="'Page ' + (${currentPage + 1}) + ' / ' + ${totalPages}"></span>
@@ -144,6 +146,5 @@
         </div>
     </main>
 </div>
-
 </body>
 </html>
