@@ -38,10 +38,24 @@ public class LivraisonController {
                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin,
                                   @RequestParam(required = false) String referenceProduit,
-                                  @RequestParam(required = false) Long entrepotId) {
+                                  @RequestParam(required = false) Long entrepotId,
+                                  @RequestParam(defaultValue = "0") int page) {
 
-        List<Livraison> livraisons = livraisonService.searchBetween(dateDebut, dateFin, referenceProduit, entrepotId);
-        model.addAttribute("livraisons", livraisons);
+        // Appel normal : récupère toutes les livraisons correspondant aux critères
+        List<Livraison> toutes = livraisonService.searchBetween(dateDebut, dateFin, referenceProduit, entrepotId);
+
+        int size = 4;
+        int total = toutes.size();
+        int totalPages = (total + size - 1) / size;
+
+        int start = page * size;
+        int end = Math.min(start + size, total);
+        List<Livraison> pageList = (start >= total) ? List.of() : toutes.subList(start, end);
+
+        model.addAttribute("livraisons", pageList);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
         model.addAttribute("dateDebut", dateDebut);
         model.addAttribute("dateFin", dateFin);
@@ -49,6 +63,8 @@ public class LivraisonController {
         model.addAttribute("entrepotId", entrepotId);
         return "livraison/list";
     }
+
+
 
     @GetMapping("/nouvelle")
     public String nouvelleLivraison(Model model) {
@@ -213,16 +229,54 @@ public class LivraisonController {
     }
 
     @GetMapping("/rechercherCommandes")
-    public String rechercherCommandes(@RequestParam(required = false) String numero,
-                                      @RequestParam(required = false) String produit,
-                                      Model model) {
-        List<CommandeLivraison> commandes = commandeLivraisonService.searchByNumeroOrProduit(numero, produit);
+    public String rechercherCommandes(
+            @RequestParam(required = false) String numero,
+            @RequestParam(required = false) String produit,
+            Model model) {
+
+        // 1) Récupère toutes les commandes correspondant au numéro OU au produit (méthode existante)
+        List<CommandeLivraison> commandes =
+                commandeLivraisonService.searchByNumeroOrProduit(numero, produit);
+
+        // 2) Filtrage « numéro exact » si numéro non vide
+        if (numero != null && !numero.isBlank()) {
+            commandes = commandes.stream()
+                    .filter(c -> c.getNumeroLivraison() != null
+                            && c.getNumeroLivraison().equals(numero.trim()))
+                    .toList();
+        }
+
+        // 3) Filtrage « référence du produit contient la chaîne saisie » si produit non vide
+        if (produit != null && !produit.isBlank()) {
+            String prodMin = produit.trim().toLowerCase();
+            commandes = commandes.stream()
+                    .filter(c -> c.getProduit() != null
+                            && c.getProduit().getReference() != null
+                            && c.getProduit().getReference().toLowerCase().contains(prodMin))
+                    .toList();
+        }
+
+        // 4) Toujours retirer les commandes déjà « livré »
+        commandes = commandes.stream()
+                .filter(c -> c.getStatut() == null
+                        || !c.getStatut().equalsIgnoreCase("livré"))
+                .toList();
+
+        // 5) On renvoie la liste filtrée
         model.addAttribute("commandeLivraisons", commandes);
+
+        // 6) Pour réafficher les valeurs dans les champs de recherche
+        model.addAttribute("numero", numero);
+        model.addAttribute("produit", produit);
+
+        // 7) Listes utilisées ailleurs dans la vue
         model.addAttribute("produits", produitService.getAllProduits());
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
-        model.addAttribute("livraison", new Livraison());
+
         return "livraison/form";
     }
+
+
 
 
     @GetMapping("/livrerCommande/{id}")

@@ -4,79 +4,111 @@
     <meta charset="UTF-8">
     <title th:text="${edition} ? 'Modification de la livraison' : 'Nouvelle livraison'">Livraison</title>
     <style>
-        body { font-family: Arial; margin: 0; display: flex; }
-        aside {
-          width: 220px; background: white; padding: 20px; border-right: 1px solid black; height: 100vh;
+        /* ==== Copier exactement les styles du formulaire de réception ==== */
+        body {
+            font-family: Arial;
+            padding: 30px;
+            background: #f2f2f2;
         }
-        aside a:hover, .active { background-color: #cce0ff; border-radius: 4px; }
-        main { flex: 1; padding: 30px; background-color: #f8f8f8; }
+        h2 {
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #e6f0ff;
+        }
+        .btn {
+            padding: 6px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #3e8e41;
+        }
         .form-section {
-          background: white; padding: 25px; border-radius: 8px;
-          box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 650px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px #ccc;
+            max-width: 650px;
+            margin: auto;
         }
-        h2 { margin-bottom: 15px; color: purple; }
-        label { display: inline-block; width: 140px; font-weight: bold; margin-bottom: 10px; }
-        input[type="text"], input[type="number"], input[type="date"], select {
-          width: 300px; padding: 6px; margin-bottom: 10px;
+        .form-section h3 {
+            margin-top: 0;
+            color: #333;
         }
-        .buttons { margin-top: 20px; }
-        .buttons button, .buttons a {
-          padding: 8px 15px; margin-right: 10px; border: none; border-radius: 4px;
-          text-decoration: none; font-weight: bold;
+        .form-section label {
+            display: inline-block;
+            width: 140px;
+            margin-bottom: 8px;
+            font-weight: bold;
         }
-        .buttons button { background-color: purple; color: white; cursor: pointer; }
-        .buttons a { background-color: #ccc; color: black; }
-        .table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
-        .table th, .table td {
-          border: 1px solid #ccc; padding: 8px; text-align: left;
+        .form-section input,
+        .form-section select {
+            width: 300px;
+            padding: 6px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
         }
-        .table th { background-color: #eee; }
-        .actions a { color: purple; font-weight: bold; text-decoration: none; }
-        .top-link { color: purple; font-weight: bold; text-decoration: none; margin-right: 15px; }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .success-message {
+            background-color: #e0ffe0;
+            border: 1px solid #00aa00;
+            color: #006600;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
 
-<aside>
-    <div><b>Accueil</b></div>
-    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div><hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}" class="active">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-        <li><a th:href="@{/commandes}">Commandes</a></li>
-        <li><a th:href="@{/commandeLivraison}">Commandes de livraison</a></li>
-    </ul>
-    <hr>
-    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
-</aside>
+<!-- ==== Bloc “Commandes non livrées” identique à l’exemple réception, sans menu latéral ==== -->
+<div th:if="${edition} == null">
 
-<main>
-    <h2 th:text="${edition} ? 'Livraisons > Modification de la livraison' : 'Livraisons > Nouvelle livraison'">Livraison</h2>
+    <h2>Commandes non livrées</h2>
 
-    <!-- 🔁 Ces deux liens ne s’affichent que si on N'EST PAS en édition -->
-    <div th:if="${edition} == null">
-        <a th:href="@{/livraisons/nouvelle}" class="top-link">Livraisons des commandes</a>
-        <a th:href="@{/livraisons/nouvelle-independante}" class="top-link">Autre sortie</a>
-    </div>
-
-    <!-- 🔍 Formulaire de recherche, affiché uniquement si pas en mode édition -->
-    <form method="get" th:action="@{/livraisons/rechercherCommandes}" style="margin-top: 20px" th:if="${edition} == null">
-        <label style="width: 120px">N commande :</label>
-        <input type="text" name="numero" />
-
-        <label style="width: 80px">Produit :</label>
-        <input type="text" name="produit" />
-
-        <button type="submit" style="margin-left: 20px">Chercher</button>
+    <form method="get" th:action="@{/livraisons/rechercherCommandes}">
+        <label>N° commande :</label>
+        <input type="text" name="numero" th:value="${numero}" />
+        <br>
+        <label>Produit :</label>
+        <input type="text" name="produit" th:value="${produit}" />
+        <br>
+        <button type="submit" class="btn">Chercher</button>
     </form>
 
-    <!-- 📦 Liste des commandes, affichée uniquement si pas en mode édition -->
-    <table class="table" th:if="${commandeLivraisons != null and edition == null}">
+    <table>
         <thead>
         <tr>
-            <th>Date livraison</th>
+            <th>Date commande</th>
             <th>N° commande</th>
             <th>Produit</th>
             <th>Unité</th>
@@ -89,75 +121,98 @@
         </thead>
         <tbody>
         <tr th:each="cmd : ${commandeLivraisons}">
-            <td th:text="${cmd.dateLivraison}"></td>
-            <td th:text="${cmd.numeroLivraison}"></td>
-            <td th:text="${cmd.produit.reference}"></td>
-            <td th:text="${cmd.unite}"></td>
-            <td th:text="${cmd.quantite}"></td>
-            <td th:text="${cmd.client}"></td>
-            <td th:text="${cmd.entrepot.nom}"></td>
-            <td th:text="${cmd.remarque}"></td>
-            <td><a th:href="@{'/livraisons/livrerCommande/' + ${cmd.id}}">Livrer</a></td>
+            <td th:text="${cmd.dateLivraison}">2025-01-01</td>
+            <td th:text="${cmd.numeroLivraison}">L123</td>
+            <td th:text="${cmd.produit.reference}">Farine</td>
+            <td th:text="${cmd.unite}">kg</td>
+            <td th:text="${cmd.quantite}">50</td>
+            <td th:text="${cmd.client}">Client A</td>
+            <td th:text="${cmd.entrepot.nom}">Dada</td>
+            <td th:text="${cmd.remarque}">Remarque</td>
+            <td>
+                <a th:href="@{'/livraisons/livrerCommande/' + ${cmd.id}}" class="btn">Livrer</a>
+            </td>
+        </tr>
+        <tr th:if="${commandeLivraisons.empty}">
+            <td colspan="9" style="text-align:center; color:red; font-weight:bold;">
+                ⚠️ Aucune commande ne correspond à la recherche.
+            </td>
         </tr>
         </tbody>
     </table>
 
-    <!-- 🧾 Formulaire livraison -->
-    <div th:if="${livraison != null and edition == null}" class="form-section">
+    <a th:href="@{/livraisons}" class="back-link">⬅ Retour à la liste des livraisons</a>
+</div>
 
-    <h2 th:text="${edition} ? 'Modification de la livraison' : 'Nouvelle livraison'"></h2>
+<!-- ==== Bloc “Formulaire de livraison” identique en style au formulaire de réception ==== -->
+<div class="form-section" th:if="${livraison != null}">
 
-        <p th:if="${error}" th:text="${error}" style="color: red; font-weight: bold;"></p>
+    <a th:href="@{/livraisons}" class="back-link">⬅ Retour à la liste des livraisons</a>
 
-        <form th:action="@{/livraisons/save}" th:object="${livraison}" method="post">
-            <input type="hidden" th:field="*{id}" />
+    <div th:if="${error}" class="error-message" th:text="${error}"></div>
+    <div th:if="${message}" class="success-message" th:text="${message}"></div>
 
-            <!-- champ commandeId uniquement en mode ajout -->
-            <input type="hidden" name="commandeId"
-                   th:if="${livraison.commandeLivraison != null}"
-                   th:value="${livraison.commandeLivraison.id}" />
+    <h3 th:text="${edition} ? 'Modification de la livraison' : 'Livraison à enregistrer'"></h3>
 
+    <form th:action="@{/livraisons/save}" th:object="${livraison}" method="post">
+        <input type="hidden" th:field="*{id}" />
 
-            <label>Date de livraison :</label>
-            <input type="date" th:field="*{dateLivraison}" required /><br>
+        <!-- champ commandeId uniquement en mode ajout -->
+        <input type="hidden" name="commandeId"
+               th:if="${livraison.commandeLivraison != null}"
+               th:value="${livraison.commandeLivraison.id}" />
 
-            <label>Date commande :</label>
-            <input type="text"
-                   th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.dateLivraison : ''}" readonly /><br>
+        <label>Date de livraison :</label>
+        <input type="date" th:field="*{dateLivraison}" required />
+        <br>
 
-            <label>N° commande :</label>
-            <input type="text"
-                   th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.numeroLivraison : ''}" readonly /><br>
+        <label>Date commande :</label>
+        <input type="text"
+               th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.dateLivraison : ''}"
+               readonly />
+        <br>
 
-            <label>Produit :</label>
-            <input type="text"
-                   th:value="${livraison.commandeLivraison != null && livraison.commandeLivraison.produit != null ? livraison.commandeLivraison.produit.reference : (livraison.produit != null ? livraison.produit.reference : '')}" readonly /><br>
+        <label>N° commande :</label>
+        <input type="text"
+               th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.numeroLivraison : ''}"
+               readonly />
+        <br>
 
-            <label>Unité :</label>
-            <input type="text" th:value="${livraison.unite}" readonly /><br>
+        <label>Produit :</label>
+        <input type="text"
+               th:value="${livraison.commandeLivraison != null && livraison.commandeLivraison.produit != null
+                         ? livraison.commandeLivraison.produit.reference
+                         : (livraison.produit != null ? livraison.produit.reference : '')}"
+               readonly />
+        <br>
 
-            <label>Quantité :</label>
-            <input type="number" th:value="${livraison.quantite}" readonly /><br>
+        <label>Unité :</label>
+        <input type="text" th:value="${livraison.unite}" readonly />
+        <br>
 
-            <label>Client :</label>
-            <input type="text"
-                   th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.client : ''}" readonly /><br>
+        <label>Quantité :</label>
+        <input type="number" th:value="${livraison.quantite}" readonly />
+        <br>
 
-            <label>Entrepôt :</label>
-            <input type="text"
-                   th:value="${livraison.entrepot != null ? livraison.entrepot.nom : ''}" readonly /><br>
+        <label>Client :</label>
+        <input type="text"
+               th:value="${livraison.commandeLivraison != null ? livraison.commandeLivraison.client : ''}"
+               readonly />
+        <br>
 
-            <label>Remarques :</label>
-            <input type="text" th:field="*{remarque}" /><br>
+        <label>Entrepôt :</label>
+        <input type="text"
+               th:value="${livraison.entrepot != null ? livraison.entrepot.nom : ''}"
+               readonly />
+        <br>
 
-            <div class="buttons">
-                <button type="submit" th:text="${edition} ? '✏ Modifier' : '✅ Enregistrer'"></button>
-                <a th:href="@{/livraisons}">⬅ Retour</a>
-            </div>
-        </form>
-    </div>
+        <label>Remarques :</label>
+        <input type="text" th:field="*{remarque}" placeholder="Optionnel" />
+        <br>
 
+        <button type="submit" class="btn" th:text="${edition} ? '✏ Modifier' : '✅ Enregistrer'"></button>
+    </form>
+</div>
 
-</main>
 </body>
 </html>

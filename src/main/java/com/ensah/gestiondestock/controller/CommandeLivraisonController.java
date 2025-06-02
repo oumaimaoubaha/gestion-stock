@@ -6,11 +6,14 @@ import com.ensah.gestiondestock.service.CommandeLivraisonService;
 import com.ensah.gestiondestock.service.EntrepotService;
 import com.ensah.gestiondestock.service.ProduitService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Controller
@@ -27,8 +30,62 @@ public class CommandeLivraisonController {
     private EntrepotService entrepotService;
 
     @GetMapping
-    public String liste(Model model) {
-        model.addAttribute("commandes", commandeLivraisonService.getAll());
+    public String liste(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String numero,
+            @RequestParam(required = false) String produit,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) Long entrepotId,
+            @RequestParam(required = false) String statut,
+            Model model
+    ) {
+        // Normalisation des filtres ("" -> null)
+        if (numero != null && numero.trim().isEmpty()) numero = null;
+        if (produit != null && produit.trim().isEmpty()) produit = null;
+        if (statut != null && statut.trim().isEmpty()) statut = null;
+
+        // Conversion de la date
+        LocalDate dateLivraison = null;
+        if (date != null && !date.isEmpty()) {
+            try {
+                dateLivraison = LocalDate.parse(date);
+            } catch (DateTimeParseException e) {
+                model.addAttribute("error", "❌ Date invalide");
+                model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+                return "commandeLivraison/list";
+            }
+        }
+
+        // Recherche paginée
+        Page<CommandeLivraison> commandes = commandeLivraisonService.search(
+                numero, produit, dateLivraison, entrepotId, statut, PageRequest.of(page, 5)
+        );
+
+        // Redirection vers la première page si on dépasse la dernière
+        if (commandes.getTotalPages() > 0 && page >= commandes.getTotalPages()) {
+            return "redirect:/commandeLivraison?page=0"
+                    + (numero != null ? "&numero=" + numero : "")
+                    + (produit != null ? "&produit=" + produit : "")
+                    + (date != null ? "&date=" + date : "")
+                    + (entrepotId != null ? "&entrepotId=" + entrepotId : "")
+                    + (statut != null ? "&statut=" + statut : "");
+        }
+
+        model.addAttribute("commandes", commandes);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", commandes.getTotalPages());
+
+        model.addAttribute("numero", numero);
+        model.addAttribute("produit", produit);
+        model.addAttribute("date", date);
+        model.addAttribute("statut", statut);
+        model.addAttribute("entrepotId", entrepotId);
+        model.addAttribute("entrepots", entrepotService.getAllEntrepots());
+
+        if (commandes.getTotalElements() == 0) {
+            model.addAttribute("noResults", "⚠️ Aucun résultat trouvé pour cette recherche.");
+        }
+
         return "commandeLivraison/list";
     }
 
@@ -36,7 +93,7 @@ public class CommandeLivraisonController {
     public String nouveau(Model model) {
         CommandeLivraison commande = new CommandeLivraison();
         commande.setDateLivraison(LocalDate.now());
-        commande.setStatut("non livré"); // ⬅️ statut par défaut
+        commande.setStatut("non livré");
         model.addAttribute("commande", commande);
         model.addAttribute("produits", produitService.getAllProduits());
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
@@ -76,16 +133,7 @@ public class CommandeLivraisonController {
             }
         }
 
-        // ❌ NE PAS modifier le stock ici
         commandeLivraisonService.save(commande);
-        return "redirect:/commandeLivraison";
-    }
-
-
-
-    @GetMapping("/supprimer/{id}")
-    public String delete(@PathVariable Long id) {
-        commandeLivraisonService.delete(id);
         return "redirect:/commandeLivraison";
     }
 
@@ -96,6 +144,12 @@ public class CommandeLivraisonController {
         model.addAttribute("produits", produitService.getAllProduits());
         model.addAttribute("entrepots", entrepotService.getAllEntrepots());
         return "commandeLivraison/form";
+    }
+
+    @GetMapping("/supprimer/{id}")
+    public String supprimer(@PathVariable Long id) {
+        commandeLivraisonService.delete(id);
+        return "redirect:/commandeLivraison";
     }
 
     @GetMapping("/produits-par-entrepot")

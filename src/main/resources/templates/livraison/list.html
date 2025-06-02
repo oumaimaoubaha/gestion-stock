@@ -4,105 +4,200 @@
     <meta charset="UTF-8">
     <title>Liste des livraisons</title>
     <style>
-        body { font-family: Arial; margin: 0; display: flex; }
-        aside {
-            width: 220px; background: white; padding: 20px;
-            border-right: 1px solid black; height: 100vh;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #dfefff, #ffffff);
         }
-        aside a:hover, .active { background-color: #cce0ff; border-radius: 4px; }
-        main { flex: 1; padding: 30px; background: #f8f8f8; }
-        h2 { margin-bottom: 15px; color: purple; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
-        th, td { padding: 10px; border: 1px solid #ccc; }
-        th { background: #eaeaea; }
-        input, select { padding: 5px; margin: 5px 0; }
-        .top-bar { margin-top: 15px; }
-        .actions a { margin-right: 8px; color: purple; font-weight: bold; text-decoration: none; }
-        .form-row { margin-bottom: 10px; }
+        .container {
+            display: flex;
+        }
+        aside {
+            width: 230px;
+            background-color: #002147;
+            color: white;
+            height: 100vh;
+            padding: 20px;
+        }
+        aside h3 {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        aside a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        aside a:hover,
+        aside a.active-link {
+            background-color: #0056b3;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+            background-color: transparent;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        form input, form select {
+            padding: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #eaeaea;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: red;
+        }
+        .pagination {
+            margin-top: 15px;
+        }
+        .pagination a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: blue;
+        }
+        .pagination span {
+            font-weight: bold;
+        }
+        .alert {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+<div class="container">
+    <aside>
+        <h3 th:text="'User : ' + ${#authentication.name}">Utilisateur</h3>
+        <a th:href="@{/}">🏠 Accueil</a>
+        <a th:href="@{/entrepots}">🏠 Entrepôts</a>
+        <a th:href="@{/produits}">📦 Produits</a>
+        <a th:href="@{/commandes}">📄 Commandes Achat</a>
+        <a th:href="@{/commandeLivraison}">🧾 Commandes de livraison</a>
+        <a th:href="@{/receptions}">📥 Réceptions</a>
+        <a th:href="@{/livraisons}" class="active-link">📤 Livraisons</a>
+        <a th:href="@{/transferts}">🔁 Transferts</a>
+        <a th:href="@{/inventaires}">📊 Inventaires</a>
+    </aside>
 
-<aside>
-    <div><b>Accueil</b></div>
-    <div><a th:href="@{/entrepots}">Gestion des entrepôts</a></div><hr>
-    <div><b>Mouvements de stock</b></div>
-    <ul>
-        <li><a th:href="@{/receptions}">Réceptions</a></li>
-        <li><a th:href="@{/livraisons}" class="active">Livraisons</a></li>
-        <li><a th:href="@{/transferts}">Transferts</a></li>
-        <li><a th:href="@{/commandes}">Commandes</a></li>
-        <li><a th:href="@{/commandeLivraison}">Commandes de livraison</a></li>
-    </ul>
-    <hr>
-    <div><a th:href="@{/inventaires}"><b>Inventaires</b></a></div>
-</aside>
+    <main>
+        <h2>🚚 Liste des livraisons</h2>
 
-<main>
-    <h2>Livraisons &gt; Liste des livraisons</h2>
+        <!-- Message après enregistrement -->
+        <div th:if="${message}" class="alert">
+            <span th:text="${message}"></span>
+        </div>
 
-    <form method="get" th:action="@{/livraisons}">
-        <div class="form-row">
+        <form method="get" th:action="@{/livraisons}" style="margin-bottom: 15px;">
             <label>Date de livraison :</label>
             De: <input type="date" name="dateDebut" th:value="${dateDebut}" />
             À: <input type="date" name="dateFin" th:value="${dateFin}" />
-        </div>
-
-        <div class="form-row">
-            <label style="display:inline-block; width: 80px;">Produit :</label>
-            <input type="text" name="referenceProduit" th:value="${referenceProduit}" style="width: 250px;" />
-        </div>
-
-        <div class="form-row">
-            <label style="display:inline-block; width: 80px;">Entrepôt :</label>
+            <label>Produit :</label>
+            <input type="text" name="referenceProduit" th:value="${referenceProduit}" />
+            <label>Entrepôt :</label>
             <select name="entrepotId">
-                <option value="">-- Choisir --</option>
-                <option th:each="e : ${entrepots}" th:value="${e.id}" th:text="${e.nom}"
-                        th:selected="${entrepotId != null && entrepotId == e.id}"></option>
+                <option value="">--</option>
+                <option th:each="e : ${entrepots}"
+                        th:value="${e.id}"
+                        th:text="${e.nom}"
+                        th:selected="${entrepotId != null && entrepotId == e.id}">
+                </option>
             </select>
+            <button type="submit" class="btn">Chercher</button>
+        </form>
+
+        <a href="/livraisons/nouvelle" class="btn" style="margin-top:10px;">➕ Nouvelle livraison</a>
+        <a href="/livraisons/independante" class="btn" style="margin-top:10px; margin-left:10px;">➕ Autre</a>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Date livraison</th>
+                <th>N° commande</th>
+                <th>Produit</th>
+                <th>Unité</th>
+                <th>Quantité</th>
+                <th>Client</th>
+                <th>Entrepôt</th>
+                <th>Remarque</th>
+                <th>Modifier</th>
+                <th>Supprimer</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="liv : ${livraisons}">
+                <td th:text="${liv.dateLivraison}">15/02/2023</td>
+                <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.numeroLivraison : 'indépendante'}">C12345</td>
+                <td th:text="${liv.produit != null ? liv.produit.libelle : '-'}">Farine</td>
+                <td th:text="${liv.unite}">Kg</td>
+                <td th:text="${liv.quantite}">50</td>
+                <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.client : liv.pour}">Client A</td>
+                <td th:text="${liv.entrepot != null ? liv.entrepot.nom : 'N/A'}">MAG1</td>
+                <td th:text="${liv.remarque != null ? liv.remarque : 'Néant'}">Néant</td>
+                <td>
+                    <a th:href="@{'/livraisons/modifier/' + ${liv.id}}" class="btn">Modifier</a>
+                </td>
+                <td>
+                    <a th:href="@{'/livraisons/supprimer/' + ${liv.id}}"
+                       class="btn btn-danger"
+                       onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+                </td>
+            </tr>
+
+            <!-- Message si aucun résultat -->
+            <tr th:if="${#lists.isEmpty(livraisons)}">
+                <td colspan="10" style="text-align:center; color:red; font-weight:bold;">
+                    ⚠️ Aucune livraison ne correspond à la recherche.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/livraisons(page=${currentPage - 1}, dateDebut=${dateDebut}, dateFin=${dateFin}, referenceProduit=${referenceProduit}, entrepotId=${entrepotId})}">
+                « Précédent
+            </a>
+
+            <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
+
+            <a th:if="${currentPage + 1 < totalPages}"
+               th:href="@{/livraisons(page=${currentPage + 1}, dateDebut=${dateDebut}, dateFin=${dateFin}, referenceProduit=${referenceProduit}, entrepotId=${entrepotId})}">
+                Suivant »
+            </a>
         </div>
-
-        <div class="form-row">
-            <input type="submit" value="Chercher" />
-        </div>
-    </form>
-
-    <table>
-        <thead>
-        <tr>
-            <th>Date livraison</th>
-            <th>N° doc vent</th>
-            <th>Produit</th>
-            <th>Unité</th>
-            <th>Quantité</th>
-            <th>Client</th>
-            <th>Entrepôt</th>
-            <th>Remarque</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="liv : ${livraisons}">
-            <td th:text="${liv.dateLivraison}">-</td>
-            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.numeroLivraison : '-'}">-</td>
-            <td th:text="${liv.produit != null ? liv.produit.reference : '-'}">-</td>
-            <td th:text="${liv.unite != null ? liv.unite : '-'}">-</td>
-            <td th:text="${liv.quantite}">0</td>
-            <td th:text="${liv.commandeLivraison != null ? liv.commandeLivraison.client : liv.pour}">-</td>
-            <td th:text="${liv.entrepot != null ? liv.entrepot.nom : '-'}">-</td>
-            <td th:text="${liv.remarque != null ? liv.remarque : ''}"></td>
-            <td class="actions">
-                <a th:href="@{'/livraisons/modifier/' + ${liv.id}}">Modifier</a>
-                <a th:href="@{'/livraisons/supprimer/' + ${liv.id}}" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
-            </td>
-        </tr>
-
-        </tbody>
-    </table>
-
-    <div class="top-bar">
-        <a th:href="@{/livraisons/nouvelle}">➕ Nouvelle livraison</a>
-    </div>
-</main>
+    </main>
+</div>
 </body>
 </html>

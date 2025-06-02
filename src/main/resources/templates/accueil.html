@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+    <style>
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: Arial, sans-serif;
+          background: linear-gradient(to right, #dfefff, #ffffff);
+          height: 100vh;
+          display: flex;
+        }
+        aside {
+          width: 220px;
+          background-color: #002147;
+          color: white;
+          height: 100vh;
+          padding: 20px;
+          box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+        }
+        aside h2 {
+          font-size: 18px;
+          margin-bottom: 30px;
+        }
+        aside a {
+          color: white;
+          text-decoration: none;
+          display: block;
+          margin-bottom: 10px;
+          padding: 10px;
+          border-radius: 4px;
+        }
+        aside a:hover {
+          background-color: #0056b3;
+        }
+        main {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .box {
+          text-align: center;
+          background: white;
+          padding: 40px;
+          border-radius: 12px;
+          box-shadow: 0 0 15px rgba(0,0,0,0.2);
+          width: 450px;
+        }
+        h1 {
+          color: #333;
+          margin-bottom: 20px;
+        }
+        p {
+          font-size: 17px;
+          color: #555;
+        }
+        .btn {
+          margin-top: 30px;
+          background-color: #007bff;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 6px;
+          text-decoration: none;
+          font-size: 16px;
+          display: inline-block;
+        }
+        .btn:hover {
+          background-color: #0056b3;
+        }
+        .logout {
+          margin-top: 20px;
+          display: block;
+          font-size: 14px;
+          color: red;
+          text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<aside>
+    <h2 th:text="${#authentication.name}">Utilisateur</h2>
+    <a href="/entrepots">🏠 Entrepôts</a>
+    <a href="/produits">📦 Produits</a>
+    <a href="/commandes">🧾 Commandes</a>
+    <a href="/receptions">📥 Réceptions</a>
+    <a href="/livraisons">📤 Livraisons</a>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="logout">🚪 Se déconnecter</button>
+    </form>
+</aside>
+<main>
+    <div class="box">
+        <h1 th:text="'Bienvenue, ' + ${#authentication.name} + ' 👋'">Bienvenue, utilisateur 👋</h1>
+        <p>Bienvenue sur votre application de gestion de stock.</p>
+        <a href="/entrepots" class="btn">Accéder à la plateforme</a>
+    </div>
+</main>
+</body>
+</html>
